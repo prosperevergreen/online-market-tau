@@ -91,6 +91,8 @@ jspm_packages/
 
 # Vagrant
 .vagrant
+Vagrantfile
+vagrant/
 _vagrant
 
 # others
