@@ -90,6 +90,8 @@ jspm_packages/
 .sublime-workspace
 
 # Vagrant
+Vagrantfile
+vagrant/
 .vagrant
 _vagrant
 
