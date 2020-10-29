@@ -11,9 +11,7 @@ chai.use(chaiHttp);
 
 // helper function for creating randomized test data
 const generateRandomString = (len = 9) => {
-  return Math.random()
-    .toString(36)
-    .substr(2, len);
+  return Math.random().toString(36).substr(2, len);
 };
 
 // Get users (create copies for test isolation)
@@ -74,10 +72,7 @@ describe('Routes', () => {
     describe('Registration: POST /api/register', () => {
       it('should respond with "406 Not Acceptable" when Accept header is missing', async () => {
         const user = getTestUser();
-        const response = await chai
-          .request(handleRequest)
-          .post(registrationUrl)
-          .send(user);
+        const response = await chai.request(handleRequest).post(registrationUrl).send(user);
         expect(response).to.have.status(406);
       });
 
@@ -204,10 +199,7 @@ describe('Routes', () => {
       });
 
       it('should respond with "406 Not Acceptable" when client does not accept JSON', async () => {
-        const response = await chai
-          .request(handleRequest)
-          .get(usersUrl)
-          .set('Accept', 'text/html');
+        const response = await chai.request(handleRequest).get(usersUrl).set('Accept', 'text/html');
 
         expect(response).to.have.status(406);
       });
@@ -216,7 +208,8 @@ describe('Routes', () => {
         const response = await chai
           .request(handleRequest)
           .get(usersUrl)
-          .set('Accept', contentType);
+          .set('Accept', contentType)
+          .set('Authorization', `Basic ${adminCredentials}`);
 
         expect(response).to.have.status(200);
         expect(response).to.be.json;

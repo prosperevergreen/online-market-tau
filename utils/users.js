@@ -5,6 +5,8 @@
  * to store all data.
  */
 
+const { use } = require("chai");
+
 /**
  * Use this object to store users
  *
@@ -13,9 +15,9 @@
  * properties do not have that restriction.
  */
 const data = {
-  // make copies of users (prevents changing from outside this module/file)
-  users: require('../users.json').map(user => ({ ...user })),
-  roles: ['customer', 'admin']
+	// make copies of users (prevents changing from outside this module/file)
+	users: require("../users.json").map((user) => ({ ...user })),
+	roles: ["customer", "admin"],
 };
 
 /**
@@ -26,8 +28,8 @@ const data = {
  * database to a known state directly.
  */
 const resetUsers = () => {
-  // make copies of users (prevents changing from outside this module/file)
-  data.users = require('../users.json').map(user => ({ ...user }));
+	// make copies of users (prevents changing from outside this module/file)
+	data.users = require("../users.json").map((user) => ({ ...user }));
 };
 
 /**
@@ -35,17 +37,17 @@ const resetUsers = () => {
  * @returns {string}
  */
 const generateId = () => {
-  let id;
+	let id;
 
-  do {
-    // Generate unique random id that is not already in use
-    // Shamelessly borrowed from a Gist. See:
-    // https://gist.github.com/gordonbrander/2230317
+	do {
+		// Generate unique random id that is not already in use
+		// Shamelessly borrowed from a Gist. See:
+		// https://gist.github.com/gordonbrander/2230317
 
-    id = Math.random().toString(36).substr(2, 9);
-  } while (data.users.some(u => u._id === id));
+		id = Math.random().toString(36).substr(2, 9);
+	} while (data.users.some((u) => u._id === id));
 
-  return id;
+	return id;
 };
 
 /**
@@ -54,9 +56,11 @@ const generateId = () => {
  * @param {string} email
  * @returns {boolean}
  */
-const emailInUse = email => {
-  // TODO: 8.3 Check if there already exists a user with a given email
-  throw new Error('Not Implemented');
+const emailInUse = (email) => {
+	// TODO: 8.3 Check if there already exists a user with a given email
+	const users = data.users;
+	return users.some((user) => user.email === email);
+	// throw new Error('Not Implemented');
 };
 
 /**
@@ -70,8 +74,20 @@ const emailInUse = email => {
  * @returns {Object|undefined}
  */
 const getUser = (email, password) => {
-  // TODO: 8.3 Get user whose email and password match the provided values
-  throw new Error('Not Implemented');
+	// TODO: 8.3 Get user whose email and password match the provided values
+
+	const users = data.users;
+	const user = users.find(
+		(userX) => userX.email === email && userX.password === password
+	);
+	if (user) {
+		return { ...user };
+	}
+	// else{
+	//   return user;
+	// }
+
+	// throw new Error('Not Implemented');
 };
 
 /**
@@ -83,9 +99,15 @@ const getUser = (email, password) => {
  * @param {string} userId
  * @returns {Object|undefined}
  */
-const getUserById = userId => {
-  // TODO: 8.3 Find user by user id
-  throw new Error('Not Implemented');
+const getUserById = (userId) => {
+	// TODO: 8.3 Find user by user id
+	const users = data.users;
+	const user = users.find((userX) => userX._id === userId);
+	if (user) {
+		return { ...user };
+	}
+
+	// throw new Error("Not Implemented");
 };
 
 /**
@@ -94,9 +116,17 @@ const getUserById = userId => {
  * @param {string} userId
  * @returns {Object|undefined} deleted user or undefined if user does not exist
  */
-const deleteUserById = userId => {
-  // TODO: 8.3 Delete user with a given id
-  throw new Error('Not Implemented');
+const deleteUserById = (userId) => {
+	// TODO: 8.3 Delete user with a given id
+	const users = data.users;
+	const index = users.findIndex((user) => user._id === userId);
+	if (index !== -1) {
+		const deletedUser = { ...users[index] };
+		users.splice(index, 1);
+		return deletedUser;
+	}
+
+	// throw new Error("Not Implemented");
 };
 
 /**
@@ -108,8 +138,13 @@ const deleteUserById = userId => {
  * @returns {Array<Object>} all users
  */
 const getAllUsers = () => {
-  // TODO: 8.3 Retrieve all users
-  throw new Error('Not Implemented');
+	// TODO: 8.3 Retrieve all users
+	const newUserArr = [];
+	for (const user of data.users) {
+		newUserArr.push({ ...user });
+	}
+	return newUserArr;
+	// throw new Error("Not Implemented");
 };
 
 /**
@@ -124,10 +159,18 @@ const getAllUsers = () => {
  * @param {Object} user
  * @returns {Object} copy of the created user
  */
-const saveNewUser = user => {
-  // TODO: 8.3 Save new user
-  // Use generateId() to assign a unique id to the newly created user.
-  throw new Error('Not Implemented');
+const saveNewUser = (user) => {
+	// TODO: 8.3 Save new user
+	// Use generateId() to assign a unique id to the newly created user.
+	const newUser = { ...user };
+	if (typeof newUser.role === "undefined") {
+		newUser.role = data.roles[0];
+	}
+	newUser._id = generateId();
+	const users = data.users;
+	users.push(newUser);
+	return { ...newUser };
+	// throw new Error("Not Implemented");
 };
 
 /**
@@ -144,8 +187,17 @@ const saveNewUser = user => {
  * @throws {Error} error object with message "Unknown role"
  */
 const updateUserRole = (userId, role) => {
-  // TODO: 8.3 Update user's role
-  throw new Error('Not Implemented');
+	// TODO: 8.3 Update user's role
+	if (data.roles.includes(role)) {
+		const users = data.users;
+		const user = users.find((userX) => userX._id === userId);
+		if (user) {
+			user.role = role;
+			return { ...user };
+		}
+	} else {
+		throw new Error("Unknown role");
+	}
 };
 
 /**
@@ -157,19 +209,32 @@ const updateUserRole = (userId, role) => {
  * @param {Object} user user object to be validated
  * @returns {Array<string>} Array of error messages or empty array if user is valid
  */
-const validateUser = user => {
-  // TODO: 8.3 Validate user before saving
-  throw new Error('Not Implemented');
+const validateUser = (user) => {
+	// TODO: 8.3 Validate user before saving
+	const errors = [];
+	if (typeof user.name === "undefined") {
+		errors.push("Missing name");
+	}
+	if (typeof user.email === "undefined") {
+		errors.push("Missing email");
+	}
+	if (typeof user.password === "undefined") {
+		errors.push("Missing password");
+	}
+	if (typeof user.role !== "undefined" && !data.roles.includes(user.role)) {
+		errors.push("Unknown role");
+	}
+	return errors;
 };
 
 module.exports = {
-  deleteUserById,
-  emailInUse,
-  getAllUsers,
-  getUser,
-  getUserById,
-  resetUsers,
-  saveNewUser,
-  updateUserRole,
-  validateUser
+	deleteUserById,
+	emailInUse,
+	getAllUsers,
+	getUser,
+	getUserById,
+	resetUsers,
+	saveNewUser,
+	updateUserRole,
+	validateUser,
 };
