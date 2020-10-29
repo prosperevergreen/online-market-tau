@@ -47,7 +47,6 @@ const acceptsJson = request => {
   // Do not rely on the header value containing only single content type!
 
   const acceptType = request.headers['accept'];
-  console.log(acceptType);
   if (acceptType && (acceptType.includes("application/json") || acceptType.includes("*/*"))){
     return true;
   }else{

@@ -16,45 +16,48 @@
  *       - Use getJSON() function from utils.js to fetch user data from server
  *
 **/
-   //Get template from users.html
-   const template = document.getElementById('user-template');
-   //Get container to put the template clones to
-   const usersContainer = document.getElementById('users-container');
 
-   //Get parsed JSON
-   const json_data = getJSON();
-
-   //Loop through the array of users, create clones with template:
-   json_data.forEach((user, i) => {
-      //Template clone:
-      let clone = template.content.cloneNode(true);
-
-      //Changing ids and innerTexts of the template clones.
-      let itemRow = clone.querySelector('.item-row');
-      itemRow.id = `user-${user._id}`;
-
-      let userName = clone.querySelector('.user-name');
-      userName.id = `name-${user._id}`;
-      userName.innerText = user.name;
-
-      let userEmail = clone.querySelector('.user-email');
-      userEmail.id = `email-${user._id}`;
-      userEmail.innerText = user.email;
-
-      let userRole = clone.querySelector('.user-role');
-      userRole.id = `role-${user._id}`;
-      userRole.innerText = user.role;
-
-      let modifyButton = clone.querySelector('.modify-button');
-      modifyButton.id = `modify-${user._id}`;
-
-      let deleteButton = clone.querySelector('.delete-button');
-      deleteButton.id = `delete-${user._id}`;
-
-      //Add clone to container
-      usersContainer.appendChild(clone);
-   });
-
+(async() => {
+    //Get template from users.html
+    const template = document.getElementById('user-template');
+    //Get container to put the template clones to
+    const usersContainer = document.getElementById('users-container');
+ 
+    //Get parsed JSON
+    const jsonData = await getJSON("/api/users");
+    
+    //Loop through the array of users, create clones with template:
+    jsonData.forEach((user, i) => {
+       //Template clone:
+       const clone = template.content.cloneNode(true);
+ 
+       //Changing ids and innerTexts of the template clones.
+       const itemRow = clone.querySelector('.item-row');
+       itemRow.id = `user-${user._id}`;
+ 
+       const userName = clone.querySelector('.user-name');
+       userName.id = `name-${user._id}`;
+       userName.innerText = user.name;
+ 
+       const userEmail = clone.querySelector('.user-email');
+       userEmail.id = `email-${user._id}`;
+       userEmail.innerText = user.email;
+ 
+       const userRole = clone.querySelector('.user-role');
+       userRole.id = `role-${user._id}`;
+       userRole.innerText = user.role;
+ 
+       const modifyButton = clone.querySelector('.modify-button');
+       modifyButton.id = `modify-${user._id}`;
+ 
+       const deleteButton = clone.querySelector('.delete-button');
+       deleteButton.id = `delete-${user._id}`;
+ 
+       //Add clone to container
+       usersContainer.appendChild(clone);
+    }); 
+})();
+  
 
 
 /**

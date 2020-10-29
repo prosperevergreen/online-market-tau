@@ -18,9 +18,20 @@
  * @param {string} url resource url on the server
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
-const getJSON = async url => {
-  // TODO: 8.3 Implement this
-  throw new Error('Not Implemented');
+const getJSON = async (url) => {
+	// TODO: 8.3 Implement this
+	// Create and setup header to accept json
+  const header = new Headers();
+  header.append("Accept", "application/json, */*");
+  // Setup fetch metadata
+	const fetchDataSetup = {
+		method: "GET",
+		headers: header,
+  };
+  
+  // Do fetch and return body of response as js object
+	return fetch(url, fetchDataSetup).then((res) => res.json());
+	// throw new Error('Not Implemented');
 };
 
 /**
@@ -35,13 +46,26 @@ const getJSON = async url => {
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
 const postOrPutJSON = async (url, method, data = {}) => {
-  method = method.toUpperCase();
-  if (method !== 'POST' && method !== 'PUT') {
-    throw 'Invalid method! Valid methods are POST and PUT!';
+	method = method.toUpperCase();
+	if (method !== "POST" && method !== "PUT") {
+		throw "Invalid method! Valid methods are POST and PUT!";
   }
 
   // TODO: 8.3 Implement this
-  throw new Error('Not Implemented');
+  // Create and setup header to specify its content type as json
+	const header = new Headers();
+  header.append("Content-Type", "application/json");
+  
+  // Setup fetch metadata
+	const fetchDataSetup = {
+		method: method,
+		body: JSON.stringify(data),
+		headers: header,
+  };
+  
+  // Do fetch and return response as JSON
+	return fetch(url, fetchDataSetup).then((res) => res.json());
+	// throw new Error("Not Implemented");
 };
 
 /**
@@ -53,9 +77,9 @@ const postOrPutJSON = async (url, method, data = {}) => {
  * @param {string} url resource url on the server
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
-const deleteResourse = async url => {
-  // TODO: 8.5 Implement this
-  throw new Error('Not Implemented');
+const deleteResourse = async (url) => {
+	// TODO: 8.5 Implement this
+	throw new Error("Not Implemented");
 };
 
 /**
@@ -66,9 +90,9 @@ const deleteResourse = async url => {
  * @returns {string}
  */
 const generateId = () => {
-  // Shamelessly borrowed from a Gist. See:
-  // https://gist.github.com/gordonbrander/2230317
-  return ('_' + Math.random().toString(36).substr(2, 9));
+	// Shamelessly borrowed from a Gist. See:
+	// https://gist.github.com/gordonbrander/2230317
+	return "_" + Math.random().toString(36).substr(2, 9);
 };
 
 /**
@@ -82,26 +106,28 @@ const generateId = () => {
  * @param {boolean} isSuccess whether the message describes a success or a failure
  */
 const createNotification = (message, containerId, isSuccess = true) => {
-  const container = document.getElementById(containerId);
+	const container = document.getElementById(containerId);
 
-  // Create new p element to hold text
-  const newParagraph = document.createElement('p');
+	// Create new p element to hold text
+	const newParagraph = document.createElement("p");
 
-  // Create unique id for the notification so that it can easily be removed after timeout
-  const notificationId = generateId()
-  newParagraph.id = notificationId;
+	// Create unique id for the notification so that it can easily be removed after timeout
+	const notificationId = generateId();
+	newParagraph.id = notificationId;
 
-  // Set CSS class for the paragraph based on the isSuccess variable
-  newParagraph.classList.add(isSuccess ? 'background-lightgreen' : 'background-red');
+	// Set CSS class for the paragraph based on the isSuccess variable
+	newParagraph.classList.add(
+		isSuccess ? "background-lightgreen" : "background-red"
+	);
 
-  // Add message test inside the paragraph and append the paragraph to the container
-  newParagraph.append(document.createTextNode(message));
-  container.append(newParagraph);
+	// Add message test inside the paragraph and append the paragraph to the container
+	newParagraph.append(document.createTextNode(message));
+	container.append(newParagraph);
 
-  // After five seconds remove the notification
-  setTimeout(() => {
-    removeElement(containerId, notificationId);
-  }, 5000);
+	// After five seconds remove the notification
+	setTimeout(() => {
+		removeElement(containerId, notificationId);
+	}, 5000);
 };
 
 /**
@@ -111,6 +137,8 @@ const createNotification = (message, containerId, isSuccess = true) => {
  * @param {string} elementId id of the element to be removed
  */
 const removeElement = (containerId, elementId) => {
-  const container = document.getElementById(containerId);
-  container.querySelectorAll(`#${elementId}`).forEach(element => element.remove());
+	const container = document.getElementById(containerId);
+	container
+		.querySelectorAll(`#${elementId}`)
+		.forEach((element) => element.remove());
 };
