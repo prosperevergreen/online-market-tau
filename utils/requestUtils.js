@@ -11,7 +11,27 @@ const getCredentials = request => {
   //       You need to first decode the header back to its original form ("email:password").
   //  See: https://attacomsian.com/blog/nodejs-base64-encode-decode
   //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-  throw new Error('Not Implemented');
+     let creds = null;
+     //Get contents of authentication-header format <type> <credentials>
+     const authHead = request.headers['authorization'];
+
+     if(authHead){
+        //Divide contents to type and credentials
+        const authorization = authHead.split(' ');
+
+        const type = authorization[0];
+        //Credentials base64
+        const credBase = authorization[1];
+
+        if(type === 'Basic'){
+           //Decode base64 to utf-8
+           const buff = Buffer.from(credBase, 'base64');
+           const credsStr = buff.toString('utf-8');
+           creds = credsStr.split(':');
+        }
+     }
+
+     return creds;
 };
 
 /**
@@ -25,7 +45,7 @@ const acceptsJson = request => {
   // NOTE: "Accept" header format allows several comma separated values simultaneously
   // as in "text/html,application/xhtml+xml,application/json,application/xml;q=0.9,*/*;q=0.8"
   // Do not rely on the header value containing only single content type!
-  
+
   const acceptType = request.headers['accept'];
   console.log(acceptType);
   if (acceptType && (acceptType.includes("application/json") || acceptType.includes("*/*"))){

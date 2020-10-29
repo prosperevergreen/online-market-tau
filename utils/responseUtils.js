@@ -1,6 +1,8 @@
 const basicAuthChallenge = response => {
   // TODO: 8.4 Send proper basic authentication challenge headers
-  throw new Error('Not Implemented');
+  //Responds with Basic authentication challenge:
+  response.writeHead(401, {'WWW-Authenticate':'Basic'});
+  return response.end();
 };
 
 const sendJson = (response, payload, code = 200) => {
