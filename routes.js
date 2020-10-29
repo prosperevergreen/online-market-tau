@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
@@ -57,6 +58,8 @@ const matchUserId = url => {
   return matchIdRoute(url, 'users');
 };
 
+// eslint-disable-next-line complexity
+// eslint-disable-next-line max-lines-per-function
 const handleRequest = async (request, response) => {
   const { url, method, headers } = request;
   const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -92,8 +95,11 @@ const handleRequest = async (request, response) => {
   // GET all users
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
     // TODO: 8.3 Return all users as JSON
+    return responseUtils.sendJson(response, getAllUsers());
+
     // TODO: 8.4 Add authentication (only allowed to users with role "admin")
-    throw new Error('Not Implemented');
+    
+    // throw new Error('Not Implemented');
   }
 
   // register new user

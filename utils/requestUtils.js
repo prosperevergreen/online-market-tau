@@ -25,7 +25,15 @@ const acceptsJson = request => {
   // NOTE: "Accept" header format allows several comma separated values simultaneously
   // as in "text/html,application/xhtml+xml,application/json,application/xml;q=0.9,*/*;q=0.8"
   // Do not rely on the header value containing only single content type!
-  throw new Error('Not Implemented');
+  
+  const acceptType = request.headers['accept'];
+  console.log(acceptType);
+  if (acceptType && (acceptType.includes("application/json") || acceptType.includes("*/*"))){
+    return true;
+  }else{
+    return false;
+  }
+  // throw new Error('Not Implemented');
 };
 
 /**
@@ -36,7 +44,14 @@ const acceptsJson = request => {
  */
 const isJson = request => {
   // TODO: 8.3 Check whether request "Content-Type" is JSON or not
-  throw new Error('Not Implemented');
+  const contentType = request.headers['content-type'];
+  if (contentType && (contentType.includes("application/json"))){
+    return true;
+  }else{
+    return false;
+  }
+
+  // throw new Error('Not Implemented');
 };
 
 /**
