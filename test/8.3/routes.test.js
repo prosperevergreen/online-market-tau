@@ -9,6 +9,12 @@ const usersUrl = '/api/users';
 const contentType = 'application/json';
 chai.use(chaiHttp);
 
+
+// helper function for authorization headers
+const encodeCredentials = (username, password) =>
+  Buffer.from(`${username}:${password}`, 'utf-8').toString('base64');
+
+
 // helper function for creating randomized test data
 const generateRandomString = (len = 9) => {
   return Math.random().toString(36).substr(2, len);
@@ -17,6 +23,8 @@ const generateRandomString = (len = 9) => {
 // Get users (create copies for test isolation)
 const users = require('../../users.json').map(user => ({ ...user }));
 const adminUser = { ...users.find(u => u.role === 'admin') };
+const adminCredentials = encodeCredentials(adminUser.email, adminUser.password);
+
 
 const unknownUrls = [`/${generateRandomString(20)}.html`, `/api/${generateRandomString(20)}`];
 
