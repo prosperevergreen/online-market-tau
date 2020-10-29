@@ -163,9 +163,9 @@ const saveNewUser = (user) => {
 	// TODO: 8.3 Save new user
 	// Use generateId() to assign a unique id to the newly created user.
 	const newUser = { ...user };
-	if (typeof newUser.role === "undefined") {
+	// if (typeof newUser.role === "undefined") {
 		newUser.role = data.roles[0];
-	}
+	// }
 	newUser._id = generateId();
 	const users = data.users;
 	users.push(newUser);

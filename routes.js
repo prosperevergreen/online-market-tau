@@ -113,12 +113,21 @@ const handleRequest = async (request, response) => {
     }
 
     // TODO: 8.3 Implement registration
+
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
     const user = await parseBodyJson(request);
-
-    return responseUtils.sendJson(response, saveNewUser(user));
-    // console.log(user);
-    // throw new Error('Not Implemented');
+    // Validate user infor and get the missing parts
+    const errorMsg = validateUser(user);
+    // Some fields are missing respond with error
+    if(errorMsg.length > 0){
+      return responseUtils.badRequest(response, errorMsg);
+    }
+    // In user email already exists, respond with error
+    if(emailInUse(user.email)){
+      return responseUtils.badRequest(response, "email already in use");
+    }
+    // Save user and respond with copy of the newly created user
+    return responseUtils.createdResource(response, saveNewUser(user));
   }
 };
 
