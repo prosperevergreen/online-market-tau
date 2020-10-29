@@ -15,6 +15,9 @@ const allowedMethods = {
   '/api/users': ['GET']
 };
 
+
+
+
 /**
  * Send response to client options request.
  *
@@ -111,7 +114,11 @@ const handleRequest = async (request, response) => {
 
     // TODO: 8.3 Implement registration
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-    throw new Error('Not Implemented');
+    const user = await parseBodyJson(request);
+
+    return responseUtils.sendJson(response, saveNewUser(user));
+    // console.log(user);
+    // throw new Error('Not Implemented');
   }
 };
 
