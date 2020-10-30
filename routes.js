@@ -100,9 +100,9 @@ const handleRequest = async (request, response) => {
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
     // TODO: 8.3 Return all users as JSON
     // TODO: 8.4 Add authentication (only allowed to users with role "admin")
-    const adminUser = auth.getCurrentUser(request);
-    console.log(adminUser.name, adminUser.role);
-    if(adminUser !== null){
+    const adminUser = await auth.getCurrentUser(request);
+
+    if(adminUser){
       if(adminUser.role === 'admin'){
          return responseUtils.sendJson(response, getAllUsers());
       }
