@@ -15,7 +15,7 @@ form.addEventListener("submit", async (event) => {
 	const passwordConfirmation = document.getElementById("passwordConfirmation");
 	const name = document.getElementById("name");
 	const email = document.getElementById("email");
-
+    event.preventDefault();
 	if (password.value === passwordConfirmation.value) {
 		await postOrPutJSON("/api/register", "POST", {
 			name: name.value,
@@ -23,9 +23,9 @@ form.addEventListener("submit", async (event) => {
 			password: password.value,
         });
         form.reset();
-        createNotification("Successful registration", "register-form");
+        createNotification("Successful registration", "notifications-container");
 	} else {
-        createNotification("Password doesn't match", "register-form", false);
-		event.preventDefault();
+        createNotification("Password doesn't match", "notifications-container", false);
+		// event.preventDefault();
 	}
 });
