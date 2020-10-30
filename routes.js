@@ -3,6 +3,7 @@ const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser } = require('./utils/users');
+const auth = require('./auth/auth');
 
 /**
  * Known API routes and their allowed methods
@@ -98,10 +99,22 @@ const handleRequest = async (request, response) => {
   // GET all users
   if (filePath === '/api/users' && method.toUpperCase() === 'GET') {
     // TODO: 8.3 Return all users as JSON
-    return responseUtils.sendJson(response, getAllUsers());
-
     // TODO: 8.4 Add authentication (only allowed to users with role "admin")
-    
+    const adminUser = auth.getCurrentUser(request);
+    console.log(adminUser.name, adminUser.role);
+    if(adminUser !== null){
+      if(adminUser.role === 'admin'){
+         return responseUtils.sendJson(response, getAllUsers());
+      }
+      else{
+         return responseUtils.forbidden(response);
+      }
+   }
+   else{
+      return responseUtils.basicAuthChallenge(response);
+   }
+
+
     // throw new Error('Not Implemented');
   }
 
