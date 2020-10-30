@@ -2,7 +2,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, getUserById, updateUserRole, deleteUserById } = require('./utils/users');
 const auth = require('./auth/auth');
 
 /**
@@ -77,7 +77,46 @@ const handleRequest = async (request, response) => {
   if (matchUserId(filePath)) {
     // TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-    throw new Error('Not Implemented');
+    console.log(filePath);
+    console.log(method);
+    const id = filePath.substr(filePath.lastIndexOf('/') + 1);
+    console.log(id);
+    const adminUser = await auth.getCurrentUser(request);
+    // Check authorization
+    if(adminUser){
+
+      if(adminUser.role === 'admin'){
+
+         if(!getUserById(id)){
+            return responseUtils.notFound(response);
+         }
+
+         //If method is GET return user a single user JSON;
+         if(method.toUpperCase() === 'GET'){
+            return responseUtils.sendJson(response, getUserById(id))
+         }
+         else if (method.toUpperCase() === 'PUT') {
+
+            const jsonBody = await parseBodyJson(request);
+            console.log(jsonBody);
+            if(jsonBody.role){
+               updateUserRole(id,'admin');
+            }
+
+         }
+         else if (method.toUpperCase() === 'DELETE') {
+            deleteUserById(id);
+         }
+      }
+      else{
+         return responseUtils.forbidden(response);
+      }
+   }
+   else{
+      return responseUtils.basicAuthChallenge(response);
+   }
+
+    //throw new Error('Not Implemented');
   }
 
   // Default to 404 Not Found if unknown url
