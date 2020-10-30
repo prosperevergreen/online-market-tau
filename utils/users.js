@@ -83,9 +83,6 @@ const getUser = (email, password) => {
 	if (user) {
 		return { ...user };
 	}
-	// else{
-	//   return user;
-	// }
 
 	// throw new Error('Not Implemented');
 };
