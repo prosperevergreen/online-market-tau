@@ -10,6 +10,7 @@ const {
 	validateUser,
 	getUserById,
 	deleteUserById,
+  updateUserRole,
 } = require("./utils/users");
 const auth = require("./auth/auth");
 
@@ -68,8 +69,7 @@ const matchUserId = (url) => {
 	return matchIdRoute(url, "users");
 };
 
-// eslint-disable-next-line complexity
-// eslint-disable-next-line max-lines-per-function
+
 const handleRequest = async (request, response) => {
 	const { url, method, headers } = request;
 	const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -83,38 +83,43 @@ const handleRequest = async (request, response) => {
 
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
-		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+    // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+
+    // Get admin cred or responde with 401 error
 		const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
+
+      // Verify admin or resonde with error 403
 			if (adminUser.role === "admin") {
-				const userId = filePath.split("/")[3];
-				const user = getUserById(userId);
+        // Get user id
+        const userId = filePath.split("/")[3];
+        // Get user details
+        const user = getUserById(userId);
+
+        // check if user exists else return error 404
 				if (user) {
+
+          // GET - send user as response body
 					if (method.toUpperCase() === "GET") {
 						responseUtils.sendJson(response, user);
 					}
 
+          // PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
-						const updateUser = await parseBodyJson(request);
 
-            // loop through the modification data to update user
-            for (const [key, value] of Object.entries(updateUser)) {
-              // console.log(`${key}: ${value}`);
-              user[key] = value;
+            // Get update info
+            const update = await parseBodyJson(request);
+
+            // Validate Role or send error 400
+            if(["admin", "customer"].includes(update.role)){
+              const updatedUser = updateUserRole(userId, update.role);
+              responseUtils.sendJson(response, updatedUser);
+            }else{
+              responseUtils.badRequest(response, "Role Missing or Not Valid");
             }
-
-            console.log("Old data");
-            console.log(user);
-            console.log("\n\n\nData recieved");
-            console.log(updateUser);
-            console.log("\n\n\nUpdated data");
-            console.log(user);
-
-						deleteUserById(userId);
-						saveNewUser(user);
-						responseUtils.noContent(response);
 					}
 
+          // DELETE - Delete user by id and send deleted user as response body
 					if (method.toUpperCase() === "DELETE") {
             const deletedUser = deleteUserById(userId);
             responseUtils.sendJson(response, deletedUser);
@@ -150,11 +155,14 @@ const handleRequest = async (request, response) => {
 	// GET all users
 	if (filePath === "/api/users" && method.toUpperCase() === "GET") {
 		// TODO: 8.4 Add authentication (only allowed to users with role "admin")
-		const adminUser = await auth.getCurrentUser(request);
 
+    // Get admin cred or responde with 401 error
+    const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
+      // Verify admin or resonde with error 403
 			if (adminUser.role === "admin") {
         // TODO: 8.3 Return all users as JSON
+        // Get users and send it as reponse body
         const allUsers = getAllUsers();
 				return responseUtils.sendJson(response, allUsers);
 			} else {

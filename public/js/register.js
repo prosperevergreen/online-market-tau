@@ -8,24 +8,40 @@
  *       - Use postOrPutJSON() function from utils.js to send your data back to server
  */
 
+// Get for element
 const form = document.getElementById("register-form");
 
+// Setup event listener when form is submited
 form.addEventListener("submit", async (event) => {
+
+    // Get form data
 	const password = document.getElementById("password");
 	const passwordConfirmation = document.getElementById("passwordConfirmation");
 	const name = document.getElementById("name");
-	const email = document.getElementById("email");
+    const email = document.getElementById("email");
+
+    // Prevent default submission
     event.preventDefault();
+
+    // Verify that password match else report error
 	if (password.value === passwordConfirmation.value) {
-		await postOrPutJSON("/api/register", "POST", {
-			name: name.value,
-			email: email.value,
-			password: password.value,
-        });
-        form.reset();
-        createNotification("Successful registration", "notifications-container");
+        // Try creating new user or report error on falure
+        try {
+            await postOrPutJSON("/api/register", "POST", {
+                name: name.value,
+                email: email.value,
+                password: password.value,
+            });
+            form.reset();
+            createNotification("Successful registration", "notifications-container");
+        } catch (error) {
+            createNotification(
+                `${error}`,
+                "notifications-container",
+                false);
+        }
+		
 	} else {
         createNotification("Password doesn't match", "notifications-container", false);
-		// event.preventDefault();
 	}
 });
