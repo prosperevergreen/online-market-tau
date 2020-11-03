@@ -20,8 +20,6 @@ const getCurrentUser = async (request) => {
 	} else {
 		return null;
 	}
-
-	//throw new Error('Not Implemented');
 };
 
 module.exports = { getCurrentUser };

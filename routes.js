@@ -171,8 +171,6 @@ const handleRequest = async (request, response) => {
 		} else {
 			return responseUtils.basicAuthChallenge(response);
 		}
-
-		// throw new Error('Not Implemented');
 	}
 
 	// register new user
