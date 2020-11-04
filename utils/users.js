@@ -60,7 +60,6 @@ const emailInUse = (email) => {
 	// TODO: 8.3 Check if there already exists a user with a given email
 	const users = data.users;
 	return users.some((user) => user.email === email);
-	// throw new Error('Not Implemented');
 };
 
 /**
@@ -83,8 +82,6 @@ const getUser = (email, password) => {
 	if (user) {
 		return { ...user };
 	}
-
-	// throw new Error('Not Implemented');
 };
 
 /**
@@ -103,8 +100,6 @@ const getUserById = (userId) => {
 	if (user) {
 		return { ...user };
 	}
-
-	// throw new Error("Not Implemented");
 };
 
 /**
@@ -122,8 +117,6 @@ const deleteUserById = (userId) => {
 		users.splice(index, 1);
 		return deletedUser;
 	}
-
-	// throw new Error("Not Implemented");
 };
 
 /**
@@ -141,7 +134,6 @@ const getAllUsers = () => {
 		newUserArr.push({ ...user });
 	}
 	return newUserArr;
-	// throw new Error("Not Implemented");
 };
 
 /**
@@ -167,7 +159,6 @@ const saveNewUser = (user) => {
 	const users = data.users;
 	users.push(newUser);
 	return { ...newUser };
-	// throw new Error("Not Implemented");
 };
 
 /**

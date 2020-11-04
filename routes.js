@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+
 const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
@@ -12,6 +13,7 @@ const {
   updateUserRole,
 } = require("./utils/users");
 const auth = require("./auth/auth");
+
 
 /**
  * Known API routes and their allowed methods
@@ -82,7 +84,7 @@ const handleRequest = async (request, response) => {
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
     // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-    
+
     // Get admin cred or responde with 401 error
 		const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
@@ -93,7 +95,7 @@ const handleRequest = async (request, response) => {
         const userId = filePath.split("/")[3];
         // Get user details
         const user = getUserById(userId);
-        
+
         // check if user exists else return error 404
 				if (user) {
 
@@ -107,7 +109,7 @@ const handleRequest = async (request, response) => {
 
             // Get update info
             const update = await parseBodyJson(request);
-            
+
             // Validate Role or send error 400
             if(["admin", "customer"].includes(update.role)){
               const updatedUser = updateUserRole(userId, update.role);
@@ -153,7 +155,7 @@ const handleRequest = async (request, response) => {
 	// GET all users
 	if (filePath === "/api/users" && method.toUpperCase() === "GET") {
 		// TODO: 8.4 Add authentication (only allowed to users with role "admin")
-    
+
     // Get admin cred or responde with 401 error
     const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
@@ -169,8 +171,6 @@ const handleRequest = async (request, response) => {
 		} else {
 			return responseUtils.basicAuthChallenge(response);
 		}
-
-		// throw new Error('Not Implemented');
 	}
 
 	// register new user
