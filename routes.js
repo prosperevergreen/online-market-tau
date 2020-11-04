@@ -13,6 +13,7 @@ const {
   updateUserRole,
 } = require("./utils/users");
 const auth = require("./auth/auth");
+const productJSON = require("./utils/products");
 
 
 /**
@@ -24,6 +25,9 @@ const auth = require("./auth/auth");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/users": ["GET"],
+   //Added routes for products and cart:
+   "/api/products":["GET"],
+   "/api/cart":["GET"]
 };
 
 /**
@@ -184,7 +188,6 @@ const handleRequest = async (request, response) => {
 		}
 
 		// TODO: 8.3 Implement registration
-
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 		const user = await parseBodyJson(request);
 		// Validate user infor and get the missing parts
@@ -200,6 +203,25 @@ const handleRequest = async (request, response) => {
 		// Save user and respond with copy of the newly created user
 		return responseUtils.createdResource(response, saveNewUser(user));
 	}
+
+   // Get all products
+   if (filePath === "/api/products" && method.toUpperCase() === "GET") {
+      //User authentication
+      const user = await auth.getCurrentUser(request);
+
+      if(user){
+         //User authorization
+         if(user.role === "admin" || user.role === "customer"){
+            //Get all products as JSON
+            const allProducts = await productJSON();
+            //Respond with product JSON
+            return responseUtils.sendJson(response, allProducts);
+         }
+      }
+      else{
+         return responseUtils.basicAuthChallenge(response);
+      }
+   }
 };
 
 module.exports = { handleRequest };
