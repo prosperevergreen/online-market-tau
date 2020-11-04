@@ -14,7 +14,9 @@ const getCurrentUser = async (request) => {
 	// and getUser(email, password) function from utils/users.js to get the currently
 	// logged in user
 
-	const credentials = requestUtils.getCredentials(request);
+  // Get request user credentials (Basic Auth)
+  const credentials = requestUtils.getCredentials(request);
+  // If found exists, return it in parts(type and value) or return null
 	if (credentials) {
 		return users.getUser(credentials[0], credentials[1]);
 	} else {
