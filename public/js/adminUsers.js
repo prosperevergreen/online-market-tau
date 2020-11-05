@@ -25,10 +25,6 @@ const usersContainer = document.getElementById("users-container");
 const formTemplate = document.getElementById("form-template");
 // Get container to put the template clones to
 const formContainer = document.getElementById("modify-user");
-// Get array of all delete buttons
-const deleteButtons = document.getElementsByClassName("delete-button");
-// Get array of all modify buttons
-const modifyButtons = document.getElementsByClassName("modify-button");
 
 // Setup the view for each user from template
 const setupUserView = (userTemplate, user) => {
@@ -53,9 +49,22 @@ const setupUserView = (userTemplate, user) => {
 
 	const modifyButton = clone.querySelector(".modify-button");
 	modifyButton.id = `modify-${user._id}`;
+	// Set event listener for modify button
+	modifyButton.addEventListener("click", async (event) => {
+		// Scroll to modify form field
+		scrollToTop();
+		// Setup modify form field
+		await modifyButtonAction(user._id);
+	});
 
+	
 	const deleteButton = clone.querySelector(".delete-button");
 	deleteButton.id = `delete-${user._id}`;
+	// Set event listener for delete button
+	deleteButton.addEventListener("click", async (event) => {
+		// Delete user by thier id
+		await deleteButtonAction(user._id);
+	});
 
 	return clone;
 };
@@ -81,6 +90,8 @@ const setupUserView = (userTemplate, user) => {
 		createNotification(`${err}`, "notifications-container", false);
 	}
 
+})();
+
 	/**
 	 * TODO: 8.5 Updating/modifying and deleting existing users
 	 *       - Use postOrPutJSON() function from utils.js to send your data back to server
@@ -100,27 +111,8 @@ const setupUserView = (userTemplate, user) => {
 	 *       - Use createNotification() function from utils.js to create notifications
 	 */
 
-	// Setup event listeners for each delete or modify button
-	for (let index = 0; index < usersContainer.childElementCount; index++) {
-		// Set event lister for all delete buttons
-		deleteButtons[index].addEventListener("click", async (event) => {
-			const userId = event.target.id.substr("delete-".length);
-			// Delete user by thier id
-			await deleteButtonAction(userId);
-		});
 
-		modifyButtons[index].addEventListener("click", async (event) => {
-			// Scroll to modify form field
-			scrollToTop();
 
-			// Extract user id from the element id attribute
-			const userId = event.target.id.substr("modify-".length);
-
-			// Setup modify form field
-			await modifyButtonAction(userId);
-		});
-	}
-})();
 
 // Scroll to top to view modification form
 function scrollToTop() {
@@ -158,21 +150,6 @@ async function modifyButtonAction(userId) {
         // Populate modify form template with user details
         const clone = modifyFormSetup(formTemplate, user);
 
-        // Get access to modify form field
-        const updateForm = clone.querySelector("#edit-user-form");
-
-        //Set event listener to listen for form update submit event
-        updateForm.addEventListener("submit", async (e) => {
-            // Prevent form from submiting and refreshing page
-            e.preventDefault();
-
-            // Update user role from updated role form field
-            user.role = updateForm.querySelector("#role-input").value;
-
-            // Update server with modified user role
-            await updateUserAction(userId, user);
-        });
-
         // Append form to form container if empty or replace exiting form
         if (formContainer.children.length > 0) {
             removeElement("modify-user", "edit-user-form");
@@ -204,15 +181,29 @@ function modifyFormSetup (modifyFormTemplate, user){
 	const userRoleField = clone.querySelector("#role-input");
 	userRoleField.value = user.role;
 
+	// Get access to modify form field
+	const updateForm = clone.querySelector("#edit-user-form");
+	//Set event listener to listen for form update submit event
+	updateForm.addEventListener("submit", async (e) => {
+		// Prevent form from submiting and refreshing page
+		e.preventDefault();
+
+		// Update user role from updated role form field
+		user.role = updateForm.querySelector("#role-input").value;
+
+		// Update server with modified user role
+		await updateUserAction(user);
+	});
+
 	return clone;
 }
 
 // Send modification to server and update page
-async function updateUserAction(userId, user) {
+async function updateUserAction(user) {
     // Try sending update to server, if error report it as notification
     try {
         const updatedUser = await postOrPutJSON(
-            `/api/users/${userId}`,
+            `/api/users/${user._id}`,
             "PUT",
             user
         );
@@ -221,7 +212,7 @@ async function updateUserAction(userId, user) {
         removeElement("modify-user", "edit-user-form");
 
         // Update the user role on the page using the user's id
-        (document.getElementById(`role-${userId}`).innerText =
+        (document.getElementById(`role-${user._id}`).innerText =
             user.role);
 
         // Notify the user if successful
