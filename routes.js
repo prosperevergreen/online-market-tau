@@ -13,7 +13,7 @@ const {
   updateUserRole,
 } = require("./utils/users");
 const auth = require("./auth/auth");
-const productJSON = require("./utils/products");
+const {getAllProducts} = require("./utils/products");
 
 
 /**
@@ -213,7 +213,7 @@ const handleRequest = async (request, response) => {
          //User authorization
          if(user.role === "admin" || user.role === "customer"){
             //Get all products as JSON
-            const allProducts = await productJSON();
+            const allProducts = getAllProducts();
             //Respond with product JSON
             return responseUtils.sendJson(response, allProducts);
          }
