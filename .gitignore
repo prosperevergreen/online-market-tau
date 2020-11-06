@@ -13,6 +13,8 @@
 *.xz
 *.lzma
 *.cab
+
+#Ignore environment variables
 *.env
 
 # Packing-only formats
