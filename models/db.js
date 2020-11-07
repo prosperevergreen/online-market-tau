@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+require('dotenv').config();
 /**
  * Get database connect URL.
  *
@@ -9,8 +9,11 @@ const mongoose = require('mongoose');
  * @returns {string} connection URL
  */
 const getDbUrl = () => {
+  const envDBURL = process.env.DBURL;
+  const defautDBURL = "mongodb://localhost:27017/WebShopDb";
+  return envDBURL === undefined ? defautDBURL : envDBURL;
   // TODO: 9.3 Implement this
-  throw new Error('Implement this');
+  // throw new Error('Implement this');
 };
 
 function connectDB () {

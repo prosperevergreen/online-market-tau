@@ -166,4 +166,5 @@ lib-cov
 # nyc test coverage
 .nyc_output
 
-
+# Eslint
+.eslintrc.json
