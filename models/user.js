@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//Cusom validator for user e-mail
+//Custom validator for user e-mail
 const emailValidator = email => {
    return /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(email);
 };
@@ -12,7 +12,7 @@ const saltRounds = 10;
 
 //Set method that hashes the password
 const hashPwd = pwd => {
-   //Hash only if password is as required
+   //Hash only if password is as long as required
    if(pwd && pwd.length >= 10){
       //Using sync versions of bcrypt to have something to set when returned
       const salt = bcrypt.genSaltSync(saltRounds);
@@ -26,7 +26,6 @@ const hashPwd = pwd => {
 const userSchema = new Schema({
   // TODO: 9.4 Implement this
   //Mongoose automatically creates _id (ObjectId) to all schemas
-  //Property name
   name : {
      //Validation for name
      type: String,
@@ -40,6 +39,7 @@ const userSchema = new Schema({
      type: String,
      required: true,
      unique: true,
+     //Using custom validator
      validate: emailValidator,
   },
   password : {
@@ -53,7 +53,9 @@ const userSchema = new Schema({
   role : {
      type: String,
      set: val => val.trim().toLowerCase(),
+     //Checks if value is in the arr
      enum:['admin','customer'],
+     //Sets default value for role
      default: 'customer',
 
  }
