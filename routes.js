@@ -3,18 +3,19 @@
 const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
-const {
-	emailInUse,
-	getAllUsers,
-	saveNewUser,
-	validateUser,
-	getUserById,
-	deleteUserById,
-  updateUserRole,
-} = require("./utils/users");
+// const {
+// 	emailInUse,
+// 	getAllUsers,
+// 	saveNewUser,
+// 	validateUser,
+// 	getUserById,
+// 	deleteUserById,
+// 	updateUserRole,
+// } = require("./utils/users");
 const auth = require("./auth/auth");
-const {getAllProducts} = require("./utils/products");
-
+const { getAllProducts } = require("./utils/products");
+// require user model
+const User = require("./models/user");
 
 /**
  * Known API routes and their allowed methods
@@ -25,9 +26,9 @@ const {getAllProducts} = require("./utils/products");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/users": ["GET"],
-   //Added routes for products and cart:
-   "/api/products":["GET"],
-   "/api/cart":["GET"]
+	//Added routes for products and cart:
+	"/api/products": ["GET"],
+	"/api/cart": ["GET"],
 };
 
 /**
@@ -73,7 +74,6 @@ const matchUserId = (url) => {
 	return matchIdRoute(url, "users");
 };
 
-
 const handleRequest = async (request, response) => {
 	const { url, method, headers } = request;
 	const filePath = new URL(url, `http://${headers.host}`).pathname;
@@ -87,46 +87,50 @@ const handleRequest = async (request, response) => {
 
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
-    // You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-    // Get admin cred or responde with 401 error
+		// Get admin cred or responde with 401 error
 		const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
-
-      // Verify admin or resonde with error 403
+			// Verify admin or resonde with error 403
 			if (adminUser.role === "admin") {
-        // Get user id
-        const userId = filePath.split("/")[3];
-        // Get user details
-        const user = getUserById(userId);
+				// Get user id
+				const userId = filePath.split("/")[3];
+				// Get user details by id
+				const user = await User.findById(userId).exec();
 
-        // check if user exists else return error 404
+				// check if user exists else return error 404
 				if (user) {
-
-          // GET - send user as response body
+					// GET - send user as response body
 					if (method.toUpperCase() === "GET") {
 						responseUtils.sendJson(response, user);
 					}
 
-          // PUT - Modify user role and send modified user as response body
+					// PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
+						// Get update info
+						const update = await parseBodyJson(request);
 
-            // Get update info
-            const update = await parseBodyJson(request);
-
-            // Validate Role or send error 400
-            if(["admin", "customer"].includes(update.role)){
-              const updatedUser = updateUserRole(userId, update.role);
-              responseUtils.sendJson(response, updatedUser);
-            }else{
-              responseUtils.badRequest(response, "Role Missing or Not Valid");
-            }
+						// Validate Role or send error 400
+						if (["admin", "customer"].includes(update.role)) {
+							// updating an existing user
+							const existingUser = await User.findById(userId).exec();
+							// change user's name and save changes
+							existingUser.role = update.role;
+							await existingUser.save();
+							// const updatedUser = updateUserRole(userId, update.role);
+							responseUtils.sendJson(response, existingUser);
+						} else {
+							responseUtils.badRequest(response, "Role Missing or Not Valid");
+						}
 					}
 
-          // DELETE - Delete user by id and send deleted user as response body
+					// DELETE - Delete user by id and send deleted user as response body
 					if (method.toUpperCase() === "DELETE") {
-            const deletedUser = deleteUserById(userId);
-            responseUtils.sendJson(response, deletedUser);
+						const deletedUser = await User.findById(userId).exec();
+						await User.deleteOne({ _id: userId });
+						// const deletedUser = deleteUserById(userId);
+						responseUtils.sendJson(response, deletedUser);
 					}
 				} else {
 					responseUtils.notFound(response);
@@ -160,14 +164,14 @@ const handleRequest = async (request, response) => {
 	if (filePath === "/api/users" && method.toUpperCase() === "GET") {
 		// TODO: 8.4 Add authentication (only allowed to users with role "admin")
 
-    // Get admin cred or responde with 401 error
-    const adminUser = await auth.getCurrentUser(request);
+		// Get admin cred or responde with 401 error
+		const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
-      // Verify admin or resonde with error 403
+			// Verify admin or resonde with error 403
 			if (adminUser.role === "admin") {
-        // TODO: 8.3 Return all users as JSON
-        // Get users and send it as reponse body
-        const allUsers = getAllUsers();
+				// TODO: 8.3 Return all users as JSON
+				// Get users and send it as reponse body
+				const allUsers = await User.find({}); // getAllUsers();
 				return responseUtils.sendJson(response, allUsers);
 			} else {
 				return responseUtils.forbidden(response);
@@ -191,37 +195,41 @@ const handleRequest = async (request, response) => {
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 		const user = await parseBodyJson(request);
 		// Validate user infor and get the missing parts
-		const errorMsg = validateUser(user);
+		const newUser = new User(user);
+
 		// Some fields are missing respond with error
-		if (errorMsg.length > 0) {
-			return responseUtils.badRequest(response, errorMsg);
+		const errorMsg = newUser.validateSync();
+		// console.log(errorMsg);
+		if (errorMsg) {
+			return responseUtils.badRequest(response, errorMsg['_message']);
 		}
+
 		// If user email already exists, respond with error
-		if (emailInUse(user.email)) {
+		if (await User.findOne({ email: user.email }).exec()) {
 			return responseUtils.badRequest(response, "email already in use");
 		}
 		// Save user and respond with copy of the newly created user
-		return responseUtils.createdResource(response, saveNewUser(user));
+		await newUser.save();
+		return responseUtils.createdResource(response, newUser); //saveNewUser(user));
 	}
 
-   // Get all products
-   if (filePath === "/api/products" && method.toUpperCase() === "GET") {
-      //User authentication
-      const user = await auth.getCurrentUser(request);
+	// Get all products
+	if (filePath === "/api/products" && method.toUpperCase() === "GET") {
+		//User authentication
+		const user = await auth.getCurrentUser(request);
 
-      if(user){
-         //User authorization
-         if(user.role === "admin" || user.role === "customer"){
-            //Get all products as JSON
-            const allProducts = getAllProducts();
-            //Respond with product JSON
-            return responseUtils.sendJson(response, allProducts);
-         }
-      }
-      else{
-         return responseUtils.basicAuthChallenge(response);
-      }
-   }
+		if (user) {
+			//User authorization
+			if (user.role === "admin" || user.role === "customer") {
+				//Get all products as JSON
+				const allProducts = getAllProducts();
+				//Respond with product JSON
+				return responseUtils.sendJson(response, allProducts);
+			}
+		} else {
+			return responseUtils.basicAuthChallenge(response);
+		}
+	}
 };
 
 module.exports = { handleRequest };

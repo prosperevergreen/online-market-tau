@@ -207,19 +207,28 @@ async function updateUserAction(user) {
             "PUT",
             user
         );
+		if(updatedUser.error){
+			// Notify the user if successful
+			createNotification(
+				`Error: ${updatedUser.error}`,
+				"notifications-container",
+				false
+			);
+		}else{
+			 // Remove the modification form
+			 removeElement("modify-user", "edit-user-form");
 
-        // Remove the modification form
-        removeElement("modify-user", "edit-user-form");
-
-        // Update the user role on the page using the user's id
-        (document.getElementById(`role-${user._id}`).innerText =
-            user.role);
-
-        // Notify the user if successful
-        createNotification(
-            `Updated user ${updatedUser.name}`,
-            "notifications-container"
-        );
+			 // Update the user role on the page using the user's id
+			 (document.getElementById(`role-${user._id}`).innerText =
+				 user.role);
+	 
+			 // Notify the user if successful
+			 createNotification(
+				 `Updated user ${updatedUser.name}`,
+				 "notifications-container"
+			 );
+		}
+       
     } catch (err) {
         createNotification(`${err}`, "notifications-container", false);
     }
