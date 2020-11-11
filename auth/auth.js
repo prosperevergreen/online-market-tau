@@ -1,5 +1,4 @@
 const requestUtils = require("../utils/requestUtils");
-// const users = require("../utils/users");
 // require user model
 const User = require('../models/user');
 
@@ -22,8 +21,9 @@ const getCurrentUser = async (request) => {
 	if (credentials) {
 		const currentUserEmail = credentials[0];
 		const currentUserPassword = credentials[1];
-		// find one user with an email "email@email.com"
+		// Find one user with an email "email@email.com"
 		const emailUser = await User.findOne({ email: currentUserEmail }).exec();
+
 		if (emailUser === null) {
 			// User email not found
 			return null;
