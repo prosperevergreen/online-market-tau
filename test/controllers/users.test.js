@@ -58,7 +58,7 @@ describe('Users Controller', () => {
     it('should respond with JSON', async () => {
       const userId = customer.id;
       const customerData = JSON.parse(JSON.stringify(customer));
-      await viewUser(response, userId, currentUser);
+      await viewUser(response, userId, customer);
 
       expect(response.statusCode).to.equal(200);
       expect(response.getHeader('content-type')).to.equal('application/json');

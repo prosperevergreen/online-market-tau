@@ -4,7 +4,12 @@ const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
-const { getAllProducts } = require("./utils/products");
+const { getAllProducts } = require("./controllers/products");
+const { getAllUsers,
+        registerUser,
+        deleteUser,
+        viewUser,
+        updateUser } = require("./controllers/users")
 // Require user model
 const User = require("./models/user");
 
@@ -89,14 +94,12 @@ const handleRequest = async (request, response) => {
 				const userId = filePath.split("/")[3];
 				// Get user details by id
 				const user = await User.findById(userId).exec();
-
 				// check if user exists else return error 404
 				if (user) {
 					// GET - send user as response body
 					if (method.toUpperCase() === "GET") {
-						responseUtils.sendJson(response, user);
+						viewUser(response, userId, user);
 					}
-
 					// PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
 						// Get update info
@@ -162,8 +165,7 @@ const handleRequest = async (request, response) => {
 			if (adminUser.role === "admin") {
 				// TODO: 8.3 Return all users as JSON
 				// Get users and send it as reponse body
-				const allUsers = await User.find({});
-				return responseUtils.sendJson(response, allUsers);
+            getAllUsers(response);
 			} else {
 				return responseUtils.forbidden(response);
 			}
@@ -198,7 +200,7 @@ const handleRequest = async (request, response) => {
 		if (await User.findOne({ email: user.email }).exec()) {
 			return responseUtils.badRequest(response, "email already in use");
 		}
-		// Set role to "customer" 
+		// Set role to "customer"
 		newUser.role = "customer";
 		// Save user and respond with copy of the newly created user
 		await newUser.save();
@@ -214,9 +216,7 @@ const handleRequest = async (request, response) => {
 			// User authorization
 			if (user.role === "admin" || user.role === "customer") {
 				// Get all products as JSON
-				const allProducts = getAllProducts();
-				// Respond with product JSON
-				return responseUtils.sendJson(response, allProducts);
+				const allProducts = getAllProducts(response);
 			}
 		} else {
 			return responseUtils.basicAuthChallenge(response);

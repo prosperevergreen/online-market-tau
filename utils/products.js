@@ -19,7 +19,7 @@ const data = {
  *
  * @returns {Array<Object>} all products
  */
-const getAllProducts = () => {
+const getAllProductsJson = () => {
 
 	const newProductArr = [];
 	for (const product of data.products) {
@@ -28,4 +28,4 @@ const getAllProducts = () => {
 	return newProductArr;
 };
 
-module.exports = { getAllProducts };
+module.exports = { getAllProductsJson };

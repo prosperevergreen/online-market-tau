@@ -7,7 +7,7 @@ const basicAuthChallenge = response => {
 
 const sendJson = (response, payload, code = 200) => {
   response.writeHead(code, { 'Content-Type': 'application/json' });
-  return response.end(JSON.stringify(payload));
+  response.end(JSON.stringify(payload));
 };
 
 const createdResource = (response, payload) => {

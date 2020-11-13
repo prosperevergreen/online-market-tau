@@ -1,11 +1,16 @@
+const responseUtils = require("../utils/responseUtils");
+const User = require("../models/user");
 /**
  * Send all users as JSON
  *
  * @param {http.ServerResponse} response
  */
-const getAllUsers = async response => {
+const getAllUsers = async (response) => {
   // TODO: 10.1 Implement this
-  throw new Error('Not Implemented');
+  const allUsers = await User.find({});
+  responseUtils.sendJson(response, allUsers);
+
+  //throw new Error('Not Implemented');
 };
 
 /**
@@ -42,7 +47,14 @@ const updateUser = async (response, userId, currentUser, userData) => {
  */
 const viewUser = async (response, userId, currentUser) => {
   // TODO: 10.1 Implement this
-  throw new Error('Not Implemented');
+  if(userId === currentUser.id){
+     responseUtils.sendJson(response, currentUser);
+  }
+  else{
+    responseUtils.notFound(response);
+ }
+
+  //throw new Error('Not Implemented');
 };
 
 /**
