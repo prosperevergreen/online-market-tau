@@ -6,9 +6,9 @@ const User = require("../models/user");
  * @param {http.ServerResponse} response
  */
 const getAllUsers = async (response) => {
-  // TODO: 10.1 Implement this
-  
-  // Get all users from database
+	// TODO: 10.1 Implement this
+
+	// Get all users from database
 	const allUsers = await User.find({});
 	responseUtils.sendJson(response, allUsers);
 };
@@ -30,15 +30,15 @@ const deleteUser = async (response, userId, currentUser) => {
 	}
 
 	// Get user to be deleted
-  const userToDelete = await User.findById(userId).exec();
-  
+	const userToDelete = await User.findById(userId).exec();
+
 	// Check if user exists
 	if (userToDelete === null) {
 		responseUtils.notFound(response);
 		return;
-  }
-  
-  // Delete user by id
+	}
+
+	// Delete user by id
 	await User.deleteOne({ _id: userId });
 	responseUtils.sendJson(response, userToDelete);
 };
@@ -91,14 +91,17 @@ const updateUser = async (response, userId, currentUser, userData) => {
 const viewUser = async (response, userId, currentUser) => {
   // TODO: 10.1 Implement this
   
-  // Check if userId is same as current user
-	if (userId !== currentUser.id) {
-    responseUtils.notFound(response);
-    return;
-  } 
+	// Get user by id
+  const user = await User.findById(userId).exec();
+  
+	// Check if user exists
+	if (user === null) {
+		responseUtils.notFound(response);
+		return;
+	}
 
-  // Respond with user JSON
-  responseUtils.sendJson(response, currentUser);
+	// Send user as JSON
+	responseUtils.sendJson(response, user);
 };
 
 /**
@@ -121,7 +124,7 @@ const registerUser = async (response, userData) => {
 	}
 
 	// If user email already exists, respond with error
-	if (await User.findOne({ email: user.email }).exec()) {
+	if (await User.findOne({ email: newUser.email }).exec()) {
 		responseUtils.badRequest(response, "email already in use");
 		return;
 	}

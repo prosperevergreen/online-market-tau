@@ -100,7 +100,7 @@ const handleRequest = async (request, response) => {
 				if (selectedUser) {
 					// GET - send user as response body
 					if (method.toUpperCase() === "GET") {
-						viewUser(response, userId, selectedUser);
+						await viewUser(response, userId, adminUser);
 					}
 					// PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
