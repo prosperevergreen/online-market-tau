@@ -167,4 +167,4 @@ lib-cov
 .nyc_output
 
 # Eslint
-.eslintrc.json
+*.eslintrc.json

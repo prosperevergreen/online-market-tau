@@ -5,11 +5,13 @@ const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
 const { getAllProducts } = require("./controllers/products");
-const { getAllUsers,
-        registerUser,
-        deleteUser,
-        viewUser,
-        updateUser } = require("./controllers/users")
+const {
+	getAllUsers,
+	registerUser,
+	deleteUser,
+	viewUser,
+	updateUser,
+} = require("./controllers/users");
 // Require user model
 const User = require("./models/user");
 
@@ -88,46 +90,31 @@ const handleRequest = async (request, response) => {
 		// Get admin cred or responde with 401 error
 		const adminUser = await auth.getCurrentUser(request);
 		if (adminUser) {
-			// Verify admin or resonde with error 403
+			// Verify admin or respond with error 403
 			if (adminUser.role === "admin") {
-				// Get user id
+				// Get user id from path
 				const userId = filePath.split("/")[3];
 				// Get user details by id
-				const user = await User.findById(userId).exec();
+				const selectedUser = await User.findById(userId).exec();
 				// check if user exists else return error 404
-				if (user) {
+				if (selectedUser) {
 					// GET - send user as response body
 					if (method.toUpperCase() === "GET") {
-						viewUser(response, userId, user);
+						viewUser(response, userId, selectedUser);
 					}
 					// PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
 						// Get update info
 						const update = await parseBodyJson(request);
-
-						// Validate Role or send error 400
-						if (["admin", "customer"].includes(update.role)) {
-							// updating an existing user
-							const existingUser = await User.findById(userId).exec();
-							// change user's name and save changes
-							existingUser.role = update.role;
-							await existingUser.save();
-							// const updatedUser = updateUserRole(userId, update.role);
-							responseUtils.sendJson(response, existingUser);
-						} else {
-							responseUtils.badRequest(response, "Role Missing or Not Valid");
-						}
+						await updateUser(response, userId, adminUser, update);
 					}
 
 					// DELETE - Delete user by id and send deleted user as response body
 					if (method.toUpperCase() === "DELETE") {
-						const deletedUser = await User.findById(userId).exec();
-						await User.deleteOne({ _id: userId });
-						// const deletedUser = deleteUserById(userId);
-						responseUtils.sendJson(response, deletedUser);
+						await deleteUser(response, userId, adminUser);
 					}
 				} else {
-					responseUtils.notFound(response);
+					return responseUtils.notFound(response);
 				}
 			} else {
 				return responseUtils.forbidden(response);
@@ -165,7 +152,7 @@ const handleRequest = async (request, response) => {
 			if (adminUser.role === "admin") {
 				// TODO: 8.3 Return all users as JSON
 				// Get users and send it as reponse body
-            getAllUsers(response);
+				await getAllUsers(response);
 			} else {
 				return responseUtils.forbidden(response);
 			}
@@ -186,25 +173,8 @@ const handleRequest = async (request, response) => {
 
 		// TODO: 8.3 Implement registration
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-		const user = await parseBodyJson(request);
-		// Validate user infor and get the missing parts
-		const newUser = new User(user);
-
-		// Some fields are missing respond with error
-		const errorMsg = newUser.validateSync();
-		if (errorMsg) {
-			return responseUtils.badRequest(response, errorMsg["_message"]);
-		}
-
-		// If user email already exists, respond with error
-		if (await User.findOne({ email: user.email }).exec()) {
-			return responseUtils.badRequest(response, "email already in use");
-		}
-		// Set role to "customer"
-		newUser.role = "customer";
-		// Save user and respond with copy of the newly created user
-		await newUser.save();
-		return responseUtils.createdResource(response, newUser);
+		const userData = await parseBodyJson(request);
+		await registerUser(response, userData);
 	}
 
 	// Get all products
@@ -216,7 +186,7 @@ const handleRequest = async (request, response) => {
 			// User authorization
 			if (user.role === "admin" || user.role === "customer") {
 				// Get all products as JSON
-				const allProducts = getAllProducts(response);
+				await getAllProducts(response);
 			}
 		} else {
 			return responseUtils.basicAuthChallenge(response);
