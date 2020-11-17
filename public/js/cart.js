@@ -143,24 +143,27 @@ function getProductCountFromCart(productId) {
 function getAllProductsFromCart() {
     // Get cart
     const cart = getCart();
-    // Create products array
-    const productsInCart = [];
-    // Fill products from cart into array
-	for (const productId of cart) {
-		const product = getProductFromCart(productId);
-		productsInCart.push(product);
-    }
-    // return products in cart
-	return productsInCart;
+    // Create products array and fill it with products
+    if(cart){
+      const productsInCart = cart.map(productId => getProductFromCart(productId));
+      // return products in cart
+      return productsInCart;
+   }
+   else{
+      //If nothing in cart, return empty arr;
+      return [];
+   }
 }
 
 function clearCart() {
     // Get cart
     const cart = getCart();
-    // Remove all elements in cart
-	for (const productId of cart) {
-		removeProductFromCart(productId);
+    //If cart has content, remove all elements in cart
+    if(cart){
+       const removed =
+       cart.map(productId => removeProductFromCart(productId));
     }
+
     // Delete cart
 	sessionStorage.removeItem("cart");
 }
@@ -178,7 +181,5 @@ placeOrderButton.addEventListener("click", placeOrderButtonAction);
 // Get all products in cart
 const productsInCart = getAllProductsFromCart();
 // load products to UI
-for (const product of productsInCart) {
-	const templateClone = setupCartView(cartTemplate, product);
-	cartsContainer.appendChild(templateClone);
-}
+const allTemplates =
+productsInCart.map(product => cartsContainer.appendChild(setupCartView(cartTemplate,product)));

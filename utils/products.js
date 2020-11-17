@@ -20,11 +20,9 @@ const data = {
  * @returns {Array<Object>} all products
  */
 const getAllProductsJson = () => {
+   const productsInMem = data.products;
+	const newProductArr = productsInMem.map((product) => ({ ...product }));
 
-	const newProductArr = [];
-	for (const product of data.products) {
-		newProductArr.push({ ...product });
-	}
 	return newProductArr;
 };
 
