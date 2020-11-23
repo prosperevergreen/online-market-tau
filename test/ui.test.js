@@ -7,13 +7,17 @@ const { handleRequest } = require('../routes');
 chai.use(chaiHttp);
 
 const User = require('../models/user');
+const Product = require('../models/product');
 
 // helper function for creating randomized test data
 const generateRandomString = (len = 9) => {
   let str = '';
 
   do {
-    str += Math.random().toString(36).substr(2, 9).trim();
+    str += Math.random()
+      .toString(36)
+      .substr(2, 9)
+      .trim();
   } while (str.length < len);
 
   return str.substr(0, len);
@@ -31,10 +35,11 @@ const notificationSelector = '#notifications-container';
 const rowSelector = '.item-row';
 
 // Get products
-const products = require('../products.json').map(product => ({ ...product }));
+const products = require('../setup/products.json').map(product => ({ ...product }));
 
 describe('User Inteface', () => {
   let allUsers;
+  let allProducts;
   let baseUrl;
   let browser;
   let page;
@@ -54,6 +59,10 @@ describe('User Inteface', () => {
   };
 
   before(async () => {
+    await Product.deleteMany({});
+    await Product.create(products);
+    allProducts = await Product.find({});
+
     server = http.createServer(handleRequest);
     server.listen(3000, () => {
       const port = server.address().port;
@@ -80,6 +89,7 @@ describe('User Inteface', () => {
     await User.deleteMany({});
     await User.create(users);
     allUsers = await User.find({});
+
     await page.authenticate({ username: adminUser.email, password: adminUser.password });
   });
 
@@ -290,6 +300,7 @@ describe('User Inteface', () => {
   // Product UI tests
   describe('UI: List all products', () => {
     it('should list all products when navigating to "/products.html"', async () => {
+      const productsData = JSON.parse(JSON.stringify(allProducts));
       await page.goto(productsPage);
       await page.waitForTimeout(shortWaitTime);
 
@@ -299,27 +310,23 @@ describe('User Inteface', () => {
       const errorMsg =
         `Authenticated as ${adminUser.email} and navigated to "/products.html" ` +
         `Tried to locate all products with selector "${selector}" ` +
-        `Expected to find ${products.length} elements ` +
+        `Expected to find ${productsData.length} elements ` +
         `but found ${productElements.length} elements instead.`;
 
-      expect(productElements.length).to.equal(products.length, errorMsg);
+      expect(productElements.length).to.equal(productsData.length, errorMsg);
 
-      for (const product of products) {
-        const { _id: id, name, description, price } = product;
-        const nameText = await page.$eval(`#name-${id}`, elem => elem.textContent.trim());
-        const descriptionText = await page.$eval(`#description-${id}`, elem =>
+      for (const product of productsData) {
+        const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
+        const descriptionText = await page.$eval(`#description-${product._id}`, elem =>
           elem.textContent.trim()
         );
-        const priceText = await page.$eval(`#price-${id}`, elem => elem.textContent.trim());
-        expect({
-          _id: id,
-          name: nameText,
-          description: descriptionText,
-          price: priceText
-        }).to.include(
-          product,
-          `Name, description or price is incorrect for product: ${name} (id: ${id}, description: ${description}, price: ${price})`
+        const priceText = await page.$eval(`#price-${product._id}`, elem =>
+          elem.textContent.trim()
         );
+
+        expect(nameText).to.equal(product.name);
+        expect(descriptionText).to.equal(product.description);
+        expect(priceText).to.equal(String(product.price));
       }
     });
   });
@@ -328,8 +335,8 @@ describe('User Inteface', () => {
     it('should show a notification about adding a product to shopping cart', async () => {
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const product = products[0];
-      const addToCartSelector = `#add-to-cart-${product._id}`;
+      const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
       const expectedText = `Added ${product.name} to cart!`;
 
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
@@ -361,16 +368,14 @@ describe('User Inteface', () => {
     });
 
     it('should show the product in shopping cart', async () => {
-      const product = products[0];
+      const product = allProducts[0];
 
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
-      const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
-      const priceText = await page.$eval(`#price-${product._id}`, elem => elem.textContent.trim());
-      const amountText = await page.$eval(`#amount-${product._id}`, elem =>
-        elem.textContent.trim()
-      );
+      const nameText = await page.$eval(`#name-${product.id}`, elem => elem.textContent.trim());
+      const priceText = await page.$eval(`#price-${product.id}`, elem => elem.textContent.trim());
+      const amountText = await page.$eval(`#amount-${product.id}`, elem => elem.textContent.trim());
 
       errorMsg =
         'Tried to get text content from the shopping cart ' +
@@ -382,22 +387,15 @@ describe('User Inteface', () => {
         name: nameText,
         price: priceText,
         amount: amountText
-      }).to.include({ name: product.name, price: product.price, amount: '1x' }, errorMsg);
+      }).to.include({ name: product.name, price: String(product.price), amount: '1x' }, errorMsg);
     });
 
     it('should increase the amount of items of a product in a shopping cart', async () => {
-      const product = products[0];
+      const product = allProducts[0];
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const { _id, name, price } = products[0];
 
-      const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
-      const priceText = await page.$eval(`#price-${product._id}`, elem => elem.textContent.trim());
-      const amountText = await page.$eval(`#amount-${product._id}`, elem =>
-        elem.textContent.trim()
-      );
-
-      const plusButtonSelector = `#plus-${_id}`;
+      const plusButtonSelector = `#plus-${product.id}`;
       const increaseAmountButton = await page.$(plusButtonSelector);
 
       let errorMsg =
@@ -410,7 +408,7 @@ describe('User Inteface', () => {
       await page.click(plusButtonSelector);
       await page.waitForTimeout(shortWaitTime);
 
-      const newAmountText = await page.$eval(`#amount-${product._id}`, elem =>
+      const newAmountText = await page.$eval(`#amount-${product.id}`, elem =>
         elem.textContent.trim()
       );
 
@@ -424,18 +422,11 @@ describe('User Inteface', () => {
     });
 
     it('should decrease the amount of items of a product in a shopping cart', async () => {
-      const product = products[0];
+      const product = allProducts[0];
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const { _id, name, price } = products[0];
 
-      const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
-      const priceText = await page.$eval(`#price-${product._id}`, elem => elem.textContent.trim());
-      const amountText = await page.$eval(`#amount-${product._id}`, elem =>
-        elem.textContent.trim()
-      );
-
-      const minusButtonSelector = `#minus-${_id}`;
+      const minusButtonSelector = `#minus-${product.id}`;
       const decreaseAmountButton = await page.$(minusButtonSelector);
 
       let errorMsg =
@@ -462,18 +453,11 @@ describe('User Inteface', () => {
     });
 
     it('should remove item from shopping cart when amount decreases to 0', async () => {
-      const product = products[0];
+      const product = allProducts[0];
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const { _id, name, price } = products[0];
 
-      const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
-      const priceText = await page.$eval(`#price-${product._id}`, elem => elem.textContent.trim());
-      const amountText = await page.$eval(`#amount-${product._id}`, elem =>
-        elem.textContent.trim()
-      );
-
-      const minusButtonSelector = `#minus-${_id}`;
+      const minusButtonSelector = `#minus-${product.id}`;
       const decreaseAmountButton = await page.$(minusButtonSelector);
 
       let errorMsg =
@@ -500,8 +484,8 @@ describe('User Inteface', () => {
     it("should increase the amount in shopping cart with each click on product's page", async () => {
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const product = products[0];
-      const addToCartSelector = `#add-to-cart-${product._id}`;
+      const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
       const expectedText = `Added ${product.name} to cart!`;
 
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
@@ -538,11 +522,9 @@ describe('User Inteface', () => {
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
-      const nameText = await page.$eval(`#name-${product._id}`, elem => elem.textContent.trim());
-      const priceText = await page.$eval(`#price-${product._id}`, elem => elem.textContent.trim());
-      const amountText = await page.$eval(`#amount-${product._id}`, elem =>
-        elem.textContent.trim()
-      );
+      const nameText = await page.$eval(`#name-${product.id}`, elem => elem.textContent.trim());
+      const priceText = await page.$eval(`#price-${product.id}`, elem => elem.textContent.trim());
+      const amountText = await page.$eval(`#amount-${product.id}`, elem => elem.textContent.trim());
 
       errorMsg =
         'Tried to get text content from the shopping cart ' +
@@ -554,11 +536,11 @@ describe('User Inteface', () => {
         name: nameText,
         price: priceText,
         amount: amountText
-      }).to.include({ name: product.name, price: product.price, amount: '3x' }, errorMsg);
+      }).to.include({ name: product.name, price: String(product.price), amount: '3x' }, errorMsg);
     });
 
     it('should place order from the shopping cart', async () => {
-      const product = products[0];
+      const product = allProducts[0];
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
@@ -596,13 +578,13 @@ describe('User Inteface', () => {
     });
 
     it('should be able to add two different products to the shopping cart', async () => {
-      const product1 = products[0];
-      const product2 = products[2];
+      const product1 = allProducts[0];
+      const product2 = allProducts[2];
 
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const addToCartSelector1 = `#add-to-cart-${product1._id}`;
-      const addToCartSelector2 = `#add-to-cart-${product2._id}`;
+      const addToCartSelector1 = `#add-to-cart-${product1.id}`;
+      const addToCartSelector2 = `#add-to-cart-${product2.id}`;
       const expectedText1 = `Added ${product1.name} to cart!`;
       const expectedText2 = `Added ${product2.name} to cart!`;
 
@@ -659,21 +641,12 @@ describe('User Inteface', () => {
       // Here start the cart page handling
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
-      const { _id, name, price } = products[0];
 
-      const nameText1 = await page.$eval(`#name-${product1._id}`, elem => elem.textContent.trim());
-      const priceText1 = await page.$eval(`#price-${product1._id}`, elem =>
-        elem.textContent.trim()
-      );
-      const amountText1 = await page.$eval(`#amount-${product1._id}`, elem =>
+      const amountText1 = await page.$eval(`#amount-${product1.id}`, elem =>
         elem.textContent.trim()
       );
 
-      const nameText2 = await page.$eval(`#name-${product2._id}`, elem => elem.textContent.trim());
-      const priceText2 = await page.$eval(`#price-${product2._id}`, elem =>
-        elem.textContent.trim()
-      );
-      const amountText2 = await page.$eval(`#amount-${product2._id}`, elem =>
+      const amountText2 = await page.$eval(`#amount-${product2.id}`, elem =>
         elem.textContent.trim()
       );
 
