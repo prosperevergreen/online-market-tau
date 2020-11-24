@@ -1,6 +1,6 @@
 # Group 
 
-Member1:  name, email, student ID, 
+Member1:  Kaisa Sormunen, kaisa.sormunen@tuni.fi, 439656, 
 resposible for: TODO, short description of duties 
 
 Member2:  name, email, student ID, 
