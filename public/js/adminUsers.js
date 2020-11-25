@@ -26,7 +26,15 @@ const formTemplate = document.getElementById("form-template");
 // Get container to put the template clones to
 const formContainer = document.getElementById("modify-user");
 
-// Setup the view for each user from template
+/**
+ * Creates a HTML-element and populates it with data
+ * from user object.
+ * 
+ * @param {HTMLTemplateElement} userTemplate 
+ * @param {object} user
+ * 
+ * @return {HTMLElement} clone
+ */
 const setupUserView = (userTemplate, user) => {
 	// Clone template
 	const clone = userTemplate.content.cloneNode(true);
@@ -57,7 +65,7 @@ const setupUserView = (userTemplate, user) => {
 		await modifyButtonAction(user._id);
 	});
 
-	
+
 	const deleteButton = clone.querySelector(".delete-button");
 	deleteButton.id = `delete-${user._id}`;
 	// Set event listener for delete button
@@ -69,6 +77,15 @@ const setupUserView = (userTemplate, user) => {
 	return clone;
 };
 
+
+/**
+ * Displays all users in HTML
+ * 
+ * Function lists all users from database to the HTML.
+ * Function calls setupUserView to create clones based on HTML template
+ * and appends them to a container.
+ * Function is called when user has logged in as an admin.
+ */
 (async () => {
 	// List users to the DOM
 
@@ -112,13 +129,24 @@ const setupUserView = (userTemplate, user) => {
 	 */
 
 
-
+/**
+ * Moves the view to the top of the page.
+ */
 
 // Scroll to top to view modification form
 function scrollToTop() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 }
+
+/**
+ * Removes a user from the database and the view.
+ * 
+ * Function is used as a part of an eventhandler in a user 
+ * template element delete-button.
+ * 
+ * @param {string} userId 
+ */
 
 // Delete button pressed function
 async function deleteButtonAction(userId) {
@@ -131,7 +159,7 @@ async function deleteButtonAction(userId) {
         // Remove modify form if exists
         removeElement("modify-user", "edit-user-form");
 
-        // Send notificaion for deleted user
+        // Send notifictaion for deleted user
         createNotification(
             `Deleted user ${deletedUser.name}`,
             "notifications-container"
@@ -140,6 +168,15 @@ async function deleteButtonAction(userId) {
         createNotification(`${error}`, "notifications-container", false);
     }
 }
+
+/**
+ * Gets user data from database and creates a modification 
+ * form.
+ * 
+ * Function is used as a part of an eventhandler in a user 
+ * template element modify-button. 
+ * @param {string} userId 
+ */
 
 async function modifyButtonAction(userId) {
     // Try fetching full user details or report error
@@ -161,6 +198,15 @@ async function modifyButtonAction(userId) {
         createNotification(`${error}`, "notifications-container", false);
     }
 }
+
+/**
+ * Function sets up a modification form that is displayed in HTML.
+ * 
+ * @param {HTMLTemplateElement} modifyFormTemplate 
+ * @param {HTMLElement} user 
+ * 
+ * @return {HTMLElement} clone
+ */
 
 function modifyFormSetup (modifyFormTemplate, user){
 
@@ -198,6 +244,12 @@ function modifyFormSetup (modifyFormTemplate, user){
 	return clone;
 }
 
+/**
+ * Function sends a modified user information to the server and database.
+ * 
+ * @param {object} user 
+ */
+
 // Send modification to server and update page
 async function updateUserAction(user) {
     // Try sending update to server, if error report it as notification
@@ -221,14 +273,14 @@ async function updateUserAction(user) {
 			 // Update the user role on the page using the user's id
 			 (document.getElementById(`role-${user._id}`).innerText =
 				 user.role);
-	 
+
 			 // Notify the user if successful
 			 createNotification(
 				 `Updated user ${updatedUser.name}`,
 				 "notifications-container"
 			 );
 		}
-       
+
     } catch (err) {
         createNotification(`${err}`, "notifications-container", false);
     }
