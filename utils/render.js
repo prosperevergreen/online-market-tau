@@ -69,6 +69,13 @@ const getContentType = fileExtension => {
   return contentType;
 };
 
+/**
+ * Renders a file to user.
+ * 
+ * @param {string} filePath 
+ * @param {string} contentType 
+ * @param {Object} response 
+ */
 const renderFile = (filePath, contentType, response) => {
   fs.readFile(filePath, (error, content) => {
     if (error) {
@@ -97,6 +104,12 @@ const renderFile = (filePath, contentType, response) => {
   });
 };
 
+/**
+ * Gets the full file path for a file.
+ * 
+ * @param {string} fileName 
+ * @return {Promise<string>}
+ */
 const getFullFilePath = fileName => {
   const basePath = 'public';
   return path.resolve(
@@ -105,6 +118,12 @@ const getFullFilePath = fileName => {
   );
 };
 
+/**
+ * Splits filepath at '?'.
+ * 
+ * @param {string} filePath 
+ * @return {Array}
+ */
 const splitPath = filePath => {
   const tmpPath = filePath.split('?')[0];
   const filename = path.basename(tmpPath);
