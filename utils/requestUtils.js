@@ -88,7 +88,7 @@ const isJson = request => {
  *   })
  *
  * @param {http.IncomingMessage} request
- * @returns {Promise<*>} Promise resolves to JSON content of the body
+ * @returns {Promise<Object>} Promise resolves to JSON content of the body
  */
 const parseBodyJson = request => {
   return new Promise((resolve, reject) => {

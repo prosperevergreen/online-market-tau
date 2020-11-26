@@ -170,3 +170,6 @@ lib-cov
 *.eslintrc.json
 
 *.drawio
+
+# JSDoc file report
+jsdoc_report.html

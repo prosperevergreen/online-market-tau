@@ -5,7 +5,6 @@
  * 
  * @param {Object} response 
  */
-
 const basicAuthChallenge = response => {
   // TODO: 8.4 Send proper basic authentication challenge headers
   //Responds with Basic authentication challenge:

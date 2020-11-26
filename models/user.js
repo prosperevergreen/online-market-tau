@@ -2,7 +2,12 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Custom validator for user e-mail
+/**
+ * Custom validator for user e-mail format
+ * 
+ * @param { string } email 
+ * @returns { boolean }
+ */
 const emailValidator = email => {
    return /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(email);
 };
@@ -10,7 +15,12 @@ const emailValidator = email => {
 // Number that defines how well the hash is salted
 const saltRounds = 10;
 
-// Set method that hashes the password
+/**
+ * Set method that hashes the password
+ * 
+ * @param { string } pwd
+ * @returns { string | boolean } 
+ */
 const hashPwd = pwd => {
    // Hash only if password is as long as required
    if(pwd && pwd.length >= 10){

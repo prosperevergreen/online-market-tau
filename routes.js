@@ -72,6 +72,15 @@ const matchUserId = (url) => {
 	return matchIdRoute(url, "users");
 };
 
+
+/**
+ * Handles all app RESTfull requests calls
+ * 
+ * @param { http.ServerRequest } request 
+ * @param { http.ServerResponse } response 
+ * 
+ * @returns { http.ServerResponse }
+ */
 const handleRequest = async (request, response) => {
 	const { url, method, headers } = request;
 	const filePath = new URL(url, `http://${headers.host}`).pathname;

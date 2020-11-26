@@ -15,6 +15,12 @@ const getDbUrl = () => {
   // throw new Error('Implement this');
 };
 
+/**
+ * Open connection to Mongodb for CRUD operations
+ * @throws { error } if unsuccessfull
+ * @returns { void }
+ * 
+ */
 function connectDB () {
   // Do nothing if already connected
   if (!mongoose.connection || mongoose.connection.readyState === 0) {
@@ -37,11 +43,23 @@ function connectDB () {
   }
 }
 
+/**
+ * Closes connection to Mongodb
+ * @throws { error }
+ * @returns { void }
+ * 
+ */
 function handleCriticalError (err) {
   console.error(err);
   throw err;
 }
 
+/**
+ * Throws error on catch when connecting to Mongodb
+ * @throws { error } if unsuccessfull
+ * @returns { void }
+ * 
+ */
 function disconnectDB () {
   mongoose.disconnect();
 }
