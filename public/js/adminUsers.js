@@ -29,11 +29,11 @@ const formContainer = document.getElementById("modify-user");
 /**
  * Creates a HTML-element and populates it with data
  * from user object.
- * 
- * @param {HTMLTemplateElement} userTemplate 
- * @param {object} user
- * 
- * @return {HTMLElement} clone
+ *
+ * @param {HTMLTemplateElement} userTemplate a template from users.html
+ * @param {object} user user information as an object
+ *
+ * @returns {HTMLElement} clone
  */
 const setupUserView = (userTemplate, user) => {
 	// Clone template
@@ -80,7 +80,7 @@ const setupUserView = (userTemplate, user) => {
 
 /**
  * Displays all users in HTML
- * 
+ *
  * Function lists all users from database to the HTML.
  * Function calls setupUserView to create clones based on HTML template
  * and appends them to a container.
@@ -109,31 +109,28 @@ const setupUserView = (userTemplate, user) => {
 
 })();
 
-	/**
-	 * TODO: 8.5 Updating/modifying and deleting existing users
-	 *       - Use postOrPutJSON() function from utils.js to send your data back to server
-	 *       - Use deleteResource() function from utils.js to delete users from server
-	 *       - Clicking "Delete" button of a user will delete the user and update the listing accordingly
-	 *       - Clicking "Modify" button of a user will use <template id="form-template"> to
-	 *         show an editing form populated with the values of the selected user
-	 *       - The edit form should appear inside <div id="modify-user">
-	 *       - Afted successful edit of user the form should be removed and the listing updated accordingly
-	 *       - You can use removeElement() from utils.js to remove the form.
-	 *       - Remove edit form from the DOM after successful edit or replace it with a new form when another
-	 *         user's "Modify" button is clicked. There should never be more than one form visible at any time.
-	 *         (Notice that the edit form has an id "edit-user-form" which should be unique in the DOM at all times.)
-	 *       - Also remove the edit form when a user is deleted regardless of which user is deleted.
-	 *       - Modifying a user successfully should show a notification message "Updated user {User Name}"
-	 *       - Deleting a user successfully should show a notification message "Deleted user {User Name}"
-	 *       - Use createNotification() function from utils.js to create notifications
-	 */
-
+/**
+ * TODO: 8.5 Updating/modifying and deleting existing users
+ *       - Use postOrPutJSON() function from utils.js to send your data back to server
+ *       - Use deleteResource() function from utils.js to delete users from server
+ *       - Clicking "Delete" button of a user will delete the user and update the listing accordingly
+ *       - Clicking "Modify" button of a user will use <template id="form-template"> to
+ *         show an editing form populated with the values of the selected user
+ *       - The edit form should appear inside <div id="modify-user">
+ *       - Afted successful edit of user the form should be removed and the listing updated accordingly
+ *       - You can use removeElement() from utils.js to remove the form.
+ *       - Remove edit form from the DOM after successful edit or replace it with a new form when another
+ *         user's "Modify" button is clicked. There should never be more than one form visible at any time.
+ *         (Notice that the edit form has an id "edit-user-form" which should be unique in the DOM at all times.)
+ *       - Also remove the edit form when a user is deleted regardless of which user is deleted.
+ *       - Modifying a user successfully should show a notification message "Updated user {User Name}"
+ *       - Deleting a user successfully should show a notification message "Deleted user {User Name}"
+ *       - Use createNotification() function from utils.js to create notifications
+ */
 
 /**
  * Moves the view to the top of the page.
  */
-
-// Scroll to top to view modification form
 function scrollToTop() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
@@ -141,14 +138,12 @@ function scrollToTop() {
 
 /**
  * Removes a user from the database and the view.
- * 
- * Function is used as a part of an eventhandler in a user 
+ *
+ * Function is used as a part of an eventhandler in a user
  * template element delete-button.
- * 
- * @param {string} userId 
+ *
+ * @param {string} userId - an id of the user
  */
-
-// Delete button pressed function
 async function deleteButtonAction(userId) {
     // Try deleting user or report error
     try {
@@ -170,14 +165,14 @@ async function deleteButtonAction(userId) {
 }
 
 /**
- * Gets user data from database and creates a modification 
+ * Gets user data from database and creates a modification
  * form.
- * 
- * Function is used as a part of an eventhandler in a user 
- * template element modify-button. 
- * @param {string} userId 
+ *
+ * Function is used as a part of an eventhandler in a user
+ * template element modify-button.
+ *
+ * @param {string} userId - an id of the user
  */
-
 async function modifyButtonAction(userId) {
     // Try fetching full user details or report error
     try {
@@ -201,13 +196,12 @@ async function modifyButtonAction(userId) {
 
 /**
  * Function sets up a modification form that is displayed in HTML.
- * 
- * @param {HTMLTemplateElement} modifyFormTemplate 
- * @param {HTMLElement} user 
- * 
- * @return {HTMLElement} clone
+ *
+ * @param {HTMLTemplateElement} modifyFormTemplate - a template from users.html
+ * @param {HTMLElement} user - a user object
+ *
+ * @returns {HTMLElement} clone of the template filled with user info
  */
-
 function modifyFormSetup (modifyFormTemplate, user){
 
 	//Populating the modify form with user details.
@@ -246,11 +240,9 @@ function modifyFormSetup (modifyFormTemplate, user){
 
 /**
  * Function sends a modified user information to the server and database.
- * 
- * @param {object} user 
+ *
+ * @param {object} user - a user object
  */
-
-// Send modification to server and update page
 async function updateUserAction(user) {
     // Try sending update to server, if error report it as notification
     try {

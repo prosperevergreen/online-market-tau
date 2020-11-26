@@ -28,7 +28,7 @@ const getJSON = async (url) => {
 		method: "GET",
 		headers: header,
   };
-  
+
   // Do fetch and return body of response as js object
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 	// throw new Error('Not Implemented');
@@ -42,7 +42,7 @@ const getJSON = async (url) => {
  *
  * @param {string} url resource url on the server
  * @param {string} method "PUT" or "POST"
- * @param {Object|Array} data payload data be sent to the server as JSON
+ * @param {object|Array} data payload data be sent to the server as JSON
  * @returns {Promise<*>} promise that resolves to the parsed JSON
  */
 const postOrPutJSON = async (url, method, data = {}) => {
@@ -55,14 +55,14 @@ const postOrPutJSON = async (url, method, data = {}) => {
   // Create and setup header to specify its content type as json
 	const header = new Headers();
   header.append("Content-Type", "application/json");
-  
+
   // Setup fetch metadata
 	const fetchDataSetup = {
 		method: method,
 		body: JSON.stringify(data),
 		headers: header,
   };
-  
+
   // Do fetch and return response as JSON
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 	// throw new Error("Not Implemented");
@@ -87,7 +87,7 @@ const deleteResourse = async (url) => {
 		method: "DELETE",
 		headers: header,
   };
-  
+
   // Do fetch and return body of response as js object
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 };
@@ -97,7 +97,7 @@ const deleteResourse = async (url) => {
  * or other HTML elements (remember that IDs must be unique within
  * a document).
  *
- * @returns {string}
+ * @returns {string} a generated id
  */
 const generateId = () => {
 	// Shamelessly borrowed from a Gist. See:
@@ -111,7 +111,7 @@ const generateId = () => {
  * Appends a new paragraph inside the container element and gives it
  * class based on the status of the message (success or failure).
  *
- * @param {string} message
+ * @param {string} message a message to be displayed to user
  * @param {string} containerId id attribute of the container element
  * @param {boolean} isSuccess whether the message describes a success or a failure
  */

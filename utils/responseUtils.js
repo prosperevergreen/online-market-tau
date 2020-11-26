@@ -1,9 +1,11 @@
 
 /**
- * Sends a Basic authentication challenge to an unindentified 
+ * Sends a Basic authentication challenge to an unindentified
  * user.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const basicAuthChallenge = response => {
   // TODO: 8.4 Send proper basic authentication challenge headers
@@ -14,10 +16,10 @@ const basicAuthChallenge = response => {
 
 /**
  * Sends JSON in response to client.
- * 
- * @param {Object} response 
- * @param {string} payload 
- * @param {number} code 
+ *
+ * @param {object} response - a http response
+ * @param {string} payload - content
+ * @param {number} code - status code
  */
 const sendJson = (response, payload, code = 200) => {
   response.writeHead(code, { 'Content-Type': 'application/json' });
@@ -26,19 +28,23 @@ const sendJson = (response, payload, code = 200) => {
 
 /**
  * Sends JSON of a created resource with the method sendJson.
- * 
- * @param {Object} response 
- * @param {string} payload 
+ *
+ * @param {object} response - a http response
+ * @param {string} payload - content
+ *
+ * @returns {object} sent response
  */
 const createdResource = (response, payload) => {
   return sendJson(response, payload, 201);
 };
 
 /**
- * Response for situations when there is no need for visual update, 
+ * Response for situations when there is no need for visual update,
  * but the request succeeded.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const noContent = response => {
   response.statusCode = 204;
@@ -47,9 +53,11 @@ const noContent = response => {
 
 /**
  * Responds to a bad request.
- * 
- * @param {Object} response 
- * @param {string} errorMsg 
+ *
+ * @param {object} response - a http response
+ * @param {string} errorMsg - an error message
+ *
+ * @returns {object} sent response
  */
 const badRequest = (response, errorMsg) => {
   if (errorMsg) return sendJson(response, { error: errorMsg }, 400);
@@ -60,8 +68,10 @@ const badRequest = (response, errorMsg) => {
 
 /**
  * Responds to an unauthorized request.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const unauthorized = response => {
   response.statusCode = 401;
@@ -70,8 +80,10 @@ const unauthorized = response => {
 
 /**
  * Responds to an unauthorized request.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const forbidden = response => {
   response.statusCode = 403;
@@ -80,8 +92,10 @@ const forbidden = response => {
 
 /**
  * Responds when the resourse requested is not found.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const notFound = response => {
   response.statusCode = 404;
@@ -90,8 +104,10 @@ const notFound = response => {
 
 /**
  * Responds when the request method is not allowed.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const methodNotAllowed = response => {
   response.statusCode = 405;
@@ -100,8 +116,10 @@ const methodNotAllowed = response => {
 
 /**
  * Responds when the request Content-Type is not accepted.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
 const contentTypeNotAcceptable = response => {
   response.statusCode = 406;
@@ -110,10 +128,11 @@ const contentTypeNotAcceptable = response => {
 
 /**
  * Responds when a server error occurs.
- * 
- * @param {Object} response 
+ *
+ * @param {object} response - a http response
+ *
+ * @returns {object} sent response
  */
-
 const internalServerError = response => {
   response.statusCode = 500;
   return response.end();
@@ -121,9 +140,9 @@ const internalServerError = response => {
 
 /**
  * Responds when redirect is needed.
- * 
- * @param {Object} response 
- * @param {string} page 
+ *
+ * @param {object} response - a http response
+ * @param {string} page - a html page
  */
 const redirectToPage = (response, page) => {
   response.writeHead(302, { Location: page });

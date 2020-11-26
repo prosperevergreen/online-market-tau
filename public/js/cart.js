@@ -6,15 +6,14 @@ const cartsContainer = document.getElementById("cart-container");
 const placeOrderButton = document.getElementById("place-order-button");
 
 /**
- * Creates a HTML element based on template and populates it with 
+ * Creates a HTML element based on template and populates it with
  * data from product object.
- * 
- * @param {HTMLTemplateElement} template 
- * @param {object} product 
- * 
- * @return {HTMLElement} clone
+ *
+ * @param {HTMLTemplateElement} template a template from cart.html
+ * @param {object} product information of a product as an object
+ *
+ * @returns {HTMLElement} clone
  */
-//Fill a cart item to be displayed:
 const setupCartView = (template, product) => {
 	const clone = template.content.cloneNode(true);
 
@@ -54,16 +53,19 @@ const setupCartView = (template, product) => {
 
 /**
  * Increases the amount of products in cart and display.
- * 
- * @param {object} param0 
- * @return {function} 
+ *
+ * @param {object} param0 - an item in cart
+ * @param {string} param0.productId - an id of a product
+ * @param {number} param0.amountDiv - the amount of the product in cart
+ * @returns {Function} - function that increases the amount of the product in cart
  */
 function increaseItemAmount({ productId, amountDiv }) {
-	/**
-	 * Increases amount of the product in cart with increaseProductCount()
-	 * and then updates display.
-	 * @param {event} event
-	 */
+/**
+ * Increases amount of the product in cart with increaseProductCount()
+ * and then updates display.
+ *
+ * @param {object} event - the event of clicking the plus button
+ */
 	return function (event) {
 		// Increase/save the amount
 		increaseProductCount(productId);
@@ -74,17 +76,20 @@ function increaseItemAmount({ productId, amountDiv }) {
 
 /**
  * Decreases the amount of products in cart and display.
- * 
- * @param {object} param0 
- * @return {function} 
+ *
+ * @param {object} param0 - an item in cart
+ * @param {string} param0.productId - an id of a product
+ * @param {number} param0.amountDiv - the amount of the product in cart
+ * @returns {Function} - function that decreases the amount of the product in cart
  */
 function decreaseItemAmount({ productId, amountDiv }) {
-	/**
-	 * Decreases amount of the product in cart with decreaseProductCount()
-	 * and then updates display. If the product count is lower than one, 
-	 * the item is removed from cart.
-	 * @param {event} event
-	 */
+/**
+ * Decreases amount of the product in cart with decreaseProductCount()
+ * and then updates display. If the product count is lower than one,
+ * the item is removed from cart.
+ *
+ * @param {object} event - the event of clicking the minus button
+ */
 	return function (event) {
 		if (getProductCountFromCart(productId) > 1) {
 			// Decrease/save the amount of the product in cart
@@ -99,10 +104,10 @@ function decreaseItemAmount({ productId, amountDiv }) {
 }
 
 /**
- * Gets item "cart" from sessionStorage and returns it parsed 
+ * Gets item "cart" from sessionStorage and returns it parsed
  * into JSON.
- * 
- * @return {string} cart parsed into JSON
+ *
+ * @returns {string} cart parsed into JSON
  */
 function getCart() {
 	// Get cart string value
@@ -112,10 +117,10 @@ function getCart() {
 }
 
 /**
- * Removes a product from cart sessionStorage item "cart" and 
+ * Removes a product from cart sessionStorage item "cart" and
  * from HTML container.
- * 
- * @param {string} productId 
+ *
+ * @param {string} productId - an id of a product object
  */
 function removeProductFromCart(productId) {
     // Get previous cart
@@ -131,9 +136,10 @@ function removeProductFromCart(productId) {
 
 /**
  * Gets a product with the productId from the cart.
- * @param {string} productId 
- * 
- * @return {string} product parsed into JSON
+ *
+ * @param {string} productId - an id of a product object
+ *
+ * @returns {string} product parsed into JSON
  */
 function getProductFromCart(productId) {
 	// Get product string value
@@ -144,8 +150,8 @@ function getProductFromCart(productId) {
 
 /**
  * Saves changes to a product's count to the cart.
- * 
- * @param {object} product 
+ *
+ * @param {object} product - a product object
  */
 function updateProductInCart(product) {
 	// Save product to session storage
@@ -153,9 +159,10 @@ function updateProductInCart(product) {
 }
 
 /**
- * Decreases the amount of product in cart and saves the changes 
+ * Decreases the amount of product in cart and saves the changes
  * to the sessionStorage with updateProductInCart().
- * @param {string} productId 
+ *
+ * @param {string} productId - an id of a product object
  */
 function decreaseProductCount(productId) {
 	// Get product from cart
@@ -167,9 +174,10 @@ function decreaseProductCount(productId) {
 }
 
 /**
- * Increases the amount of product in cart and saves the changes 
+ * Increases the amount of product in cart and saves the changes
  * to the sessionStorage with updateProductInCart().
- * @param {string} productId 
+ *
+ * @param {string} productId - an id of a product object
  */
 function increaseProductCount(productId) {
 	// Get product from cart
@@ -182,8 +190,10 @@ function increaseProductCount(productId) {
 
 /**
  * Gets the product count of a product with the productId from cart.
- * @param {string} productId 
- * @return {}
+ *
+ * @param {string} productId - an id of a product object
+ *
+ * @returns {number} number of a specified product in cart.
  */
 function getProductCountFromCart(productId) {
     // Get product from cart
@@ -195,7 +205,8 @@ function getProductCountFromCart(productId) {
 /**
  * Gets all products from the cart and creates an array from them.
  * If there are no products, returns an empty array.
- * @return {Array} productsInCart
+ *
+ * @returns {Array} productsInCart
  */
 function getAllProductsFromCart() {
     // Get cart
@@ -228,13 +239,12 @@ function clearCart() {
 	sessionStorage.removeItem("cart");
 }
 /**
- * 
- * Creates a notification when an order is placed by clicking the 
+ *
+ * Creates a notification when an order is placed by clicking the
  * "place order"-button. Then clears the cart.
- * @param {event} event 
+ *
+ * @param {object} event - event of clickin the order button
  */
-
-// Will send data to database to create and save an order.
 function placeOrderButtonAction(event) {
 	// Notify user of successful order
 	createNotification(
