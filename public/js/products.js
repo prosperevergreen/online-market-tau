@@ -6,11 +6,11 @@ const productsContainer = document.getElementById("products-container");
 /**
  *  Creates a HTML-element and populates it with data
  * from product object.
- * 
- * @param {HTMLTemplateElement} template 
- * @param {Object} product 
- * 
- * @return {HTMLElement} clone
+ *
+ * @param {HTMLTemplateElement} template - template from products.html
+ * @param {object} product - a product object
+ *
+ * @returns {HTMLElement} clone of the template filled with product info
  */
 //Fill a product template to be displayed:
 const setProductView = (template, product) => {
@@ -40,13 +40,12 @@ const setProductView = (template, product) => {
 
 /**
  * Displays all products in HTML
- * 
+ *
  * Function lists all products from database to the HTML.
  * Function calls setupProductView to create clones based on HTML template
  * and appends them to a container.
  * Function is called when user has logged in and page is viewed.
  */
-//List all products to DOM:
 (async () => {
 	try {
 		//Get products as JSON from server:
@@ -63,15 +62,16 @@ const setProductView = (template, product) => {
 
 /**
  * Adds an item to the cart in sessionStorage.
- * 
- * @param {Object} product 
- * @return {function}
+ *
+ * @param {object} product - a product object
+ * @returns {Function} function that creates a cart or add a product to existing cart
  */
-
 function addToCartButtonPressed(product) {
-	/**
-	 * 
-	 */
+/**
+ * Creates a cart or adds a product to existing cart in session storage.
+ *
+ * @param {object} event - the click of the "add to cart"-button.
+ */
 	return function (event) {
 		// event and product will be available here
 
@@ -102,11 +102,10 @@ function addToCartButtonPressed(product) {
 
 /**
  * Adds a product to sessionStorage item named "cart".
- * 
- * @param {string} cart 
- * @param {Object} product 
+ *
+ * @param {object} cart - cart as JSON object
+ * @param {object} product - a product object
  */
-
 function addProductToCart(cart, product) {
 	// Add new item to cart list by id
 	cart.push(product._id);
@@ -119,9 +118,10 @@ function addProductToCart(cart, product) {
 }
 
 /**
- * Increases the amount of product in cart and saves the changes 
+ * Increases the amount of product in cart and saves the changes
  * to the sessionStorage with updateProductInCart().
- * @param {string} productId 
+ *
+ * @param {string} productId - an id of a product object
  */
 function increaseProductCount(productId) {
 	// Get product from cart
@@ -134,8 +134,8 @@ function increaseProductCount(productId) {
 
 /**
  * Saves changes to a product's count to the cart.
- * 
- * @param {object} product 
+ *
+ * @param {object} product - a product object
  */
 function updateProductInCart(product) {
 	// Save product to session storage
@@ -143,10 +143,10 @@ function updateProductInCart(product) {
 }
 
 /**
- * Gets item "cart" from sessionStorage and returns it parsed 
+ * Gets item "cart" from sessionStorage and returns it parsed
  * into JSON.
- * 
- * @return {string} cart parsed into JSON
+ *
+ * @returns {string} cart parsed into JSON
  */
 function getCart() {
 	// Get cart string value
@@ -157,9 +157,10 @@ function getCart() {
 
 /**
  * Gets a product with the productId from the cart.
- * @param {string} productId 
- * 
- * @return {string} product parsed into JSON
+ *
+ * @param {string} productId - an id of a product object
+ *
+ * @returns {string} product parsed into JSON
  */
 function getProductFromCart(productId) {
 	// Get product string value

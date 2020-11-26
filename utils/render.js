@@ -6,8 +6,8 @@ const NOT_FOUND_TEMPLATE = path.resolve(__dirname, '../public/404.html');
 /**
  * Render file from ./public directory (calls response.end())
  *
- * @param {string} filePath
- * @param {http.ServerResponse} response
+ * @param {string} filePath - a path to a file to render
+ * @param {http.ServerResponse} response - a http response
  * @returns {void}
  */
 const renderPublic = (filePath, response) => {
@@ -24,7 +24,7 @@ const renderPublic = (filePath, response) => {
 /**
  * Render ../views/404.html (calls response.end())
  *
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response - the response
  * @returns {void}
  */
 const renderNotFound = response => {
@@ -34,7 +34,7 @@ const renderNotFound = response => {
 /**
  * Get Content-Type based on file extension
  *
- * @param {string} fileExtension
+ * @param {string} fileExtension - the type of the file
  * @returns {string} contentType
  */
 const getContentType = fileExtension => {
@@ -71,10 +71,10 @@ const getContentType = fileExtension => {
 
 /**
  * Renders a file to user.
- * 
- * @param {string} filePath 
- * @param {string} contentType 
- * @param {Object} response 
+ *
+ * @param {string} filePath - a path to file
+ * @param {string} contentType - requested content type
+ * @param {object} response - a http response
  */
 const renderFile = (filePath, contentType, response) => {
   fs.readFile(filePath, (error, content) => {
@@ -106,9 +106,9 @@ const renderFile = (filePath, contentType, response) => {
 
 /**
  * Gets the full file path for a file.
- * 
- * @param {string} fileName 
- * @return {Promise<string>}
+ *
+ * @param {string} fileName - name of a file to render
+ * @returns {Promise<string>} - path to file if available
  */
 const getFullFilePath = fileName => {
   const basePath = 'public';
@@ -120,9 +120,9 @@ const getFullFilePath = fileName => {
 
 /**
  * Splits filepath at '?'.
- * 
- * @param {string} filePath 
- * @return {Array}
+ *
+ * @param {string} filePath - a file path
+ * @returns {Array} array with filename and ext
  */
 const splitPath = filePath => {
   const tmpPath = filePath.split('?')[0];

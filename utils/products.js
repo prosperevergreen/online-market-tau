@@ -17,7 +17,7 @@ const data = {
  * Returns copies of the products and not the originals
  * to prevent modifying them outside of this module.
  *
- * @returns {Array<Object>} all products
+ * @returns {Array<object>} all products
  */
 const getAllProductsJson = () => {
    const productsInMem = data.products;
