@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 /**
  * Custom validator for user e-mail format
  * 
- * @param { string } email 
- * @returns { boolean }
+ * @param { string } email - user email to be verified 
+ * @returns { boolean } - return the validity of the email
  */
 const emailValidator = email => {
    return /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(email);
@@ -18,8 +18,8 @@ const saltRounds = 10;
 /**
  * Set method that hashes the password
  * 
- * @param { string } pwd
- * @returns { string | boolean } 
+ * @param { string } pwd - user password to be hashed
+ * @returns { string | boolean } - returns password hashed string or false if password length < 10
  */
 const hashPwd = pwd => {
    // Hash only if password is as long as required
@@ -73,8 +73,8 @@ const userSchema = new Schema({
 /**
  * Compare supplied password with user's own (hashed) password
  *
- * @param {string} password
- * @returns {Promise<boolean>} promise that resolves to the comparison result
+ * @param {string} password - hashed password to be validated
+ * @returns {Promise<boolean>} - promise that resolves to the comparison result
  */
 userSchema.methods.checkPassword = function (password) {
   // TODO: 9.4 Implement this

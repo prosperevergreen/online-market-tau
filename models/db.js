@@ -17,7 +17,8 @@ const getDbUrl = () => {
 
 /**
  * Open connection to Mongodb for CRUD operations
- * @throws { error } if unsuccessfull
+ * 
+ * @throws { Error } if unsuccessfull
  * @returns { void }
  * 
  */
@@ -45,7 +46,9 @@ function connectDB () {
 
 /**
  * Closes connection to Mongodb
- * @throws { error }
+ * 
+ * @param { Error} err - Mongodn connection error object
+ * @throws { Error } 
  * @returns { void }
  * 
  */
@@ -56,7 +59,8 @@ function handleCriticalError (err) {
 
 /**
  * Throws error on catch when connecting to Mongodb
- * @throws { error } if unsuccessfull
+ * 
+ * @throws { Error } if unsuccessfull
  * @returns { void }
  * 
  */

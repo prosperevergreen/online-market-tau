@@ -3,7 +3,8 @@ const User = require("../models/user");
 /**
  * Send all users as JSON
  *
- * @param {http.ServerResponse} response
+ * @param {http.ServerResponse} response - server response object to GET api/users
+ * @returns { void }
  */
 const getAllUsers = async (response) => {
 	// TODO: 10.1 Implement this
@@ -16,9 +17,11 @@ const getAllUsers = async (response) => {
 /**
  * Delete user and send deleted user as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
+ * @param {http.ServerResponse} response - server response object to DELETE api/users/userID
+ * @param {string} userId - id of the requested user
+ * @param {object} currentUser (mongoose document object)
+ * 
+ * @returns { void }
  */
 const deleteUser = async (response, userId, currentUser) => {
 	// TODO: 10.1 Implement this
@@ -46,10 +49,11 @@ const deleteUser = async (response, userId, currentUser) => {
 /**
  * Update user and send updated user as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
- * @param {Object} userData JSON data from request body
+ * @param {http.ServerResponse} response - server response object to PUT api/users/userID
+ * @param {string} userId - id of the requested user
+ * @param {object} currentUser (mongoose document object)
+ * @param {object} userData JSON data from request body
+ * @returns { void }
  */
 const updateUser = async (response, userId, currentUser, userData) => {
 	// TODO: 10.1 Implement this
@@ -84,9 +88,11 @@ const updateUser = async (response, userId, currentUser, userData) => {
 /**
  * Send user data as JSON
  *
- * @param {http.ServerResponse} response
- * @param {string} userId
- * @param {Object} currentUser (mongoose document object)
+ * @param {http.ServerResponse} response - server response object to GET api/users/userID
+ * @param {string} userId - id of the requested user
+ * @param {object} currentUser (mongoose document object)
+ * 
+ * @returns { void }
  */
 const viewUser = async (response, userId, currentUser) => {
   // TODO: 10.1 Implement this
@@ -107,8 +113,10 @@ const viewUser = async (response, userId, currentUser) => {
 /**
  * Register new user and send created user back as JSON
  *
- * @param {http.ServerResponse} response
- * @param {Object} userData JSON data from request body
+ * @param {http.ServerResponse} response - server response object to POST /api/register
+ * @param {object} userData - JSON data from request body
+ * 
+ * @returns { void }
  */
 const registerUser = async (response, userData) => {
 	// TODO: 10.1 Implement this

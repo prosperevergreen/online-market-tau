@@ -32,8 +32,10 @@ const allowedMethods = {
 /**
  * Send response to client options request.
  *
- * @param {string} filePath pathname of the request URL
- * @param {http.ServerResponse} response
+ * @param {string} filePath - pathname of the request URL
+ * @param {http.ServerResponse} response - response object
+ * 
+ * @returns { http.ServerResponse } - reponses with 204 if path is allowed or 404 otherwise.
  */
 const sendOptions = (filePath, response) => {
 	if (filePath in allowedMethods) {
@@ -52,9 +54,9 @@ const sendOptions = (filePath, response) => {
 /**
  * Does the url have an ID component as its last part? (e.g. /api/users/dsf7844e)
  *
- * @param {string} url filePath
- * @param {string} prefix
- * @returns {boolean}
+ * @param {string} url - filePath
+ * @param {string} prefix - prefix of the path e.g for path /api/users/dsf7844e, prefix == users
+ * @returns {boolean} - returns true if pattern matches otherwise false
  */
 const matchIdRoute = (url, prefix) => {
 	const idPattern = "[0-9a-z]{8,24}";
@@ -65,8 +67,8 @@ const matchIdRoute = (url, prefix) => {
 /**
  * Does the URL match /api/users/{id}
  *
- * @param {string} url filePath
- * @returns {boolean}
+ * @param {string} url - filePath
+ * @returns {boolean} - returns true if urls contains path to users id otherwise false
  */
 const matchUserId = (url) => {
 	return matchIdRoute(url, "users");
@@ -76,10 +78,10 @@ const matchUserId = (url) => {
 /**
  * Handles all app RESTfull requests calls
  * 
- * @param { http.ServerRequest } request 
- * @param { http.ServerResponse } response 
+ * @param { http.IncomingMessage } request - RESTful requests to server
+ * @param { http.ServerResponse } response - response object to the request
  * 
- * @returns { http.ServerResponse }
+ * @returns { http.ServerResponse } - request response object
  */
 const handleRequest = async (request, response) => {
 	const { url, method, headers } = request;
