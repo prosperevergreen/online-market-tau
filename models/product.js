@@ -2,12 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 /**
- * Custom validator for user e-mail format
+ * Custom validator for user product format
  *
- * @param { string } url - product image url to be verified
+ * @param { string } url - product image url
  * @returns { boolean } - return the validity of the url
  */
-
 const urlValidator = (url) => {
 	return /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g.test(url);
 };
@@ -40,5 +39,5 @@ const productSchema = new Schema({
 // Omit the version key when serialized to JSON
 productSchema.set("toJSON", { virtuals: false, versionKey: false });
 
-const Product = new mongoose.model("Product", userSchema);
+const Product = new mongoose.model("Product", productSchema);
 module.exports = Product;

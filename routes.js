@@ -4,7 +4,7 @@ const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
-const { getAllProducts } = require("./controllers/products");
+const { getAllProducts, createProduct, viewProduct, deleteProduct } = require("./controllers/products");
 const {
 	getAllUsers,
 	registerUser,
@@ -14,6 +14,7 @@ const {
 } = require("./controllers/users");
 // Require user model
 const User = require("./models/user");
+const Product = require("./models/product");
 
 /**
  * Known API routes and their allowed methods
@@ -74,6 +75,16 @@ const matchUserId = (url) => {
 	return matchIdRoute(url, "users");
 };
 
+/**
+ * Does the URL match /api/products/{id}
+ *
+ * @param {string} url - filePath
+ * @returns {boolean} - returns true if urls contains path to users id otherwise false
+ */
+const matchProductId = (url) => {
+	return matchIdRoute(url, "products");
+};
+
 
 /**
  * Handles all app RESTfull requests calls
@@ -93,7 +104,7 @@ const handleRequest = async (request, response) => {
 			filePath === "/" || filePath === "" ? "index.html" : filePath;
 		return renderPublic(fileName, response);
 	}
-
+	
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
@@ -111,18 +122,18 @@ const handleRequest = async (request, response) => {
 				if (selectedUser) {
 					// GET - send user as response body
 					if (method.toUpperCase() === "GET") {
-						await viewUser(response, userId, adminUser);
+						return viewUser(response, userId, adminUser);
 					}
 					// PUT - Modify user role and send modified user as response body
 					if (method.toUpperCase() === "PUT") {
 						// Get update info
 						const update = await parseBodyJson(request);
-						await updateUser(response, userId, adminUser, update);
+						return updateUser(response, userId, adminUser, update);
 					}
 
 					// DELETE - Delete user by id and send deleted user as response body
 					if (method.toUpperCase() === "DELETE") {
-						await deleteUser(response, userId, adminUser);
+						return deleteUser(response, userId, adminUser);
 					}
 				} else {
 					return responseUtils.notFound(response);
@@ -135,6 +146,45 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
+	// view, update and delete a single product by ID (GET, PUT, DELETE)
+	if (matchProductId(filePath)) {
+		// TODO: 11.1 Implement 
+		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+
+		// Get admin cred or responde with 401 error
+		const adminUser = await auth.getCurrentUser(request);
+		if (adminUser) {
+			// Verify admin or respond with error 403
+			if (adminUser.role === "admin") {
+				// Get product id from path
+				const productId = filePath.split("/")[3];
+				
+				// GET - send user as response body
+				if (method.toUpperCase() === "GET") {
+					return viewProduct(response, productId);
+				}
+
+				// PUT - Modify user role and send modified user as response body
+				if (method.toUpperCase() === "PUT") {
+					// Get update info
+					const productUpdate = await parseBodyJson(request);
+					return updateUser(response, userId, productUpdate);
+				}
+
+				// DELETE - Delete user by id and send deleted user as response body
+				if (method.toUpperCase() === "DELETE") {
+					return deleteProduct(response, productId);
+				}
+			} else {
+				return responseUtils.forbidden(response);
+			}
+		} else {
+			return responseUtils.basicAuthChallenge(response);
+		}
+	}
+
+
+	
 	// Default to 404 Not Found if unknown url
 	if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
 
@@ -163,7 +213,7 @@ const handleRequest = async (request, response) => {
 			if (adminUser.role === "admin") {
 				// TODO: 8.3 Return all users as JSON
 				// Get users and send it as reponse body
-				await getAllUsers(response);
+				return getAllUsers(response);
 			} else {
 				return responseUtils.forbidden(response);
 			}
@@ -185,7 +235,7 @@ const handleRequest = async (request, response) => {
 		// TODO: 8.3 Implement registration
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 		const userData = await parseBodyJson(request);
-		await registerUser(response, userData);
+		return registerUser(response, userData);
 	}
 
 	// Get all products
@@ -197,12 +247,15 @@ const handleRequest = async (request, response) => {
 			// User authorization
 			if (user.role === "admin" || user.role === "customer") {
 				// Get all products as JSON
-				await getAllProducts(response);
+				return getAllProducts(response);
 			}
 		} else {
 			return responseUtils.basicAuthChallenge(response);
 		}
 	}
+
+	
+
 };
 
 module.exports = { handleRequest };

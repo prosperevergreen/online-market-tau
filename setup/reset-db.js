@@ -11,10 +11,10 @@ const products = require('./products.json').map(product => ({ ...product }));
 (async () => {
   connectDB();
 
-  try {
-    const Order = require('../models/order');
-    await Order.deleteMany({});
-  } catch (error) {}
+  // try {
+  //   const Order = require('../models/order');
+  //   await Order.deleteMany({});
+  // } catch (error) {}
 
   try {
     const Product = require('../models/product');

@@ -86,7 +86,7 @@ const updateUser = async (response, userId, currentUser, userData) => {
 };
 
 /**
- * Send user data as JSON
+ * Get user data as JSON
  *
  * @param {http.ServerResponse} response - server response object to GET api/users/userID
  * @param {string} userId - id of the requested user

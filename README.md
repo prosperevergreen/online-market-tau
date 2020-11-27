@@ -3,14 +3,14 @@
 Member1:  Kaisa Sormunen, kaisa.sormunen@tuni.fi, 439656, 
 resposible for: TODO, short description of duties 
 
-Member2:  name, email, student ID, 
+Member2:  Prosper Evergreen, prosper.evergreen@tuni.fi, 050542738, 
 resposible for: TODO, short description of duties 
 
 
 
 # WebDev1 coursework assignment
 
-A web shop with vanilla HTML, CSS.
+A web shop with vanilla JS, HTML & CSS.
 
 
 ### The project structure
