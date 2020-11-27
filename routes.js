@@ -202,58 +202,77 @@ const handleRequest = async (request, response) => {
 		return responseUtils.contentTypeNotAcceptable(response);
 	}
 
-	// GET all users
-	if (filePath === "/api/users" && method.toUpperCase() === "GET") {
-		// TODO: 8.4 Add authentication (only allowed to users with role "admin")
+	if (filePath === "/api/users") {
+		// GET all users
+		if (method.toUpperCase() === "GET") {
+			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
 
-		// Get admin cred or responde with 401 error
-		const adminUser = await auth.getCurrentUser(request);
-		if (adminUser) {
-			// Verify admin or resonde with error 403
-			if (adminUser.role === "admin") {
-				// TODO: 8.3 Return all users as JSON
-				// Get users and send it as reponse body
-				return getAllUsers(response);
+			// Get admin cred or responde with 401 error
+			const adminUser = await auth.getCurrentUser(request);
+			if (adminUser) {
+				// Verify admin or resonde with error 403
+				if (adminUser.role === "admin") {
+					// TODO: 8.3 Return all users as JSON
+					// Get users and send it as reponse body
+					return getAllUsers(response);
+				} else {
+					return responseUtils.forbidden(response);
+				}
 			} else {
-				return responseUtils.forbidden(response);
+				return responseUtils.basicAuthChallenge(response);
 			}
-		} else {
-			return responseUtils.basicAuthChallenge(response);
-		}
-	}
-
-	// register new user
-	if (filePath === "/api/register" && method.toUpperCase() === "POST") {
-		// Fail if not a JSON request
-		if (!isJson(request)) {
-			return responseUtils.badRequest(
-				response,
-				"Invalid Content-Type. Expected application/json"
-			);
 		}
 
-		// TODO: 8.3 Implement registration
-		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-		const userData = await parseBodyJson(request);
-		return registerUser(response, userData);
-	}
-
-	// Get all products
-	if (filePath === "/api/products" && method.toUpperCase() === "GET") {
-		// User authentication
-		const user = await auth.getCurrentUser(request);
-
-		if (user) {
-			// User authorization
-			if (user.role === "admin" || user.role === "customer") {
-				// Get all products as JSON
-				return getAllProducts(response);
+		// register new user
+		if (method.toUpperCase() === "POST") {
+			// Fail if not a JSON request
+			if (!isJson(request)) {
+				return responseUtils.badRequest(
+					response,
+					"Invalid Content-Type. Expected application/json"
+				);
 			}
-		} else {
-			return responseUtils.basicAuthChallenge(response);
+
+			// TODO: 8.3 Implement registration
+			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+			const userData = await parseBodyJson(request);
+			return registerUser(response, userData);
 		}
 	}
 
+	if (filePath === "/api/products") {
+		// Get all products
+		if (method.toUpperCase() === "GET") {
+			// User authentication
+			const user = await auth.getCurrentUser(request);
+
+			if (user) {
+				// User authorization
+				if (user.role === "admin" || user.role === "customer") {
+					// Get all products as JSON
+					return getAllProducts(response);
+				}
+			} else {
+				return responseUtils.basicAuthChallenge(response);
+			}
+		}
+
+		// create new product
+		if (method.toUpperCase() === "POST") {
+			// Fail if not a JSON request
+			if (!isJson(request)) {
+				return responseUtils.badRequest(
+					response,
+					"Invalid Content-Type. Expected application/json"
+				);
+			}
+
+			// TODO: 8.3 Implement registration
+			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+			const productData = await parseBodyJson(request);
+			return createProduct(response, productData);
+		}
+	}
 	
 
 };
