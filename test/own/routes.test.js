@@ -2,7 +2,7 @@ const chai = require("chai");
 const expect = chai.expect;
 const chaiHttp = require("chai-http");
 chai.use(chaiHttp);
-const User = require("../../models/user");
+// const User = require("../../../models/user");
 
 describe("Refactor Routes", () => {
 	it("Refactor handleRequest() in routes.js to implement registerUser() from controllers/users.js", async () => {

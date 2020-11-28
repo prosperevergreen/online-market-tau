@@ -19,11 +19,19 @@ const getAllProducts = async (response) => {
  *
  * @param {http.ServerResponse} response - server response object to POST /api/register
  * @param {object} productData - JSON data from request body
+ * @param {object} currentUser (mongoose document object)
  *
  * @returns { void }
  */
-const createProduct = async (response, productData) => {
+const createProduct = async (response, productData, currentUser) => {
 	// TODO: 10.1 Implement this
+
+
+	// Authorised User check
+	if(currentUser.role !== 'admin'){
+		responseUtils.forbidden(response);
+		return;
+	}
 
 	// Create product mongoose obj
 	const newProduct = new Product(productData);
@@ -45,6 +53,7 @@ const createProduct = async (response, productData) => {
  *
  * @param {http.ServerResponse} response - server response object to GET api/users/userID
  * @param {string} productId - id of the requested product
+ * @param {object} currentUser (mongoose document object)
  *
  * @returns { void }
  */
@@ -65,15 +74,23 @@ const viewProduct = async (response, productId) => {
 };
 
 /**
- * Update product and send updated product as JSON
+ * Modify product and send updated product as JSON
  *
  * @param {http.ServerResponse} response - server response object to PUT api/users/userID
  * @param {string} productId - id of the requested user
- * @param {object} productData JSON data from request body
+ * @param {object} productUpdate Product modify data from request body
+ * @param {object} currentUser (mongoose document object)
+ * 
  * @returns { void }
  */
-const updateUser = async (response, userId, productData) => {
+const modifyProduct = async (response, productId, productUpdate, currentUser) => {
 	// TODO: 10.1 Implement this
+
+	// Authorised User check
+	if(currentUser.role !== 'admin'){
+		responseUtils.forbidden(response);
+		return;
+	}
 
 	// Get user to be modified
 	const productToModify = await Product.findById(productId).exec();
@@ -85,11 +102,11 @@ const updateUser = async (response, userId, productData) => {
 	}
 
 	// update product and save changes
-	Object.entries(productData).map(([key, value]) => {
+	Object.entries(productUpdate).map(([key, value]) => {
 		productToModify[key] = value;
 	});
-	await userToModify.save();
-	responseUtils.sendJson(response, userToModify);
+	await productToModify.save();
+	responseUtils.sendJson(response, productToModify);
 };
 
 /**
@@ -97,14 +114,21 @@ const updateUser = async (response, userId, productData) => {
  *
  * @param {http.ServerResponse} response - server response object to DELETE api/users/userID
  * @param {string} productId - id of the requested product to delete
+ * @param {object} currentUser (mongoose document object)
  *
  * @returns { void }
  */
-const deleteProduct = async (response, productId) => {
+const deleteProduct = async (response, productId, currentUser) => {
 	// TODO: 10.1 Implement this
 
+	// Authorised User check
+	if(currentUser.role !== 'admin'){
+		responseUtils.forbidden(response);
+		return;
+	}
+
 	// Get product to be deleted
-	const productToDelete = await User.findById(productId).exec();
+	const productToDelete = await Product.findById(productId).exec();
 
 	// Check if product exists
 	if (productToDelete === null) {
@@ -113,8 +137,8 @@ const deleteProduct = async (response, productId) => {
 	}
 
 	// Delete user by id
-	await User.deleteOne({ _id: productId });
+	await Product.deleteOne({ _id: productId });
 	responseUtils.sendJson(response, productToDelete);
 };
 
-module.exports = { getAllProducts, createProduct, viewProduct, deleteProduct };
+module.exports = { getAllProducts, createProduct, viewProduct, modifyProduct, deleteProduct };

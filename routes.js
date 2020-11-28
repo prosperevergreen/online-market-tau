@@ -4,7 +4,13 @@ const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
-const { getAllProducts, createProduct, viewProduct, deleteProduct } = require("./controllers/products");
+const {
+	getAllProducts,
+	createProduct,
+	viewProduct,
+	modifyProduct,
+	deleteProduct,
+} = require("./controllers/products");
 const {
 	getAllUsers,
 	registerUser,
@@ -35,7 +41,7 @@ const allowedMethods = {
  *
  * @param {string} filePath - pathname of the request URL
  * @param {http.ServerResponse} response - response object
- * 
+ *
  * @returns { http.ServerResponse } - reponses with 204 if path is allowed or 404 otherwise.
  */
 const sendOptions = (filePath, response) => {
@@ -85,13 +91,12 @@ const matchProductId = (url) => {
 	return matchIdRoute(url, "products");
 };
 
-
 /**
  * Handles all app RESTfull requests calls
- * 
+ *
  * @param { http.IncomingMessage } request - RESTful requests to server
  * @param { http.ServerResponse } response - response object to the request
- * 
+ *
  * @returns { http.ServerResponse } - request response object
  */
 const handleRequest = async (request, response) => {
@@ -104,87 +109,81 @@ const handleRequest = async (request, response) => {
 			filePath === "/" || filePath === "" ? "index.html" : filePath;
 		return renderPublic(fileName, response);
 	}
-	
+
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-		// Get admin cred or responde with 401 error
-		const adminUser = await auth.getCurrentUser(request);
-		if (adminUser) {
-			// Verify admin or respond with error 403
-			if (adminUser.role === "admin") {
-				// Get user id from path
-				const userId = filePath.split("/")[3];
-				// Get user details by id
-				const selectedUser = await User.findById(userId).exec();
-				// check if user exists else return error 404
-				if (selectedUser) {
-					// GET - send user as response body
-					if (method.toUpperCase() === "GET") {
-						return viewUser(response, userId, adminUser);
-					}
-					// PUT - Modify user role and send modified user as response body
-					if (method.toUpperCase() === "PUT") {
-						// Get update info
-						const update = await parseBodyJson(request);
-						return updateUser(response, userId, adminUser, update);
-					}
+		// Get current cred or responde with 401 error
+		const currentUser = await auth.getCurrentUser(request);
 
-					// DELETE - Delete user by id and send deleted user as response body
-					if (method.toUpperCase() === "DELETE") {
-						return deleteUser(response, userId, adminUser);
-					}
-				} else {
-					return responseUtils.notFound(response);
-				}
-			} else {
-				return responseUtils.forbidden(response);
-			}
-		} else {
+		// Check user Authentication
+		if (currentUser === null) {
 			return responseUtils.basicAuthChallenge(response);
+		}
+
+		// Verify curent user is admin or respond with error 403
+		if (currentUser.role !== "admin") {
+			return responseUtils.forbidden(response);
+		}
+
+		const adminUser = currentUser;
+
+		// Get user id from path
+		const userId = filePath.split("/")[3];
+
+		// GET - send user as response body
+		if (method.toUpperCase() === "GET") {
+			return viewUser(response, userId, adminUser);
+		}
+
+		// PUT - Modify user role and send modified user as response body
+		if (method.toUpperCase() === "PUT") {
+			// Get update info
+			const update = await parseBodyJson(request);
+			return updateUser(response, userId, adminUser, update);
+		}
+
+		// DELETE - Delete user by id and send deleted user as response body
+		if (method.toUpperCase() === "DELETE") {
+			return deleteUser(response, userId, adminUser);
 		}
 	}
 
 	// view, update and delete a single product by ID (GET, PUT, DELETE)
 	if (matchProductId(filePath)) {
-		// TODO: 11.1 Implement 
+		// TODO: 11.1 Implement
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
 		// Get admin cred or responde with 401 error
-		const adminUser = await auth.getCurrentUser(request);
-		if (adminUser) {
-			// Verify admin or respond with error 403
-			if (adminUser.role === "admin") {
-				// Get product id from path
-				const productId = filePath.split("/")[3];
-				
-				// GET - send user as response body
-				if (method.toUpperCase() === "GET") {
-					return viewProduct(response, productId);
-				}
+		const currentUser = await auth.getCurrentUser(request);
 
-				// PUT - Modify user role and send modified user as response body
-				if (method.toUpperCase() === "PUT") {
-					// Get update info
-					const productUpdate = await parseBodyJson(request);
-					return updateUser(response, userId, productUpdate);
-				}
-
-				// DELETE - Delete user by id and send deleted user as response body
-				if (method.toUpperCase() === "DELETE") {
-					return deleteProduct(response, productId);
-				}
-			} else {
-				return responseUtils.forbidden(response);
-			}
-		} else {
+		// Verify user cred or responde with 401 error
+		if (currentUser === null) {
 			return responseUtils.basicAuthChallenge(response);
+		}
+
+		// Get product Id from path
+		const productId = filePath.split("/")[3];
+
+		// GET - send user as response body
+		if (method.toUpperCase() === "GET") {
+			return viewProduct(response, productId);
+		}
+
+		// PUT - Modify user role and send modified user as response body
+		if (method.toUpperCase() === "PUT") {
+			// Get update info
+			const productUpdate = await parseBodyJson(request);
+			return modifyProduct(response, userId, productUpdate, currentUser);
+		}
+
+		// DELETE - Delete user by id and send deleted user as response body
+		if (method.toUpperCase() === "DELETE") {
+			return deleteProduct(response, productId, currentUser);
 		}
 	}
 
-
-	
 	// Default to 404 Not Found if unknown url
 	if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
 
@@ -203,26 +202,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/users") {
-		// GET all users
-		if (method.toUpperCase() === "GET") {
-			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
-
-			// Get admin cred or responde with 401 error
-			const adminUser = await auth.getCurrentUser(request);
-			if (adminUser) {
-				// Verify admin or resonde with error 403
-				if (adminUser.role === "admin") {
-					// TODO: 8.3 Return all users as JSON
-					// Get users and send it as reponse body
-					return getAllUsers(response);
-				} else {
-					return responseUtils.forbidden(response);
-				}
-			} else {
-				return responseUtils.basicAuthChallenge(response);
-			}
-		}
-
 		// register new user
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
@@ -238,23 +217,47 @@ const handleRequest = async (request, response) => {
 			const userData = await parseBodyJson(request);
 			return registerUser(response, userData);
 		}
+
+		// GET all users
+		if (method.toUpperCase() === "GET") {
+			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
+
+			// Get current user cred
+			const currentUser = await auth.getCurrentUser(request);
+
+			// Verify user cred or responde with 401 error
+			if (currentUser === null) {
+				return responseUtils.basicAuthChallenge(response);
+			}
+
+			// Verify user is admin or resonde with error 403
+			if (currentUser.role !== "admin") {
+				return responseUtils.forbidden(response);
+			}
+
+			// Get users and send it as reponse body
+			return getAllUsers(response);
+		}
 	}
 
 	if (filePath === "/api/products") {
+		// User authentication
+		const currentUser = await auth.getCurrentUser(request);
+
+		// Verify user cred or responde with 401 error
+		if (currentUser === null) {
+			return responseUtils.basicAuthChallenge(response);
+		}
+
 		// Get all products
 		if (method.toUpperCase() === "GET") {
-			// User authentication
-			const user = await auth.getCurrentUser(request);
 
-			if (user) {
-				// User authorization
-				if (user.role === "admin" || user.role === "customer") {
-					// Get all products as JSON
-					return getAllProducts(response);
-				}
-			} else {
-				return responseUtils.basicAuthChallenge(response);
+			// Authorised User check
+			if (currentUser.role !== "admin" && currentUser.role !== "customer") {
+				return responseUtils.forbidden(response);
 			}
+
+			return getAllProducts(response);
 		}
 
 		// create new product
@@ -267,14 +270,11 @@ const handleRequest = async (request, response) => {
 				);
 			}
 
-			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const productData = await parseBodyJson(request);
-			return createProduct(response, productData);
+			return createProduct(response, productData, currentUser);
 		}
 	}
-	
-
 };
 
 module.exports = { handleRequest };

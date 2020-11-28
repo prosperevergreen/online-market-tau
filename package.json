@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "coverage": "nyc --reporter=lcov --reporter=html --reporter=json mocha --require test/setup.test.js --ignore 'test/8.3/**/*.js' --ignore 'test/8.4/**/*.js' --ignore 'test/8.5/**/*.js' --ignore 'test/9.1/**/*.js' --ignore 'test/9.5/**/*.js' --ignore 'test/10.1/**/*.js' --ignore 'test/models/env.test.js'",
+    "coverage-own": "nyc --reporter=lcov --reporter=html --reporter=json mocha --require test/setup.test.js --exit --timeout 10000 --recursive test/own",
     "nodemon": "nodemon index.js",
     "reset-db": "node ./setup/reset-db.js",
     "create-orders": "node ./setup/create-orders.js",
@@ -20,7 +21,8 @@
     "test-9.4": "mocha --exit --timeout 10000 --recursive test/9.5/models",
     "test-9.5": "mocha --require test/9.5/setup.test.js --exit --timeout 10000 --recursive test/9.5",
     "test-10.1": "mocha --require test/10.1/setup.test.js --exit --timeout 10000 --recursive test/10.1",
-    "test": "mocha --require test/setup.test.js --ignore 'test/8.3/**/*.js' --ignore 'test/8.4/**/*.js' --ignore 'test/8.5/**/*.js' --ignore 'test/9.1/**/*.js' --ignore 'test/9.5/**/*.js' --ignore 'test/10.1/**/*.js'"
+    "test": "mocha --require test/setup.test.js --ignore 'test/8.3/**/*.js' --ignore 'test/8.4/**/*.js' --ignore 'test/8.5/**/*.js' --ignore 'test/9.1/**/*.js' --ignore 'test/9.5/**/*.js' --ignore 'test/10.1/**/*.js'",
+    "test-own": "mocha --require test/setup.test.js --exit --timeout 10000 --recursive test/own"
   },
   "keywords": [],
   "author": "",
