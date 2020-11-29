@@ -18,6 +18,9 @@ const {
 	viewUser,
 	updateUser,
 } = require("./controllers/users");
+const {
+	getAllOrders
+} = require("./controllers/orders");
 // Require user model
 const User = require("./models/user");
 const Product = require("./models/product");
@@ -34,6 +37,7 @@ const allowedMethods = {
 	//Added routes for products and cart:
 	"/api/products": ["GET"],
 	"/api/cart": ["GET"],
+   "/api/orders" : ["GET"]
 };
 
 /**
@@ -275,6 +279,23 @@ const handleRequest = async (request, response) => {
 			return createProduct(response, productData, currentUser);
 		}
 	}
+
+   if (filePath === "/api/orders") {
+      const currentUser = await auth.getCurrentUser(request);
+
+      if (currentUser === null) {
+         return responseUtils.basicAuthChallenge(response);
+      }
+
+      if (method.toUpperCase() === "GET"){
+         if (currentUser.role.toLowerCase() === "admin"){
+            return getAllOrders(response);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+   }
 };
 
 module.exports = { handleRequest };
