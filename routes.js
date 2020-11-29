@@ -21,6 +21,8 @@ const {
 const {
 	getAllOrders,
    getAllUserOrders,
+   getAnyOrder,
+   getOneOrder,
    createNewOrder
 } = require("./controllers/orders");
 // Require user model
@@ -98,6 +100,16 @@ const matchProductId = (url) => {
 };
 
 /**
+ * Does the URL match /api/orders/{id}
+ *
+ * @param {string} url - filePath
+ * @returns {boolean} - returns true if urls contains path to users id otherwise false
+ */
+const matchOrderId = (url) => {
+   return matchIdRoute(url, "orders");
+}
+
+/**
  * Handles all app RESTfull requests calls
  *
  * @param { http.IncomingMessage } request - RESTful requests to server
@@ -120,7 +132,7 @@ const handleRequest = async (request, response) => {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-		// Get current cred or responde with 401 error
+		// Get current cred or respond with 401 error
 		const currentUser = await auth.getCurrentUser(request);
 
 		// Check user Authentication
@@ -189,6 +201,28 @@ const handleRequest = async (request, response) => {
 			return deleteProduct(response, productId, currentUser);
 		}
 	}
+
+   if (matchOrderId(filePath)) {
+      const orderId = filePath.split("/")[3];
+
+      const currentUser = await auth.getCurrentUser(request);
+
+      if (currentUser === null) {
+         return responseUtils.basicAuthChallenge(response);
+      }
+
+      if (method.toUpperCase() === "GET"){
+         if(currentUser.role === "admin"){
+            return getAnyOrder(response, orderId);
+         }
+         else if (currentUser.role === "customer"){
+            return getOneOrder(response, orderId, currentUser);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+   }
 
 	// Default to 404 Not Found if unknown url
 	if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
@@ -290,10 +324,10 @@ const handleRequest = async (request, response) => {
       }
 
       if (method.toUpperCase() === "GET"){
-         if (currentUser.role.toLowerCase() === "admin"){
+         if (currentUser.role === "admin"){
             return getAllOrders(response);
          }
-         else if(currentUser.role.toLowerCase() === "customer"){
+         else if(currentUser.role === "customer"){
             return getAllUserOrders(response, currentUser);
          }
          else{
@@ -302,7 +336,7 @@ const handleRequest = async (request, response) => {
       }
 
       if (method.toUpperCase() === "POST") {
-         if (currentUser.role.toLowerCase() === "customer") {
+         if (currentUser.role === "customer") {
             // Fail if not a JSON request
    			if (!isJson(request)) {
    				return responseUtils.badRequest(
