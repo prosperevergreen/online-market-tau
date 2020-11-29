@@ -19,7 +19,9 @@ const {
 	updateUser,
 } = require("./controllers/users");
 const {
-	getAllOrders
+	getAllOrders,
+   getAllUserOrders,
+   createNewOrder
 } = require("./controllers/orders");
 // Require user model
 const User = require("./models/user");
@@ -37,7 +39,7 @@ const allowedMethods = {
 	//Added routes for products and cart:
 	"/api/products": ["GET"],
 	"/api/cart": ["GET"],
-   "/api/orders" : ["GET"]
+   "/api/orders" : ["GET", "POST"]
 };
 
 /**
@@ -290,6 +292,26 @@ const handleRequest = async (request, response) => {
       if (method.toUpperCase() === "GET"){
          if (currentUser.role.toLowerCase() === "admin"){
             return getAllOrders(response);
+         }
+         else if(currentUser.role.toLowerCase() === "customer"){
+            return getAllUserOrders(response, currentUser);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+
+      if (method.toUpperCase() === "POST") {
+         if (currentUser.role.toLowerCase() === "customer") {
+            // Fail if not a JSON request
+   			if (!isJson(request)) {
+   				return responseUtils.badRequest(
+   					response,
+   					"Invalid Content-Type. Expected application/json"
+   				);
+   			}
+            const orderData = await parseBodyJson(request);
+            return createNewOrder(response, orderData, currentUser);
          }
          else{
             return responseUtils.forbidden(response);
