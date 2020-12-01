@@ -32,7 +32,7 @@ const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
-	"/api/products": ["GET"],
+	"/api/products": ["GET", "POST"],
 	"/api/cart": ["GET"],
 };
 
@@ -175,7 +175,7 @@ const handleRequest = async (request, response) => {
 		if (method.toUpperCase() === "PUT") {
 			// Get update info
 			const productUpdate = await parseBodyJson(request);
-			return modifyProduct(response, userId, productUpdate, currentUser);
+			return modifyProduct(response, productId, productUpdate, currentUser);
 		}
 
 		// DELETE - Delete user by id and send deleted user as response body
@@ -241,6 +241,7 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/products") {
+
 		// User authentication
 		const currentUser = await auth.getCurrentUser(request);
 
@@ -259,7 +260,6 @@ const handleRequest = async (request, response) => {
 
 			return getAllProducts(response);
 		}
-
 		// create new product
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
