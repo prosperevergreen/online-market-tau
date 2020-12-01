@@ -107,7 +107,7 @@ const matchProductId = (url) => {
  * Does the URL match /api/orders/{id}
  *
  * @param {string} url - filePath
- * @returns {boolean} - returns true if urls contains path to users id otherwise false
+ * @returns {boolean} - returns true if urls contains path to orders id otherwise false
  */
 const matchOrderId = (url) => {
    return matchIdRoute(url, "orders");
@@ -208,7 +208,6 @@ const handleRequest = async (request, response) => {
 			return deleteUser(response, userId, adminUser);
 		}
 	}
-
 	// view, update and delete a single product by ID (GET, PUT, DELETE)
 	if (matchProductId(filePath)) {
 		// TODO: 11.1 Implement

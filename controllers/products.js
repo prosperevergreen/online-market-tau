@@ -104,6 +104,13 @@ const modifyProduct = async (response, productId, productUpdate, currentUser) =>
 	Object.entries(productUpdate).map(([key, value]) => {
 		productToModify[key] = value;
 	});
+
+   const errorMsg = productToModify.validateSync();
+	if (errorMsg) {
+		responseUtils.badRequest(response, errorMsg["_message"]);
+		return;
+	}
+   
 	await productToModify.save();
 	responseUtils.sendJson(response, productToModify);
 };
