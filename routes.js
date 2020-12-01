@@ -241,8 +241,8 @@ const handleRequest = async (request, response) => {
 		return responseUtils.contentTypeNotAcceptable(response);
 	}
 
-	if (filePath === "/api/users") {
-		// register new user
+   if (filePath === "/api/register") {
+      // register new user
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
 			if (!isJson(request)) {
@@ -251,13 +251,15 @@ const handleRequest = async (request, response) => {
 					"Invalid Content-Type. Expected application/json"
 				);
 			}
-
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const userData = await parseBodyJson(request);
 			return registerUser(response, userData);
 		}
 
+   }
+
+	if (filePath === "/api/users") {
 		// GET all users
 		if (method.toUpperCase() === "GET") {
 			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
@@ -309,6 +311,9 @@ const handleRequest = async (request, response) => {
 					"Invalid Content-Type. Expected application/json"
 				);
 			}
+         if (currentUser.role !== "admin"){
+            return responseUtils.forbidden(response);
+         }
 
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const productData = await parseBodyJson(request);
