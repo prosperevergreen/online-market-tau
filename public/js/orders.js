@@ -31,11 +31,11 @@ const setProductView = (template, product, count) => {
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
-	productPrice.innerText = product.price;
+	productPrice.innerText = `${product.price}€`;
 
    const productCount = clone.querySelector(".product-count");
    productCount.id = `count-${product._id}`;
-   productCount.innerText = count;
+   productCount.innerText = `Order contains ${count} pieces of this product.`;
 
 	return clone;
 };
