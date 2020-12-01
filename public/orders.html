@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Orders</title>
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar">
+        <ul class="nav-links">
+          <li><a href="index.html">Front Page</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="users.html">List Users</a></li>
+          <li><a href="products.html">List Products</a></li>
+          <li><a href="cart.html">Shopping Cart</a></li>
+          <li><a href="orders.html">View orders</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h1>Orders</h1>
+      <div id="notifications-container"></div>
+      <div id="orders-container"></div>
+    </main>
+    <footer>
+      <p>Copyright &copy; 2020 diipadaa etc etc.</p>
+    </footer>
+    <template id="order-template">
+      <div class="item-row">
+        <h3 class="order-id">OrderId</h3>
+        <div class="items"></div>
+      </div>
+
+    </template>
+    <template id="product-template">
+      <div class="item-row">
+        <h3 class="product-name"></h3>
+        <p class="product-description"></p>
+        <p class="product-price"></p>
+        <p class="product-count"></p>
+      </div>
+    </template>
+    <script src="js/utils.js"></script>
+    <script src="js/orders.js"></script>
+  </body>
+</html>

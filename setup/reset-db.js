@@ -21,7 +21,7 @@ const products = require('./products.json').map(product => ({ ...product }));
     await Product.deleteMany({});
     await Product.create(products);
     console.log('Created products');
-  } catch (error) {}
+} catch (error) {}
 
   await User.deleteMany({});
   await User.create(users);
