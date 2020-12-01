@@ -40,7 +40,7 @@ const orderSchema = new Schema({
   items : {
      type: [orderedItemSchema],
      required: true,
-     minlength: 1,
+     validate: arr => arr.length > 0
   }
 });
 

@@ -18,6 +18,13 @@ const {
 	viewUser,
 	updateUser,
 } = require("./controllers/users");
+const {
+	getAllOrders,
+   getAllUserOrders,
+   getAnyOrder,
+   getOneOrder,
+   createNewOrder
+} = require("./controllers/orders");
 // Require user model
 const User = require("./models/user");
 const Product = require("./models/product");
@@ -34,6 +41,11 @@ const allowedMethods = {
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
 	"/api/cart": ["GET"],
+   "/api/orders" : ["GET", "POST"],
+
+   "/api/users/{id}":["GET", "PUT","DELETE"],
+   "/api/products/{id}":["GET","PUT","DELETE"],
+   "/api/orders/{id}":["GET"]
 };
 
 /**
@@ -92,6 +104,16 @@ const matchProductId = (url) => {
 };
 
 /**
+ * Does the URL match /api/orders/{id}
+ *
+ * @param {string} url - filePath
+ * @returns {boolean} - returns true if urls contains path to users id otherwise false
+ */
+const matchOrderId = (url) => {
+   return matchIdRoute(url, "orders");
+}
+
+/**
  * Handles all app RESTfull requests calls
  *
  * @param { http.IncomingMessage } request - RESTful requests to server
@@ -110,11 +132,48 @@ const handleRequest = async (request, response) => {
 		return renderPublic(fileName, response);
 	}
 
+   // See: http://restcookbook.com/HTTP%20Methods/options/
+   if (method.toUpperCase() === "OPTIONS"){
+      return sendOptions(filePath, response);
+   }
+   if (matchUserId(filePath) ||
+   matchOrderId(filePath) ||
+   matchProductId(filePath)){
+      const pathBodyParts = filePath.split('/');
+      pathBodyParts.pop();
+      pathBodyParts.push("{id}")
+      const idlessPath = pathBodyParts.join('/');
+
+      // Default to 404 Not Found if unknown url
+      if (!(idlessPath in allowedMethods)) return responseUtils.notFound(response);
+
+
+      // Check for allowable methods
+      if (!allowedMethods[idlessPath].includes(method.toUpperCase())) {
+         return responseUtils.methodNotAllowed(response);
+      }
+   }
+   else{
+      // Default to 404 Not Found if unknown url
+      if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
+
+
+      // Check for allowable methods
+      if (!allowedMethods[filePath].includes(method.toUpperCase())) {
+         return responseUtils.methodNotAllowed(response);
+      }
+   }
+
+   // Require a correct accept header (require 'application/json' or '*/*')
+   if (!acceptsJson(request)) {
+      return responseUtils.contentTypeNotAcceptable(response);
+   }
+
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-		// Get current cred or responde with 401 error
+		// Get current cred or respond with 401 error
 		const currentUser = await auth.getCurrentUser(request);
 
 		// Check user Authentication
@@ -184,25 +243,31 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
-	// Default to 404 Not Found if unknown url
-	if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
+   if (matchOrderId(filePath)) {
+      const orderId = filePath.split("/")[3];
 
-	// See: http://restcookbook.com/HTTP%20Methods/options/
-	if (method.toUpperCase() === "OPTIONS")
-		return sendOptions(filePath, response);
+      const currentUser = await auth.getCurrentUser(request);
 
-	// Check for allowable methods
-	if (!allowedMethods[filePath].includes(method.toUpperCase())) {
-		return responseUtils.methodNotAllowed(response);
-	}
+      if (currentUser === null) {
+         return responseUtils.basicAuthChallenge(response);
+      }
 
-	// Require a correct accept header (require 'application/json' or '*/*')
-	if (!acceptsJson(request)) {
-		return responseUtils.contentTypeNotAcceptable(response);
-	}
+      if (method.toUpperCase() === "GET"){
+         if(currentUser.role === "admin"){
+            return getAnyOrder(response, orderId);
+         }
+         else if (currentUser.role === "customer"){
+            return getOneOrder(response, orderId, currentUser);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+   }
 
-	if (filePath === "/api/users") {
-		// register new user
+
+   if (filePath === "/api/register") {
+      // register new user
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
 			if (!isJson(request)) {
@@ -211,13 +276,15 @@ const handleRequest = async (request, response) => {
 					"Invalid Content-Type. Expected application/json"
 				);
 			}
-
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const userData = await parseBodyJson(request);
 			return registerUser(response, userData);
 		}
 
+   }
+
+	if (filePath === "/api/users") {
 		// GET all users
 		if (method.toUpperCase() === "GET") {
 			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
@@ -269,12 +336,51 @@ const handleRequest = async (request, response) => {
 					"Invalid Content-Type. Expected application/json"
 				);
 			}
-
+         if (currentUser.role !== "admin"){
+            return responseUtils.forbidden(response);
+         }
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const productData = await parseBodyJson(request);
 			return createProduct(response, productData, currentUser);
 		}
 	}
+
+   if (filePath === "/api/orders") {
+      const currentUser = await auth.getCurrentUser(request);
+
+      if (currentUser === null) {
+         return responseUtils.basicAuthChallenge(response);
+      }
+
+      if (method.toUpperCase() === "GET"){
+         if (currentUser.role === "admin"){
+            return getAllOrders(response);
+         }
+         else if(currentUser.role === "customer"){
+            return getAllUserOrders(response, currentUser);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+
+      if (method.toUpperCase() === "POST") {
+         if (currentUser.role === "customer") {
+            // Fail if not a JSON request
+   			if (!isJson(request)) {
+   				return responseUtils.badRequest(
+   					response,
+   					"Invalid Content-Type. Expected application/json"
+   				);
+   			}
+            const orderData = await parseBodyJson(request);
+            return createNewOrder(response, orderData, currentUser);
+         }
+         else{
+            return responseUtils.forbidden(response);
+         }
+      }
+   }
 };
 
 module.exports = { handleRequest };
