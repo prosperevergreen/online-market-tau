@@ -53,7 +53,6 @@ const createProduct = async (response, productData, currentUser) => {
  *
  * @param {http.ServerResponse} response - server response object to GET api/users/userID
  * @param {string} productId - id of the requested product
- * @param {object} currentUser (mongoose document object)
  *
  * @returns { void }
  */
@@ -80,7 +79,7 @@ const viewProduct = async (response, productId) => {
  * @param {string} productId - id of the requested user
  * @param {object} productUpdate Product modify data from request body
  * @param {object} currentUser (mongoose document object)
- * 
+ *
  * @returns { void }
  */
 const modifyProduct = async (response, productId, productUpdate, currentUser) => {

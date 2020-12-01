@@ -4,7 +4,7 @@ const Order = require("../models/order");
 /**
  * Gets all orders from database and responds with JSON.
  *
- * @param response - html response
+ * @param {object} response - html response
  */
 const getAllOrders = async (response) => {
    //Get all orders from database
@@ -15,8 +15,8 @@ const getAllOrders = async (response) => {
 /**
  * Gets all orders of the current user from database and responds with JSON.
  *
- * @param response - html response
- * @param currentUser - mongoose model object
+ * @param {object} response - html response
+ * @param {object} currentUser - mongoose model object
  */
 const getAllUserOrders = async (response, currentUser) => {
    //Get all orders from database that belong to current user.
@@ -28,8 +28,8 @@ const getAllUserOrders = async (response, currentUser) => {
  * Gets any one order from database. Allowed to admins. Responds order as JSON.
  * If order is not found, responds with 404 not found.
  *
- * @param response - html response
- * @param orderId - id of the order given in path by user
+ * @param {object} response - html response
+ * @param {string} orderId - id of the order given in path by user
  */
 const getAnyOrder = async (response, orderId) => {
    const theOrder = await Order.findById(orderId).exec();
@@ -45,9 +45,9 @@ const getAnyOrder = async (response, orderId) => {
  * Gets one order from database. Responds it as JSON if it is the customers own order.
  * If order is not found, responds with 404 not found.
  *
- * @param response - html response
- * @param orderId - id of the order given in path by user
- * @param currentUser - mongoose model object
+ * @param {object} response - html response
+ * @param {string} orderId - id of the order given in path by user
+ * @param {object} currentUser - mongoose model object
  */
 const getOneOrder = async (response, orderId, currentUser) => {
    const theOrder = await Order.findById(orderId).exec();
@@ -63,8 +63,9 @@ const getOneOrder = async (response, orderId, currentUser) => {
 /**
  * Creates a new order and if its valid, saves it to the database.
  *
- * @param response - html response
- * @param orderData - data of the order to be saved
+ * @param {object} response - html response
+ * @param {object} orderData - data of the order to be saved in JSON
+ * @param {object} currentUser (mongoose document object)
  */
 const createNewOrder = async (response, orderData, currentUser) => {
    const id = currentUser._id;
