@@ -39,9 +39,13 @@ const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
-	"/api/products": ["GET"],
+	"/api/products": ["GET", "POST"],
 	"/api/cart": ["GET"],
-   "/api/orders" : ["GET", "POST"]
+   "/api/orders" : ["GET", "POST"],
+
+   "/api/users/{id}":["GET", "PUT","DELETE"],
+   "/api/products/{id}":["GET","PUT","DELETE"],
+   "/api/orders/{id}":["GET"]
 };
 
 /**
@@ -127,6 +131,43 @@ const handleRequest = async (request, response) => {
 			filePath === "/" || filePath === "" ? "index.html" : filePath;
 		return renderPublic(fileName, response);
 	}
+
+   // See: http://restcookbook.com/HTTP%20Methods/options/
+   if (method.toUpperCase() === "OPTIONS"){
+      return sendOptions(filePath, response);
+   }
+   if (matchUserId(filePath) ||
+   matchOrderId(filePath) ||
+   matchProductId(filePath)){
+      const pathBodyParts = filePath.split('/');
+      pathBodyParts.pop();
+      pathBodyParts.push("{id}")
+      const idlessPath = pathBodyParts.join('/');
+
+      // Default to 404 Not Found if unknown url
+      if (!(idlessPath in allowedMethods)) return responseUtils.notFound(response);
+
+
+      // Check for allowable methods
+      if (!allowedMethods[idlessPath].includes(method.toUpperCase())) {
+         return responseUtils.methodNotAllowed(response);
+      }
+   }
+   else{
+      // Default to 404 Not Found if unknown url
+      if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
+
+
+      // Check for allowable methods
+      if (!allowedMethods[filePath].includes(method.toUpperCase())) {
+         return responseUtils.methodNotAllowed(response);
+      }
+   }
+
+   // Require a correct accept header (require 'application/json' or '*/*')
+   if (!acceptsJson(request)) {
+      return responseUtils.contentTypeNotAcceptable(response);
+   }
 
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
@@ -224,22 +265,6 @@ const handleRequest = async (request, response) => {
       }
    }
 
-	// Default to 404 Not Found if unknown url
-	if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
-
-	// See: http://restcookbook.com/HTTP%20Methods/options/
-	if (method.toUpperCase() === "OPTIONS")
-		return sendOptions(filePath, response);
-
-	// Check for allowable methods
-	if (!allowedMethods[filePath].includes(method.toUpperCase())) {
-		return responseUtils.methodNotAllowed(response);
-	}
-
-	// Require a correct accept header (require 'application/json' or '*/*')
-	if (!acceptsJson(request)) {
-		return responseUtils.contentTypeNotAcceptable(response);
-	}
 
    if (filePath === "/api/register") {
       // register new user
@@ -314,7 +339,6 @@ const handleRequest = async (request, response) => {
          if (currentUser.role !== "admin"){
             return responseUtils.forbidden(response);
          }
-
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const productData = await parseBodyJson(request);
 			return createProduct(response, productData, currentUser);
