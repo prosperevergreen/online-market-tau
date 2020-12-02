@@ -20,10 +20,10 @@ const {
 } = require("./controllers/users");
 const {
 	getAllOrders,
-   getAllUserOrders,
-   getAnyOrder,
-   getOneOrder,
-   createNewOrder
+	getAllUserOrders,
+	getAnyOrder,
+	getOneOrder,
+	createNewOrder,
 } = require("./controllers/orders");
 // Require user model
 const User = require("./models/user");
@@ -41,11 +41,11 @@ const allowedMethods = {
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
 	"/api/cart": ["GET"],
-   "/api/orders" : ["GET", "POST"],
+	"/api/orders": ["GET", "POST"],
 
-   "/api/users/{id}":["GET", "PUT","DELETE"],
-   "/api/products/{id}":["GET","PUT","DELETE"],
-   "/api/orders/{id}":["GET"]
+	"/api/users/{id}": ["GET", "PUT", "DELETE"],
+	"/api/products/{id}": ["GET", "PUT", "DELETE"],
+	"/api/orders/{id}": ["GET"],
 };
 
 /**
@@ -110,8 +110,8 @@ const matchProductId = (url) => {
  * @returns {boolean} - returns true if urls contains path to users id otherwise false
  */
 const matchOrderId = (url) => {
-   return matchIdRoute(url, "orders");
-}
+	return matchIdRoute(url, "orders");
+};
 
 /**
  * Handles all app RESTfull requests calls
@@ -132,42 +132,37 @@ const handleRequest = async (request, response) => {
 		return renderPublic(fileName, response);
 	}
 
-   // See: http://restcookbook.com/HTTP%20Methods/options/
-   if (method.toUpperCase() === "OPTIONS"){
-      return sendOptions(filePath, response);
-   }
-   if (matchUserId(filePath) ||
-   matchOrderId(filePath) ||
-   matchProductId(filePath)){
-      const pathBodyParts = filePath.split('/');
-      pathBodyParts.pop();
-      pathBodyParts.push("{id}")
-      const idlessPath = pathBodyParts.join('/');
+	// See: http://restcookbook.com/HTTP%20Methods/options/
+	if (method.toUpperCase() === "OPTIONS") {
+		return sendOptions(filePath, response);
+	}
+	if (
+		matchUserId(filePath) ||
+		matchOrderId(filePath) ||
+		matchProductId(filePath)
+	) {
+		const pathBodyParts = filePath.split("/");
+		pathBodyParts.pop();
+		pathBodyParts.push("{id}");
+		const idlessPath = pathBodyParts.join("/");
 
-      // Default to 404 Not Found if unknown url
-      if (!(idlessPath in allowedMethods)) return responseUtils.notFound(response);
+		// Default to 404 Not Found if unknown url
+		if (!(idlessPath in allowedMethods))
+			return responseUtils.notFound(response);
 
+		// Check for allowable methods
+		if (!allowedMethods[idlessPath].includes(method.toUpperCase())) {
+			return responseUtils.methodNotAllowed(response);
+		}
+	} else {
+		// Default to 404 Not Found if unknown url
+		if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
 
-      // Check for allowable methods
-      if (!allowedMethods[idlessPath].includes(method.toUpperCase())) {
-         return responseUtils.methodNotAllowed(response);
-      }
-   }
-   else{
-      // Default to 404 Not Found if unknown url
-      if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
-
-
-      // Check for allowable methods
-      if (!allowedMethods[filePath].includes(method.toUpperCase())) {
-         return responseUtils.methodNotAllowed(response);
-      }
-   }
-
-   // Require a correct accept header (require 'application/json' or '*/*')
-   if (!acceptsJson(request)) {
-      return responseUtils.contentTypeNotAcceptable(response);
-   }
+		// Check for allowable methods
+		if (!allowedMethods[filePath].includes(method.toUpperCase())) {
+			return responseUtils.methodNotAllowed(response);
+		}
+	}
 
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
@@ -187,6 +182,11 @@ const handleRequest = async (request, response) => {
 		}
 
 		const adminUser = currentUser;
+
+		// Require a correct accept header (require 'application/json' or '*/*')
+		if (!acceptsJson(request)) {
+			return responseUtils.contentTypeNotAcceptable(response);
+		}
 
 		// Get user id from path
 		const userId = filePath.split("/")[3];
@@ -225,6 +225,11 @@ const handleRequest = async (request, response) => {
 		// Get product Id from path
 		const productId = filePath.split("/")[3];
 
+		// Require a correct accept header (require 'application/json' or '*/*')
+		if (!acceptsJson(request)) {
+			return responseUtils.contentTypeNotAcceptable(response);
+		}
+
 		// GET - send user as response body
 		if (method.toUpperCase() === "GET") {
 			return viewProduct(response, productId);
@@ -243,31 +248,38 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
-   if (matchOrderId(filePath)) {
-      const orderId = filePath.split("/")[3];
+	if (matchOrderId(filePath)) {
+		const orderId = filePath.split("/")[3];
 
-      const currentUser = await auth.getCurrentUser(request);
+		const currentUser = await auth.getCurrentUser(request);
 
-      if (currentUser === null) {
-         return responseUtils.basicAuthChallenge(response);
-      }
+		if (currentUser === null) {
+			return responseUtils.basicAuthChallenge(response);
+		}
 
-      if (method.toUpperCase() === "GET"){
-         if(currentUser.role === "admin"){
-            return getAnyOrder(response, orderId);
-         }
-         else if (currentUser.role === "customer"){
-            return getOneOrder(response, orderId, currentUser);
-         }
-         else{
-            return responseUtils.forbidden(response);
-         }
-      }
-   }
+		// Require a correct accept header (require 'application/json' or '*/*')
+		if (!acceptsJson(request)) {
+			return responseUtils.contentTypeNotAcceptable(response);
+		}
 
+		if (method.toUpperCase() === "GET") {
+			if (currentUser.role === "admin") {
+				return getAnyOrder(response, orderId);
+			} else if (currentUser.role === "customer") {
+				return getOneOrder(response, orderId, currentUser);
+			} else {
+				return responseUtils.forbidden(response);
+			}
+		}
+	}
 
-   if (filePath === "/api/register") {
-      // register new user
+	// Require a correct accept header (require 'application/json' or '*/*')
+	if (!acceptsJson(request)) {
+		return responseUtils.contentTypeNotAcceptable(response);
+	}
+
+	if (filePath === "/api/register") {
+		// register new user
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
 			if (!isJson(request)) {
@@ -281,8 +293,7 @@ const handleRequest = async (request, response) => {
 			const userData = await parseBodyJson(request);
 			return registerUser(response, userData);
 		}
-
-   }
+	}
 
 	if (filePath === "/api/users") {
 		// GET all users
@@ -308,7 +319,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/products") {
-
 		// User authentication
 		const currentUser = await auth.getCurrentUser(request);
 
@@ -319,7 +329,6 @@ const handleRequest = async (request, response) => {
 
 		// Get all products
 		if (method.toUpperCase() === "GET") {
-
 			// Authorised User check
 			if (currentUser.role !== "admin" && currentUser.role !== "customer") {
 				return responseUtils.forbidden(response);
@@ -336,51 +345,48 @@ const handleRequest = async (request, response) => {
 					"Invalid Content-Type. Expected application/json"
 				);
 			}
-         if (currentUser.role !== "admin"){
-            return responseUtils.forbidden(response);
-         }
+			if (currentUser.role !== "admin") {
+				return responseUtils.forbidden(response);
+			}
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const productData = await parseBodyJson(request);
 			return createProduct(response, productData, currentUser);
 		}
 	}
 
-   if (filePath === "/api/orders") {
-      const currentUser = await auth.getCurrentUser(request);
+	if (filePath === "/api/orders") {
+		const currentUser = await auth.getCurrentUser(request);
 
-      if (currentUser === null) {
-         return responseUtils.basicAuthChallenge(response);
-      }
+		if (currentUser === null) {
+			return responseUtils.basicAuthChallenge(response);
+		}
 
-      if (method.toUpperCase() === "GET"){
-         if (currentUser.role === "admin"){
-            return getAllOrders(response);
-         }
-         else if(currentUser.role === "customer"){
-            return getAllUserOrders(response, currentUser);
-         }
-         else{
-            return responseUtils.forbidden(response);
-         }
-      }
+		if (method.toUpperCase() === "GET") {
+			if (currentUser.role === "admin") {
+				return getAllOrders(response);
+			} else if (currentUser.role === "customer") {
+				return getAllUserOrders(response, currentUser);
+			} else {
+				return responseUtils.forbidden(response);
+			}
+		}
 
-      if (method.toUpperCase() === "POST") {
-         if (currentUser.role === "customer") {
-            // Fail if not a JSON request
-   			if (!isJson(request)) {
-   				return responseUtils.badRequest(
-   					response,
-   					"Invalid Content-Type. Expected application/json"
-   				);
-   			}
-            const orderData = await parseBodyJson(request);
-            return createNewOrder(response, orderData, currentUser);
-         }
-         else{
-            return responseUtils.forbidden(response);
-         }
-      }
-   }
+		if (method.toUpperCase() === "POST") {
+			if (currentUser.role === "customer") {
+				// Fail if not a JSON request
+				if (!isJson(request)) {
+					return responseUtils.badRequest(
+						response,
+						"Invalid Content-Type. Expected application/json"
+					);
+				}
+				const orderData = await parseBodyJson(request);
+				return createNewOrder(response, orderData, currentUser);
+			} else {
+				return responseUtils.forbidden(response);
+			}
+		}
+	}
 };
 
 module.exports = { handleRequest };

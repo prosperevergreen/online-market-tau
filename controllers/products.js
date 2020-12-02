@@ -77,12 +77,12 @@ const viewProduct = async (response, productId) => {
  *
  * @param {http.ServerResponse} response - server response object to PUT api/users/userID
  * @param {string} productId - id of the requested user
- * @param {object} productUpdate Product modify data from request body
+ * @param {object} modifyData Product modify data from request body
  * @param {object} currentUser (mongoose document object)
  *
  * @returns { void }
  */
-const modifyProduct = async (response, productId, productUpdate, currentUser) => {
+const modifyProduct = async (response, productId, modifyData, currentUser) => {
 	// TODO: 10.1 Implement this
 
 	// Authorised User check
@@ -100,8 +100,14 @@ const modifyProduct = async (response, productId, productUpdate, currentUser) =>
 		return;
 	}
 
+	if(modifyData.name === undefined || modifyData.name === "" || modifyData.price <= 0){
+		responseUtils.badRequest(response, "Product update not Valid");
+		return;
+	}
+
+	
 	// update product and save changes
-	Object.entries(productUpdate).map(([key, value]) => {
+	Object.entries(modifyData).map(([key, value]) => {
 		productToModify[key] = value;
 	});
 	await productToModify.save();

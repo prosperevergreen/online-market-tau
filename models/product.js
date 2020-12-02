@@ -23,7 +23,7 @@ const productSchema = new Schema({
 		type: Number,
 		required: true,
 		min: 0.01,
-		get: (val) => val.toFixed(2),
+		get: (val) => parseFloat(val.toFixed(2)),
 	},
 	// Adding product images to the Web store API and pages is a Level 2 development grader substitute
 	image: {
