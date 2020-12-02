@@ -16,6 +16,10 @@ const productsContainer = document.getElementById("products-container");
 const setProductView = (template, product) => {
 	const clone = template.content.cloneNode(true);
 
+   const productImage = clone.querySelector(".product-img");
+   productImage.id = `${product._id}`;
+   productImage.src = product.image;
+
 	const itemRow = clone.querySelector(".item-row");
 	itemRow.id = `${product._id}`;
 

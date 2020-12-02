@@ -118,7 +118,19 @@ button:hover {
   background-color: red;
 }
 
-.item-row {
+.card {
+   justify-content: center;
+   width: 50vw;
    border: solid black;
    margin: 3px;
+   padding: 5px;
+}
+.card > img {
+   width: 100%;
+   justify-content: center;
+}
+/* Items inside an order. */
+.inlay {
+   background: pink;
+   width: auto;
 }
