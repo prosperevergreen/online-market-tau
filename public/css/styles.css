@@ -117,3 +117,8 @@ button:hover {
 .background-red {
   background-color: red;
 }
+
+.item-row {
+   border: solid black;
+   margin: 3px;
+}
