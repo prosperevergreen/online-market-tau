@@ -149,6 +149,6 @@ const createNotification = (message, containerId, isSuccess = true) => {
 const removeElement = (containerId, elementId) => {
 	const container = document.getElementById(containerId);
 	container
-		.querySelectorAll(`#${elementId}`)
+		.querySelectorAll(`[id="${elementId}"]`)
 		.forEach((element) => element.remove());
 };
