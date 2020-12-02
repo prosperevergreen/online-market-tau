@@ -157,16 +157,43 @@ const handleRequest = async (request, response) => {
       // Default to 404 Not Found if unknown url
       if (!(filePath in allowedMethods)) return responseUtils.notFound(response);
 
-
       // Check for allowable methods
       if (!allowedMethods[filePath].includes(method.toUpperCase())) {
          return responseUtils.methodNotAllowed(response);
       }
    }
 
+   const currentUser = await auth.getCurrentUser(request);
+
    // Require a correct accept header (require 'application/json' or '*/*')
    if (!acceptsJson(request)) {
+      if(method.toUpperCase() === "PUT" && currentUser === null){
+         return responseUtils.basicAuthChallenge(response);
+      }
       return responseUtils.contentTypeNotAcceptable(response);
+   }
+
+   if (filePath === "/api/register") {
+      // register new user
+		if (method.toUpperCase() === "POST") {
+			// Fail if not a JSON request
+			if (!isJson(request)) {
+				return responseUtils.badRequest(
+					response,
+					"Invalid Content-Type. Expected application/json"
+				);
+			}
+			// TODO: 8.3 Implement registration
+			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+			const userData = await parseBodyJson(request);
+			return registerUser(response, userData);
+		}
+
+   }
+
+   // Verify user cred or respond with 401 error
+   if (currentUser === null) {
+      return responseUtils.basicAuthChallenge(response);
    }
 
 	if (matchUserId(filePath)) {
@@ -213,14 +240,6 @@ const handleRequest = async (request, response) => {
 		// TODO: 11.1 Implement
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-		// Get admin cred or responde with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Verify user cred or responde with 401 error
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		// Get product Id from path
 		const productId = filePath.split("/")[3];
 
@@ -245,12 +264,6 @@ const handleRequest = async (request, response) => {
    if (matchOrderId(filePath)) {
       const orderId = filePath.split("/")[3];
 
-      const currentUser = await auth.getCurrentUser(request);
-
-      if (currentUser === null) {
-         return responseUtils.basicAuthChallenge(response);
-      }
-
       if (method.toUpperCase() === "GET"){
          if(currentUser.role === "admin"){
             return getAnyOrder(response, orderId);
@@ -264,37 +277,10 @@ const handleRequest = async (request, response) => {
       }
    }
 
-
-   if (filePath === "/api/register") {
-      // register new user
-		if (method.toUpperCase() === "POST") {
-			// Fail if not a JSON request
-			if (!isJson(request)) {
-				return responseUtils.badRequest(
-					response,
-					"Invalid Content-Type. Expected application/json"
-				);
-			}
-			// TODO: 8.3 Implement registration
-			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-			const userData = await parseBodyJson(request);
-			return registerUser(response, userData);
-		}
-
-   }
-
 	if (filePath === "/api/users") {
 		// GET all users
 		if (method.toUpperCase() === "GET") {
 			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
-
-			// Get current user cred
-			const currentUser = await auth.getCurrentUser(request);
-
-			// Verify user cred or responde with 401 error
-			if (currentUser === null) {
-				return responseUtils.basicAuthChallenge(response);
-			}
 
 			// Verify user is admin or resonde with error 403
 			if (currentUser.role !== "admin") {
@@ -307,14 +293,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/products") {
-
-		// User authentication
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Verify user cred or responde with 401 error
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
 
 		// Get all products
 		if (method.toUpperCase() === "GET") {
@@ -345,11 +323,6 @@ const handleRequest = async (request, response) => {
 	}
 
    if (filePath === "/api/orders") {
-      const currentUser = await auth.getCurrentUser(request);
-
-      if (currentUser === null) {
-         return responseUtils.basicAuthChallenge(response);
-      }
 
       if (method.toUpperCase() === "GET"){
          if (currentUser.role === "admin"){
