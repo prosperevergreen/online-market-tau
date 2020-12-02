@@ -35,7 +35,8 @@ const setProductView = (template, product, count) => {
 
    const productCount = clone.querySelector(".product-count");
    productCount.id = `count-${product._id}`;
-   productCount.innerText = `Order contains ${count} pieces of this product.`;
+
+   productCount.innerText = `${count} in this order.`;
 
 	return clone;
 };

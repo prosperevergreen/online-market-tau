@@ -1,5 +1,7 @@
 * {
-  box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
 }
 
 body,
@@ -13,9 +15,10 @@ html {
 
 body {
   font-size: 1.6rem;
-  font-family: 'Montserrat';
+  font-family: 'Arial';
   display: grid;
   grid-template-rows: auto 1fr auto;
+  background-color: #E4F0F6;
 }
 
 header,
@@ -26,11 +29,24 @@ footer {
 
 header,
 footer {
-  background-color: #eee;
-}
+  background-color: #24581D;
+  color: #C2E3AB;
 
+}
+header{
+   display: flex;
+   justify-content: space-evenly;
+}
+header h1{
+   padding: 10px;
+}
+header a {
+   color: #C2E3AB;
+   text-decoration: none;
+}
 footer {
   font-size: 1.5em;
+
 }
 
 .navbar {
@@ -118,19 +134,6 @@ button:hover {
   background-color: red;
 }
 
-.card {
-   justify-content: center;
-   width: 50vw;
-   border: solid black;
-   margin: 3px;
-   padding: 5px;
-}
-.card > img {
-   width: 100%;
-   justify-content: center;
-}
-/* Items inside an order. */
-.inlay {
-   background: pink;
-   width: auto;
+.item-row{
+   margin: 5px 0px;
 }
