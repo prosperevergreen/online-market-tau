@@ -5,10 +5,8 @@ body{
 
 
 .card {
-   width: 50vw;
+   width: 25rem;
    height: auto;
-   margin: 22px;
-   padding: 5px;
    display: flex;
    flex-direction: column;
    justify-content: center;
@@ -36,18 +34,40 @@ body{
 }
 
 #users-container .card {
-      width: 20vw;
+      width: 25rem;
       padding: 30px 0px;
 }
 
+#users-container button{
+   margin: 10px 5px;
+   border-radius: 5px;
+}
+
+#products-container {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: space-between;
+}
+
+#products-container::after {
+   content: "";
+   flex: auto;
+
+}
+
 #products-container .card {
-   width: 50rem;
-   
+   width: 25rem;
+   height: 100%;
+   display: flex;
+   justify-content: space-between;
+   border-radius: none;
+   box-shadow: none;
 }
 
 #products-container .card > img {
-   width: 50rem;
-   margin: 0px 10px;
+   width: inherit;
+   margin: 10px 0px;
    justify-content: center;
    align-items: center;
+
 }
