@@ -65,7 +65,7 @@ describe('Routes', () => {
     return {
       name: generateRandomString(),
       price: Math.floor(Math.random() * 50000) / 100,
-      image: `http://www.images.com/${generateRandomString}.jpg`,
+      image: `http://www.images.com/${generateRandomString()}.jpg`,
       description: generateRandomString(75)
     };
   };
