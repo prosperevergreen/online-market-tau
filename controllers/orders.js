@@ -34,7 +34,7 @@ const getAllUserOrders = async (response, currentUser) => {
 const getAnyOrder = async (response, orderId) => {
    const theOrder = await Order.findById(orderId).exec();
    if(theOrder){
-      responseUtils.sendJson(response,theOrder);
+      responseUtils.sendJson(response, theOrder);
    }
    else{
       responseUtils.notFound(response);
@@ -53,7 +53,7 @@ const getOneOrder = async (response, orderId, currentUser) => {
    const theOrder = await Order.findById(orderId).exec();
 
    if(theOrder && theOrder.customerId === currentUser._id.toString()){
-      responseUtils.sendJson(response,theOrder);
+      responseUtils.sendJson(response, theOrder);
    }
    else{
       responseUtils.notFound(response);
