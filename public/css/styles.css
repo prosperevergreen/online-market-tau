@@ -18,7 +18,7 @@ body {
   font-family: 'Arial';
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background-color: #E4F0F6;
+  background-color: #F8FCF7;
 }
 
 header,
@@ -31,6 +31,7 @@ header,
 footer {
   background-color: #24581D;
   color: #C2E3AB;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.2);
 
 }
 header{
@@ -46,7 +47,7 @@ header a {
 }
 footer {
   font-size: 1.5em;
-
+  box-shadow: 0px 0 20px rgba(0,0,0,0.2);
 }
 
 .navbar {

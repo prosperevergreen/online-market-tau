@@ -31,7 +31,8 @@ const setProductView = (template, product, count) => {
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
-	productPrice.innerText = `${product.price}€`;
+	productPrice.innerText = `${product.price} €`;
+
 
    const productCount = clone.querySelector(".product-count");
    productCount.id = `count-${product._id}`;
@@ -48,16 +49,23 @@ const setOrderView = (template, order) => {
    itemRow.id = `${order._id}`;
 
    const orderId = clone.querySelector(".order-id");
-	orderId.id = `${order._id}`;
+	orderId.id = `order-${order._id}`;
 	orderId.innerText = order._id;
+
+   const pricesForTotal = [];
 
    const displayItems = clone.querySelector(".items");
    order.items.forEach((item, i) => {
       const itemsCount = item.quantity;
       const itemsProduct = item.product;
+      const price = item.product.price;
+      pricesForTotal.push(itemsCount * price);
       const orderedItem = setProductView(productTemplate, itemsProduct, itemsCount);
       displayItems.appendChild(orderedItem);
    })
+   const total = clone.querySelector(".order-total");
+   total.id = `total-${order._id}`
+   total.innerText = `Total: ${pricesForTotal.reduce((a,b) => a + b, 0).toFixed(2)} €`;
 
    return clone;
 }

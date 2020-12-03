@@ -26,7 +26,12 @@ const setupCartView = (template, product) => {
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
-	productPrice.innerText = product.price;
+	productPrice.innerText = `${product.price} €/unit`;
+
+   const productTotal = clone.querySelector(".product-total");
+   productTotal.id = `total-${product._id}`;
+   productTotal.innerText = `${(product.amount * product.price).toFixed(2)} €`;
+
 
 	const productAmount = clone.querySelector(".product-amount");
 	productAmount.id = `amount-${product._id}`;
@@ -37,7 +42,8 @@ const setupCartView = (template, product) => {
     // Setup click listener for plus button
 	plusButton.addEventListener(
 		"click",
-		increaseItemAmount({ productId: product._id, amountDiv: productAmount })
+		increaseItemAmount({ productId: product._id, amountDiv: productAmount,
+         totalEdit: {slot: productTotal, price: product.price} })
 	);
 
 	const minusButton = clone.querySelector(".cart-minus-button");
@@ -45,7 +51,8 @@ const setupCartView = (template, product) => {
     // Setup click listener for minus button
 	minusButton.addEventListener(
 		"click",
-		decreaseItemAmount({ productId: product._id, amountDiv: productAmount })
+		decreaseItemAmount({ productId: product._id, amountDiv: productAmount,
+         totalEdit: {slot: productTotal, price: product.price}})
 	);
 
 	return clone;
@@ -59,7 +66,7 @@ const setupCartView = (template, product) => {
  * @param {number} param0.amountDiv - the amount of the product in cart
  * @returns {Function} - function that increases the amount of the product in cart
  */
-function increaseItemAmount({ productId, amountDiv }) {
+function increaseItemAmount({ productId, amountDiv, totalEdit }) {
 /**
  * Increases amount of the product in cart with increaseProductCount()
  * and then updates display.
@@ -71,6 +78,8 @@ function increaseItemAmount({ productId, amountDiv }) {
 		increaseProductCount(productId);
 		// Update UI
 		amountDiv.innerText = `${getProductCountFromCart(productId)}x`;
+
+      totalEdit.slot.innerText = `${(parseFloat(totalEdit.slot.innerText) + totalEdit.price).toFixed(2)} €`;
 	};
 }
 
@@ -82,7 +91,7 @@ function increaseItemAmount({ productId, amountDiv }) {
  * @param {number} param0.amountDiv - the amount of the product in cart
  * @returns {Function} - function that decreases the amount of the product in cart
  */
-function decreaseItemAmount({ productId, amountDiv }) {
+function decreaseItemAmount({ productId, amountDiv, totalEdit}) {
 /**
  * Decreases amount of the product in cart with decreaseProductCount()
  * and then updates display. If the product count is lower than one,
@@ -96,6 +105,8 @@ function decreaseItemAmount({ productId, amountDiv }) {
 			decreaseProductCount(productId);
 			// Update UI
 			amountDiv.innerText = `${getProductCountFromCart(productId)}x`;
+
+         totalEdit.slot.innerText = `${(parseFloat(totalEdit.slot.innerText) - totalEdit.price).toFixed(2)} €`;
 		} else {
 			// Remove product ID from cart
 			removeProductFromCart(productId);
@@ -245,14 +256,33 @@ function clearCart() {
  *
  * @param {object} event - event of clickin the order button
  */
-function placeOrderButtonAction(event) {
+async function placeOrderButtonAction(event) {
 	// Notify user of successful order
-	createNotification(
-		`Successfully created an order!`,
-		"notifications-container"
-    );
-    // Clear cart
-	clearCart();
+   try {
+      const products = getAllProductsFromCart();
+      console.log(products);
+      const result = await postOrPutJSON("/api/orders", "POST", {
+         items: products.map(product => {
+               return { product: product,
+                        quantity: product.amount
+                        }
+         })
+      });
+         // Report register error or success
+      if (result.error) {
+         createNotification(result.error, "notifications-container", false);
+      } else {
+         // Clear cart
+         clearCart();
+         createNotification(
+            "Successfully created an order",
+            "notifications-container"
+         );
+      }
+   } catch (error) {
+      createNotification(`${error}`, "notifications-container", false);
+   }
+
 }
 
 placeOrderButton.addEventListener("click", placeOrderButtonAction);

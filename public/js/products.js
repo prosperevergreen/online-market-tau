@@ -33,7 +33,7 @@ const setProductView = (template, product) => {
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
-	productPrice.innerText = product.price;
+	productPrice.innerText = `${product.price} €`;
 
 	const addButton = clone.querySelector("button");
 	addButton.id = `add-to-cart-${product._id}`;
