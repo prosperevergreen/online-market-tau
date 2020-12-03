@@ -35,7 +35,8 @@ body{
 
 #users-container{
    display: flex;
-   flex-direction: column;
+   flex-direction: row;
+   flex-wrap: wrap;
    justify-content: center;
    align-items: center;
 }
@@ -51,6 +52,7 @@ body{
 
 #products-container {
    display: flex;
+   flex-direction: row;
    flex-wrap: wrap;
    justify-content: space-between;
 }
@@ -58,7 +60,6 @@ body{
 #products-container::after {
    content: "";
    flex: auto;
-
 }
 
 #products-container .card {

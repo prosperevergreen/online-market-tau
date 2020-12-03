@@ -79,7 +79,7 @@ footer {
   text-align: center;
 }
 
-.form {
+.form, #edit-user-form {
   margin: 1rem auto;
   display: flex;
   flex-direction: column;
@@ -94,7 +94,7 @@ footer {
   height: 5rem;
   display: grid;
   gap: 1rem;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 4fr;
   margin-bottom: 1rem;
 }
 
