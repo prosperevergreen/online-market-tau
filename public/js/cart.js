@@ -258,29 +258,31 @@ function clearCart() {
  */
 async function placeOrderButtonAction(event) {
 	// Notify user of successful order
-   try {
-      const products = getAllProductsFromCart();
-      console.log(products);
-      const result = await postOrPutJSON("/api/orders", "POST", {
-         items: products.map(product => {
-               return { product: product,
-                        quantity: product.amount
-                        }
-         })
-      });
-         // Report register error or success
-      if (result.error) {
-         createNotification(result.error, "notifications-container", false);
-      } else {
-         // Clear cart
-         clearCart();
-         createNotification(
-            "Successfully created an order",
-            "notifications-container"
-         );
+   const products = getAllProductsFromCart();
+   if(products.length > 0){
+      try {
+         console.log(products);
+         const result = await postOrPutJSON("/api/orders", "POST", {
+            items: products.map(product => {
+                  return { product: product,
+                           quantity: product.amount
+                           }
+            })
+         });
+            // Report register error or success
+         if (result.error) {
+            createNotification(result.error, "notifications-container", false);
+         } else {
+            // Clear cart
+            clearCart();
+            createNotification(
+               "Successfully created an order",
+               "notifications-container"
+            );
+         }
+      }catch (error) {
+         createNotification(`${error}`, "notifications-container", false);
       }
-   } catch (error) {
-      createNotification(`${error}`, "notifications-container", false);
    }
 
 }
