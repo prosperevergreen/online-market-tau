@@ -50,7 +50,7 @@ const setOrderView = (template, order) => {
 
    const orderId = clone.querySelector(".order-id");
 	orderId.id = `order-${order._id}`;
-	orderId.innerText = order._id;
+	orderId.innerText = `Order Id: ${order._id}`;
 
    const pricesForTotal = [];
 
