@@ -19,6 +19,19 @@ body{
    margin: 10px;
 }
 
+.view-one-container{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+}
+.view-one-container .card > img {
+   width: inherit;
+   margin: 10px 0px;
+   justify-content: center;
+   align-items: center;
+}
+
 /* Items inside an order. */
 .inlay {
    background: #eee;
@@ -37,6 +50,8 @@ body{
    box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 
+
+
 #view-an-order .card{
    width: 60rem;
    box-shadow: none /*0 0 20px rgba(0,0,0,0.3)*/;
@@ -45,18 +60,8 @@ body{
    margin: 25px 40px;
 }
 
-.view-one-container{
-   display: flex;
-   justify-content: center;
-   align-items: center;
 
-}
-.view-one-container .card > img {
-   width: inherit;
-   margin: 10px 0px;
-   justify-content: center;
-   align-items: center;
-}
+/* Users - container*/
 
 #users-container{
    display: flex;
@@ -74,6 +79,9 @@ body{
    margin: 10px 5px;
    border-radius: 5px;
 }
+
+
+/*Products - container */
 
 #products-container {
    display: flex;
@@ -96,10 +104,6 @@ body{
 }
 
 #products-container .card:hover {
-   height: 100%;
-   display: flex;
-   justify-content: space-between;
-   border-radius: none;
    box-shadow: 0 20px 20px rgba(0,0,0,0.3), 0px 0px 50px rgba(0,0,0,0.2);
 }
 
