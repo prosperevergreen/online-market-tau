@@ -26,19 +26,24 @@
     <main>
       <h1>Orders</h1>
       <div id="notifications-container"></div>
+      <form id="search-by-id">
+         <input type="text" name="search"  placeholder="Find an order by id" value="">
+         <input type="submit" name="find-order" value="Search">
+      </form>
+      <div class="view-one-container" id="view-an-order"></div>
       <div id="orders-container"></div>
     </main>
     <footer>
       <p>Copyright &copy; 2020 diipadaa etc etc.</p>
     </footer>
     <template id="order-template">
-      <div class="card">
          <div class="item-row">
+            <div class="card">
             <h3 class="order-id">OrderId</h3>
             <div class="items"></div>
             <p class="order-total"></p>
+            </div>
          </div>
-      </div>
 
     </template>
     <template id="product-template">

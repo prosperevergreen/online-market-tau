@@ -235,14 +235,14 @@ const handleRequest = async (request, response) => {
 			return viewProduct(response, productId);
 		}
 
-		// PUT - Modify user role and send modified user as response body
+		// PUT - Modify user role and send modified product as response body
 		if (method.toUpperCase() === "PUT") {
 			// Get update info
 			const productUpdate = await parseBodyJson(request);
 			return modifyProduct(response, productId, productUpdate, currentUser);
 		}
 
-		// DELETE - Delete user by id and send deleted user as response body
+		// DELETE - Delete user by id and send deleted product as response body
 		if (method.toUpperCase() === "DELETE") {
 			return deleteProduct(response, productId, currentUser);
 		}
