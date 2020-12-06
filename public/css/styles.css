@@ -152,3 +152,7 @@ p {
    height: 20rem;
    width: 70rem;
 }
+
+.hidden{
+  display: none;
+}

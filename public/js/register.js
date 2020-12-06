@@ -9,15 +9,14 @@
  */
 
 // Get for element
-const form = document.getElementById("register-form");
-
+const registerForm = document.getElementById("register-form");
 // Setup event listener when form is submited
-form.addEventListener("submit", async (event) => {
+registerForm.addEventListener("submit", async (event) => {
 	// Get form data
-	const password = document.getElementById("password");
-	const passwordConfirmation = document.getElementById("passwordConfirmation");
 	const name = document.getElementById("name");
 	const email = document.getElementById("email");
+	const password = document.getElementById("password");
+	const passwordConfirmation = document.getElementById("passwordConfirmation");
 
 	// Prevent default submission
 	event.preventDefault();
@@ -34,7 +33,7 @@ form.addEventListener("submit", async (event) => {
 			if (result.error) {
 				createNotification(result.error, "notifications-container", false);
 			} else {
-				form.reset();
+				registerForm.reset();
 				createNotification(
 					"Successful registration",
 					"notifications-container"
@@ -51,3 +50,53 @@ form.addEventListener("submit", async (event) => {
 		);
 	}
 });
+
+
+const loginForm = document.getElementById("login-form");
+
+// Setup event listener when form is submited
+loginForm.addEventListener("submit", async (event) => {
+	// Get form data
+	const email = document.getElementById("login-email");
+	const password = document.getElementById("login-password");
+
+	// Prevent default submission
+	event.preventDefault();
+	// Verify that password match else report error
+	if (password.value && password.value.length) {
+		// Try creating new user or report error on falure
+		try {
+			const token = `${email.value}:${password.value}`
+			const hashCred = btoa(token);
+			const basicAuth = `Basic ${hashCred}`
+			localStorage.setItem("auth-cred", basicAuth);
+			const jwtToken = await getJSON("/api/login");
+            // Report register error or success
+			if (token.error) {
+				createNotification(result.error, "notifications-container", false);
+			} else {
+				jwtAuth = `Bearer ${jwtToken}`
+				localStorage.setItem("auth-cred", jwtAuth);
+				loginForm.reset();
+				createNotification(
+					"Successful login",
+					"notifications-container"
+				);
+			}
+		} catch (error) {
+			createNotification(`${error}`, "notifications-container", false);
+		}
+	} else {
+		createNotification(
+			"Password doesn't match or length less than 10",
+			"notifications-container",
+			false
+		);
+	}
+});
+
+const showForm = (formId) => {
+	loginForm.classList.add("hidden");
+	registerForm.classList.add("hidden");
+	document.getElementById(formId).classList.remove("hidden");
+}

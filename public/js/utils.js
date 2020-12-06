@@ -21,15 +21,16 @@
 const getJSON = async (url) => {
 	// TODO: 8.3 Implement this
 	// Create and setup header to accept json
-  const header = new Headers();
-  header.append("Accept", "application/json, */*");
-  // Setup fetch metadata
+	const header = new Headers();
+	header.append("Accept", "application/json, */*");
+	// header.set("Authorization", localStorage.getItem("auth-cred"));
+	// Setup fetch metadata
 	const fetchDataSetup = {
 		method: "GET",
 		headers: header,
-  };
+	};
 
-  // Do fetch and return body of response as js object
+	// Do fetch and return body of response as js object
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 	// throw new Error('Not Implemented');
 };
@@ -49,21 +50,22 @@ const postOrPutJSON = async (url, method, data = {}) => {
 	method = method.toUpperCase();
 	if (method !== "POST" && method !== "PUT") {
 		throw "Invalid method! Valid methods are POST and PUT!";
-  }
+	}
 
-  // TODO: 8.3 Implement this
-  // Create and setup header to specify its content type as json
+	// TODO: 8.3 Implement this
+	// Create and setup header to specify its content type as json
 	const header = new Headers();
-  header.append("Content-Type", "application/json");
+	header.append("Content-Type", "application/json");
+	// header.set("Authorization", localStorage.getItem("auth-cred"));
 
-  // Setup fetch metadata
+	// Setup fetch metadata
 	const fetchDataSetup = {
 		method: method,
 		body: JSON.stringify(data),
 		headers: header,
-  };
+	};
 
-  // Do fetch and return response as JSON
+	// Do fetch and return response as JSON
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 	// throw new Error("Not Implemented");
 };
@@ -79,16 +81,18 @@ const postOrPutJSON = async (url, method, data = {}) => {
  */
 const deleteResourse = async (url) => {
 	// TODO: 8.5 Implement this
-  // throw new Error("Not Implemented");
-  const header = new Headers();
-  header.append("Accept", "application/json, */*");
-  // Setup fetch metadata
+	// throw new Error("Not Implemented");
+	const header = new Headers();
+	header.append("Accept", "application/json, */*");
+	// header.set("Authorization",localStorage.getItem("auth-cred"))
+
+	// Setup fetch metadata
 	const fetchDataSetup = {
 		method: "DELETE",
 		headers: header,
-  };
+	};
 
-  // Do fetch and return body of response as js object
+	// Do fetch and return body of response as js object
 	return fetch(url, fetchDataSetup).then((res) => res.json());
 };
 

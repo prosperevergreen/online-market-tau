@@ -1,5 +1,6 @@
 // load environment vars
 require('dotenv').config();
+
 //  Get db
 const db = require('./models/db');
 // Connect to db
