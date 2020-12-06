@@ -31,9 +31,8 @@ const getCredentials = (request) => {
 			const credsStr = buff.toString("utf-8");
       creds = credsStr.split(":");
     }
-
-    return creds;
-	}
+  }
+  return creds;
 };
 
 /**

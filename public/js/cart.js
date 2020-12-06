@@ -26,7 +26,7 @@ const setupCartView = (template, product) => {
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
-	productPrice.innerText = `${product.price} €/unit`;
+	productPrice.innerText = `${product.price}`;
 
    const productTotal = clone.querySelector(".product-total");
    productTotal.id = `total-${product._id}`;
