@@ -33,6 +33,31 @@ body{
    margin: 25px 40px;
 }
 
+#orders-container .card:hover {
+   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+#view-an-order .card{
+   width: 60rem;
+   box-shadow: none /*0 0 20px rgba(0,0,0,0.3)*/;
+   border: solid 0.7px #98DD9B;
+   padding: 20px;
+   margin: 25px 40px;
+}
+
+.view-one-container{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+}
+.view-one-container .card > img {
+   width: inherit;
+   margin: 10px 0px;
+   justify-content: center;
+   align-items: center;
+}
+
 #users-container{
    display: flex;
    flex-direction: row;
@@ -68,6 +93,14 @@ body{
    justify-content: space-between;
    border-radius: none;
    box-shadow: none;
+}
+
+#products-container .card:hover {
+   height: 100%;
+   display: flex;
+   justify-content: space-between;
+   border-radius: none;
+   box-shadow: 0 20px 20px rgba(0,0,0,0.3), 0px 0px 50px rgba(0,0,0,0.2);
 }
 
 #products-container .card > img {

@@ -39,10 +39,11 @@ const setProductView = (template, product, count) => {
 
    productCount.innerText = `${count} in this order.`;
 
+
 	return clone;
 };
 
-const setOrderView = (template, order) => {
+const setOrderView = (template, order, view) => {
    const clone = template.content.cloneNode(true);
 
    const itemRow = clone.querySelector(".item-row");
@@ -67,6 +68,11 @@ const setOrderView = (template, order) => {
    total.id = `total-${order._id}`
    total.innerText = `Total: ${pricesForTotal.reduce((a,b) => a + b, 0).toFixed(2)} €`;
 
+   const card = clone.querySelector(".card");
+   if(!view){
+   card.addEventListener("click", (event) => {viewThisOrder(order._id)});
+   }
+
    return clone;
 }
 
@@ -76,10 +82,66 @@ const setOrderView = (template, order) => {
       const orders = await getJSON("/api/orders");
       //Create views with template and append to DOM
 		orders.forEach((order, i) => {
-			const templateClone = setOrderView(orderTemplate, order);
+			const templateClone = setOrderView(orderTemplate, order, false);
 			ordersContainer.appendChild(templateClone);
 		});
 	} catch (err) {
 		createNotification(`${err}`, "notifications-container", false);
 	}
    })();
+
+
+   /**
+    * Moves the view to the top of the page.
+    */
+   function scrollToTop() {
+       document.body.scrollTop = 0; // For Safari
+       document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+   }
+
+   const viewOneContainer = document.querySelector(".view-one-container");
+
+   function emptyViewContainer(){
+      if(viewOneContainer.childElementCount > 0){
+         const arr = Array.from(viewOneContainer.childNodes);
+         arr.map(child => viewOneContainer.removeChild(child));
+         return;
+      }
+   }
+
+   /**
+    * This function presents a product to the user on the top of the page.
+    *
+    * @param {string} orderId product objects id
+    */
+   async function viewThisOrder(orderId){
+      try {
+         if(viewOneContainer.childElementCount > 0){
+            emptyViewContainer();
+         }
+         if(viewOneContainer.childElementCount == 0){
+            const thisOrder = await getJSON(`/api/orders/${orderId}`);
+            viewOneContainer.append(setOrderView(orderTemplate, thisOrder, true));
+            scrollToTop();
+            setTimeout( function(){document.addEventListener('scroll', () => {emptyViewContainer()}, {once: true})}, 1000);
+         }
+   	} catch (err) {
+   		createNotification(`${err}`, "notifications-container", false);
+   	}
+   }
+
+   const findOrder = document.getElementById("search-by-id");
+
+   findOrder.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const maybeId = event.target.search.value;
+      const regex = new RegExp("[0-9a-z]{8,24}");
+      if(regex.test(maybeId)){
+         const id = maybeId;
+         viewThisOrder(id);
+         findOrder.reset();
+      }
+      else{
+         createNotification("Please search with valid id", "notifications-container", false);
+      }
+      })

@@ -13,7 +13,7 @@ const productsContainer = document.getElementById("products-container");
  * @returns {HTMLElement} clone of the template filled with product info
  */
 //Fill a product template to be displayed:
-const setProductView = (template, product) => {
+const setProductView = (template, product, view) => {
 	const clone = template.content.cloneNode(true);
 
    const productImage = clone.querySelector(".product-img");
@@ -37,10 +37,17 @@ const setProductView = (template, product) => {
 
 	const addButton = clone.querySelector("button");
 	addButton.id = `add-to-cart-${product._id}`;
-	addButton.addEventListener("click", addToCartButtonPressed(product));
+	addButton.addEventListener("click", addToCartButtonPressed(product),true);
+
+   const card = clone.querySelector(".card");
+   const productId = product._id;
+   if(!view){
+   card.addEventListener("click", (event) => {viewThisProduct(product._id)});
+   }
 
 	return clone;
 };
+
 
 /**
  * Displays all products in HTML
@@ -50,19 +57,20 @@ const setProductView = (template, product) => {
  * and appends them to a container.
  * Function is called when user has logged in and page is viewed.
  */
-(async () => {
+const fillWithAllProducts = async () => {
 	try {
 		//Get products as JSON from server:
 		const products = await getJSON("/api/products");
 		//Create views with template and append to DOM
 		products.forEach((product, i) => {
-			const templateClone = setProductView(productTemplate, product);
+			const templateClone = setProductView(productTemplate, product, false);
 			productsContainer.appendChild(templateClone);
 		});
 	} catch (err) {
 		createNotification(`${err}`, "notifications-container", false);
 	}
-})();
+};
+fillWithAllProducts();
 
 /**
  * Adds an item to the cart in sessionStorage.
@@ -95,6 +103,7 @@ function addToCartButtonPressed(product) {
 			// Add new item to cart
 			addProductToCart(cart, product);
 		}
+      event.stopPropagation();
 
 		// Notify user of success
 		createNotification(
@@ -171,4 +180,43 @@ function getProductFromCart(productId) {
 	const productStrValue = sessionStorage.getItem(productId);
 	// Return parsed value
 	return JSON.parse(productStrValue);
+}
+
+/**
+ * Moves the view to the top of the page.
+ */
+function scrollToTop() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+const viewOneContainer = document.querySelector(".view-one-container");
+
+function emptyViewContainer(){
+   if(viewOneContainer.childElementCount > 0){
+      const arr = Array.from(viewOneContainer.childNodes);
+      arr.map(child => viewOneContainer.removeChild(child));
+      return;
+   }
+}
+
+/**
+ * This function presents a product to the user on the top of the page.
+ *
+ * @param {string} productId product objects id
+ */
+async function viewThisProduct(productId){
+   try {
+      if(viewOneContainer.childElementCount > 0){
+         emptyViewContainer();
+      }
+      if(viewOneContainer.childElementCount == 0){
+         const thisProduct = await getJSON(`/api/products/${productId}`);
+         viewOneContainer.append(setProductView(productTemplate, thisProduct, true));
+         scrollToTop();
+         setTimeout( function(){document.addEventListener('scroll', () => {emptyViewContainer()}, {once: true})}, 1000);
+      }
+	} catch (err) {
+		createNotification(`${err}`, "notifications-container", false);
+	}
 }
