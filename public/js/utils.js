@@ -156,3 +156,26 @@ const removeElement = (containerId, elementId) => {
 		.querySelectorAll(`[id="${elementId}"]`)
 		.forEach((element) => element.remove());
 };
+
+/**
+ * Authenticate user by requesting server.
+ *
+ * Save role to sessionStorage.
+ */
+const authenticate = async () => {
+   try {
+		//Get products as JSON from server:
+		const userRole = await getJSON("/api/authenticate");
+      if(sessionStorage.getItem("role") === null){
+         sessionStorage.setItem("role", userRole.role);
+
+      }
+      else{
+         sessionStorage["role"] = userRole.role;
+      }
+
+	} catch (err) {
+		createNotification(`${err}`, "notifications-container", false);
+	}
+
+}

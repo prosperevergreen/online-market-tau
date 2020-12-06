@@ -16,20 +16,24 @@ const productsContainer = document.getElementById("products-container");
 const setProductView = (template, product, view) => {
 	const clone = template.content.cloneNode(true);
 
-   const productImage = clone.querySelector(".product-img");
-   productImage.id = `${product._id}`;
-   productImage.src = product.image;
+   if(product.image){
+      const productImage = clone.querySelector(".product-img");
+      productImage.id = `${product._id}`;
+      productImage.src = product.image;
+   }
 
 	const itemRow = clone.querySelector(".item-row");
-	itemRow.id = `${product._id}`;
+	itemRow.id = `product-${product._id}`;
 
 	const productName = clone.querySelector(".product-name");
 	productName.id = `name-${product._id}`;
 	productName.innerText = product.name;
 
-	const productDesc = clone.querySelector(".product-description");
-	productDesc.id = `description-${product._id}`;
-	productDesc.innerText = product.description;
+   if(product.description){
+      const productDesc = clone.querySelector(".product-description");
+      productDesc.id = `description-${product._id}`;
+      productDesc.innerText = product.description;
+   }
 
 	const productPrice = clone.querySelector(".product-price");
 	productPrice.id = `price-${product._id}`;
@@ -42,11 +46,51 @@ const setProductView = (template, product, view) => {
    const card = clone.querySelector(".card");
    const productId = product._id;
    if(!view){
-   card.addEventListener("click", (event) => {viewThisProduct(product._id)});
+      card.addEventListener("click", (event) => {
+         viewThisProduct(product._id)
+         if(!newProductForm.classList.contains("hidden")){
+            newProductForm.classList.add("hidden")
+         }
+      });
+   }
+
+   if(sessionStorage.getItem("role") === "admin"){
+      const deleteButton = document.createElement("button");
+      deleteButton.innerText = "Delete";
+      deleteButton.id = `delete-product-${product._id}`;
+      deleteButton.classList.add("button");
+      deleteButton.addEventListener("click", (event) => {
+         deleteProduct(product._id);
+         event.stopPropagation();
+      }, true);
+      card.appendChild(deleteButton);
    }
 
 	return clone;
 };
+
+const addProductButton = document.getElementById("add-new-product");
+const newProductForm = document.getElementById("new-product-form");
+
+
+const addButtonsAndForm = async () => {
+   //Get user role to sessionStorage.
+   const auth = await authenticate();
+
+   if(sessionStorage.getItem("role") === "admin"){
+
+      addProductButton.classList.remove("hidden");
+
+      addProductButton.addEventListener("click", () => {
+         newProductForm.classList.remove("hidden");
+         newProductForm.addEventListener("submit", (event) => {
+            createNewProduct(event);
+            newProductForm.classList.add("hidden");
+         })
+      })
+   }
+}
+addButtonsAndForm();
 
 
 /**
@@ -71,6 +115,46 @@ const fillWithAllProducts = async () => {
 	}
 };
 fillWithAllProducts();
+
+
+
+const createNewProduct = async (event) => {
+   event.preventDefault();
+
+   const values = {
+      name: event.target.name.value,
+      price: parseFloat(event.target.price.value).toFixed(2),
+      description: undefined,
+      image: undefined
+   }
+   if(event.target.description.value){
+      values.description = event.target.description.value;
+   }
+   if(event.target.linkForImage.value){
+      values.image = event.target.linkForImage.value;
+   }
+
+   try {
+      const result = await postOrPutJSON("/api/products", "POST", values);
+      
+         // Report register error or success
+      if (result.error) {
+         createNotification(result.error, "notifications-container", false);
+      } else {
+         const newProduct = setProductView(productTemplate, result, false);
+         productsContainer.appendChild(newProduct)
+         newProductForm.reset();
+         createNotification(
+            "Successful product creation",
+            "notifications-container"
+         );
+      }
+   } catch (error) {
+      createNotification(`${error}`, "notifications-container", false);
+   }
+
+}
+
 
 /**
  * Adds an item to the cart in sessionStorage.
@@ -219,4 +303,23 @@ async function viewThisProduct(productId){
 	} catch (err) {
 		createNotification(`${err}`, "notifications-container", false);
 	}
+}
+
+
+
+const deleteProduct = async (productId) => {
+   try{
+      const deletedProduct = await deleteResourse(`/api/products/${productId}`);
+        // Remove user element from DOM
+        removeElement("products-container", `product-${productId}`);
+
+        // Send notifictaion for deleted user
+        createNotification(
+            `Deleted product`,
+            "notifications-container"
+        );
+   } catch (error) {
+      createNotification(`${error}`, "notifications-container", false);
+   }
+
 }

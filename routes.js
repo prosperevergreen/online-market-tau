@@ -38,6 +38,7 @@ const Product = require("./models/product");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/login": ["GET"],
+   "/api/authenticate": ["GET"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
@@ -183,7 +184,7 @@ const handleRequest = async (request, response) => {
 			return registerUser(response, userData);
 		}
 	}
-	
+
 	// // Get current cred or respond with 401 error
 	// const currentUser = await auth.getCurrentUser(request);
 
@@ -210,6 +211,25 @@ const handleRequest = async (request, response) => {
 			return responseUtils.sendJson(response, userToken);
 		}
 	}
+
+   if (filePath === "/api/authenticate"){
+      // Check user Authentication
+      const currentUser = await auth.getCurrentUser(request);
+		if (currentUser === null) {
+			return responseUtils.basicAuthChallenge(response);
+		}
+		// Require a correct accept header (require 'application/json' or '*/*')
+		if (!acceptsJson(request)) {
+			return responseUtils.contentTypeNotAcceptable(response);
+		}
+		// register new user
+		if (method.toUpperCase() === "GET") {
+			// Fail if not a JSON request
+			// TODO: 8.3 Implement registration
+			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
+			responseUtils.sendJson(response, {role: currentUser.role})
+		}
+   }
 
 	// // Get current cred or respond with 401 error
 	// const currentUser = await auth.getCurrentUserJWT(request);
