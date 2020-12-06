@@ -79,7 +79,7 @@ footer {
   text-align: center;
 }
 
-.form, #edit-user-form {
+.form, #edit-user-form, #edit-product-form {
   margin: 1rem auto;
   display: flex;
   flex-direction: column;

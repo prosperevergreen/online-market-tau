@@ -227,7 +227,7 @@ const handleRequest = async (request, response) => {
 			// Fail if not a JSON request
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-			responseUtils.sendJson(response, {role: currentUser.role})
+			responseUtils.sendJson(response, {role: currentUser.role});
 		}
    }
 

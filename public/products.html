@@ -27,7 +27,9 @@
       <h1>Products</h1>
       <div id="notifications-container"></div>
       <button id="add-new-product" type="button" class="hidden" name="button">Add new product</button>
-      <form id="new-product-form" class="form hidden" method="PUT">
+      <div id="modify-form-container">
+      </div>
+      <form id="new-product-form" class="form hidden" method="POST">
         <h2 class="text-align-center">Create a new product</h2>
         <div class="form-group">
           <label for="productName">Name</label>
@@ -88,6 +90,66 @@
            <button>Add to cart</button>
         </div>
       </div>
+    </template>
+
+    <template id="form-template">
+      <form id="edit-product-form" method="POST">
+        <h2 class="text-align-center">Modify user {Product Name}</h2>
+        <div class="form-group">
+          <label for="id">Id</label>
+          <input
+            name="_id"
+            type="text"
+            class="form-control"
+            id="id-input"
+            value=""
+            disabled
+            required>
+        </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            name="name"
+            type="text"
+            class="form-control"
+            id="name-input"
+            value=""
+            required>
+        </div>
+        <div class="form-group">
+          <label for="price">Price</label>
+          <input
+            type="text"
+            name="price"
+            class="form-control"
+            id="price-input"
+            placeholder="Price in euros (mandatory)"
+            required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input
+            type="text"
+            name="description"
+            class="form-control"
+            id="description-input"
+            placeholder="Product description">
+        </div>
+        <div class="form-group">
+          <label for="productImage">Image</label>
+          <input
+            type="link"
+            name="linkForImage"
+            id="link"
+            class="form-control"
+            placeholder="Link for product image">
+        </div>
+        <div class="form-group">
+          <div class="second-column">
+            <button type="submit" id="update-button">Update</button>
+          </div>
+        </div>
+      </form>
     </template>
     <script src="js/utils.js"></script>
     <script src="js/products.js"></script>
