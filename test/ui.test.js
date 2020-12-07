@@ -14,16 +14,13 @@ const generateRandomString = (len = 9) => {
   let str = '';
 
   do {
-    str += Math.random()
-      .toString(36)
-      .substr(2, 9)
-      .trim();
+    str += Math.random().toString(36).substr(2, 9).trim();
   } while (str.length < len);
 
   return str.substr(0, len);
 };
 
-const shortWaitTime = 200;
+const shortWaitTime = 350;
 
 // Get users (create copies for test isolation)
 const users = require('../setup/users.json').map(user => ({ ...user }));
@@ -541,6 +538,7 @@ describe('User Inteface', () => {
 
     it('should place order from the shopping cart', async () => {
       const product = allProducts[0];
+      await page.authenticate({ username: customerUser.email, password: customerUser.password });
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
