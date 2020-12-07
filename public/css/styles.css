@@ -157,6 +157,8 @@ p {
   display: none;
 }
 
-#add-new-product{
-   float: right;
+#add-new-product-container{
+   /* float: right; */
+   display: flex;
+   flex-direction: row-reverse;
 }

@@ -8,11 +8,7 @@ const mongoose = require('mongoose');
  * @returns {string} connection URL
  */
 const getDbUrl = () => {
-  const envDBURL = process.env.DBURL;
-  const defautDBURL = "mongodb://localhost:27017/WebShopDb";
-  return envDBURL === undefined ? defautDBURL : envDBURL;
-  // TODO: 9.3 Implement this
-  // throw new Error('Implement this');
+  return process.env.DBURL || 'mongodb://localhost:27017/WebShopDb';
 };
 
 /**
