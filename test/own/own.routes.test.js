@@ -30,13 +30,13 @@ const invalidCredentials = encodeCredentials(adminUser.email, customerUser.passw
 //const customerUser = User.findById(customerUserJson._id).exec();
 let allUsers;
 
-beforeEach(async () => {
-  await User.deleteMany({});
-  await User.create(users);
-  allUsers = await User.find({});
-});
 
 describe('Test /api/login path', () => {
+   beforeEach(async () => {
+      await User.deleteMany({});
+      await User.create(users);
+      allUsers = await User.find({});
+   });
    it('should respond with Basic Auth-challenge if Authorization header is null', async () => {
       const response = await chai
       .request(handleRequest)
@@ -69,6 +69,15 @@ describe('Test /api/login path', () => {
       .set('Accept', 'text/html')
       .send({});
       expect(response).to.have.status(406);
+   });
+   it('should respond with 204 after successful login', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(loginUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', contentType)
+      .send({});
+      expect(response).to.have.status(204);
    });
 });
 

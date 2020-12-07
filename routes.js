@@ -28,6 +28,7 @@ const {
 // Require user model
 const User = require("./models/user");
 const Product = require("./models/product");
+const Order = require("./models/order");
 
 /**
  * Known API routes and their allowed methods
@@ -202,6 +203,7 @@ const handleRequest = async (request, response) => {
 		if (!acceptsJson(request)) {
 			return responseUtils.contentTypeNotAcceptable(response);
 		}
+      responseUtils.noContent(response);
 	}
 
    if (filePath === "/api/authorize"){
