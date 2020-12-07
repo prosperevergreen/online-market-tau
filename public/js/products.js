@@ -462,7 +462,6 @@ const modifyProduct = async (productId) => {
  */
 const updateView = async (product, productId) => {
    const oldProduct = document.getElementById(`product-${productId}`);
-   console.log(oldProduct);
    productsContainer.replaceChild(product, oldProduct);
 
 }
