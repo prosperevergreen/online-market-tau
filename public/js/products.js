@@ -104,7 +104,7 @@ const setProductView = (template, product, view) => {
  */
 const showButtonsAndForm = async () => {
    //Get user role to sessionStorage.
-   const auth = await authenticate();
+   const auth = await authorize();
 
    if(sessionStorage.getItem("role") === "admin"){
 

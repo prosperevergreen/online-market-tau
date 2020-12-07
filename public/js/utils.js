@@ -162,10 +162,10 @@ const removeElement = (containerId, elementId) => {
  *
  * Save role to sessionStorage.
  */
-const authenticate = async () => {
+const authorize = async () => {
    try {
 		//Get products as JSON from server:
-		const userRole = await getJSON("/api/authenticate");
+		const userRole = await getJSON("/api/authorize");
       if(sessionStorage.getItem("role") === null){
          sessionStorage.setItem("role", userRole.role);
 

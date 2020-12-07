@@ -38,7 +38,7 @@ const Product = require("./models/product");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/login": ["GET"],
-   "/api/authenticate": ["GET"],
+   "/api/authorize": ["GET"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
@@ -204,7 +204,7 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
-   if (filePath === "/api/authenticate"){
+   if (filePath === "/api/authorize"){
       // Check user Authentication
       const currentUser = await auth.getCurrentUser(request);
 		if (currentUser === null) {

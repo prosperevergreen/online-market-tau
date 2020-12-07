@@ -1,38 +1,143 @@
 const chai = require("chai");
 const expect = chai.expect;
 const chaiHttp = require("chai-http");
-chai.use(chaiHttp);
-// const User = require("../../../models/user");
+const { handleRequest } = require('../../routes');
 
-describe("Refactor Routes", () => {
-	it("Refactor handleRequest() in routes.js to implement registerUser() from controllers/users.js", async () => {
-        return true;
-    });
-	it("Refactor handleRequest() in routes.js to implement updateUser() from controllers/users.js", async () => {
-        return true;
-    });
-	it("Refactor handleRequest() in routes.js to implement deleteUser() from controllers/users.js", async () => {
-        return true;
-    });
-	it("Refactor handleRequest() in routes.js to implement getAllUsers() from controllers/users.js", async () => {
-        return true;
-    });
-	it("Refactor handleRequest() in routes.js to implement viewUser() from controllers/users.js", async () => {
-        return true;
-    });
-	it("Refactor handleRequest() in routes.js to implement getAllProducts() from controllers/products.js", async () => {
-        return true;
-    });
-    it("Implement persistant database e.g mongodb", async () => {
-      return true;
-    });
-	it("Implement basic authentication", async () => {
-      return true;
-    });
-	it("Watch video: User stories as GitLab issues", async () => {
-      return true;
-    });
-	it("Refactor code to utilise the MVC model", async () => {
-      return true;
-    });
+chai.use(chaiHttp);
+
+const User = require("../../models/user");
+
+const authorizeUrl = '/api/authorize';
+const loginUrl = '/api/login';
+const contentType = 'application/json';
+chai.use(chaiHttp);
+
+// helper function for authorization headers
+const encodeCredentials = (username, password) =>
+  Buffer.from(`${username}:${password}`, 'utf-8').toString('base64');
+
+// Get users (create copies for test isolation)
+const users = require('../../setup/users.json').map(user => ({ ...user }));
+
+const adminUser = { ...users.find(u => u.role === 'admin') };
+const customerUser = { ...users.find(u => u.role === 'customer') };
+
+const adminCredentials = encodeCredentials(adminUser.email, adminUser.password);
+const customerCredentials = encodeCredentials(customerUser.email, customerUser.password);
+const invalidCredentials = encodeCredentials(adminUser.email, customerUser.password);
+
+//const adminUser = User.findById(adminUserJson._id).exec();
+//const customerUser = User.findById(customerUserJson._id).exec();
+let allUsers;
+
+beforeEach(async () => {
+  await User.deleteMany({});
+  await User.create(users);
+  allUsers = await User.find({});
+});
+
+describe('Test /api/login path', () => {
+   it('should respond with Basic Auth-challenge if Authorization header is null', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(loginUrl)
+      .send({});
+      expect(response).to.have.status(401);
+   });
+
+   it('should respond with Basic Auth-challenge if Authorization header is empty', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(loginUrl)
+      .set('authorization','')
+      .send({});
+      expect(response).to.have.status(401);
+   });
+   it('should respond with "Not acceptable" if Accept header is missing', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(loginUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .send({});
+      expect(response).to.have.status(406);
+   });
+   it('should respond with "Not acceptable" if JSON is not accepted', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(loginUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', 'text/html')
+      .send({});
+      expect(response).to.have.status(406);
+   });
+});
+
+describe('Test /api/authorize path', () => {
+   it('should respond with Basic Auth-challenge if Authorization header is null', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .send({});
+      expect(response).to.have.status(401);
+   });
+
+   it('should respond with Basic Auth-challenge if Authorization header is empty', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('authorization','')
+      .send({});
+      expect(response).to.have.status(401);
+   });
+   it('should respond with "Not acceptable" if Accept header is missing', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .send({});
+      expect(response).to.have.status(406);
+   });
+   it('should respond with "Not acceptable" if JSON is not accepted', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', 'text/html')
+      .send({});
+      expect(response).to.have.status(406);
+   });
+   it('should respond with "Not acceptable" if JSON is not accepted', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', 'text/html')
+      .send({});
+      expect(response).to.have.status(406);
+   });
+   it('should respond with JSON if user is authenticated', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', contentType)
+      .send({});
+      expect(response).to.have.status(200);
+      expect(response).to.be.json;
+      expect(response.body).to.be.an('object');
+   });
+   it('should respond with correct user role', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get(authorizeUrl)
+      .set('Authorization', `Basic ${adminCredentials}`)
+      .set('Accept', contentType)
+      .send({});
+      expect(response).to.have.status(200);
+      expect(response).to.be.json;
+      expect(response.body).to.be.an('object');
+      expect(response.body).to.have.key('role');
+      expect(response.body.role).to.equal('admin');
+   });
+
 });
