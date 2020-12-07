@@ -28,7 +28,13 @@ registerForm.addEventListener("submit", async (event) => {
 				name: name.value,
 				email: email.value,
 				password: password.value,
-            });
+			});
+			
+			// set jwt token
+			const jwtAuth = `Bearer ${result.jwtToken}`
+			localStorage.setItem("auth-cred", jwtAuth);
+
+
             // Report register error or success
 			if (result.error) {
 				createNotification(result.error, "notifications-container", false);

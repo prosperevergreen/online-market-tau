@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 
 const responseUtils = require("./utils/responseUtils");
-const { acceptsJson, isJson, parseBodyJson } = require("./utils/requestUtils");
+const { acceptsJson, isJson, parseBodyJson, getCredentials } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
 const {
@@ -38,7 +38,7 @@ const Product = require("./models/product");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/login": ["GET"],
-   "/api/authenticate": ["GET"],
+	"/api/authenticate": ["GET"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
@@ -164,11 +164,12 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
+	// Require a correct accept header (require 'application/json' or '*/*')
+	if (!acceptsJson(request)) {
+		return responseUtils.contentTypeNotAcceptable(response);
+	}
+
 	if (filePath === "/api/register") {
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
 		// register new user
 		if (method.toUpperCase() === "POST") {
 			// Fail if not a JSON request
@@ -181,76 +182,52 @@ const handleRequest = async (request, response) => {
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 			const userData = await parseBodyJson(request);
+			userData.jwtToken = auth.createJWTWebToken(
+				userData.email,
+				userData.password
+			);
 			return registerUser(response, userData);
 		}
 	}
-
-	// // Get current cred or respond with 401 error
-	// const currentUser = await auth.getCurrentUser(request);
-
-	// // Check user Authentication
-	// if (currentUser === null) {
-	// 	return responseUtils.basicAuthChallenge(response);
-	// }
 
 	if (filePath === "/api/login") {
 		// Check user Authentication
 		if ((await auth.getCurrentUser(request)) === null) {
 			return responseUtils.basicAuthChallenge(response);
 		}
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
+
 		// register new user
 		if (method.toUpperCase() === "GET") {
 			// Fail if not a JSON request
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-			const userToken = auth.createJWTWebToken(request);
+			const userCred = getCredentials(request);
+			const userToken = auth.createJWTWebToken(userCred[0], userCred[1]);
 			return responseUtils.sendJson(response, userToken);
 		}
 	}
 
-   if (filePath === "/api/authenticate"){
-      // Check user Authentication
-      const currentUser = await auth.getCurrentUser(request);
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
+	// Get current cred or respond with 401 error
+	const currentUser = await auth.getCurrentUserJWT(request);
+
+	// Check user Authentication
+	if (currentUser === null) {
+		return responseUtils.basicAuthChallenge(response);
+	}
+
+	if (filePath === "/api/authenticate") {
 		// register new user
 		if (method.toUpperCase() === "GET") {
 			// Fail if not a JSON request
 			// TODO: 8.3 Implement registration
 			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-			responseUtils.sendJson(response, {role: currentUser.role});
+			responseUtils.sendJson(response, { role: currentUser.role });
 		}
-   }
-
-	// // Get current cred or respond with 401 error
-	// const currentUser = await auth.getCurrentUserJWT(request);
-
-	// // Check user Authentication
-	// if (currentUser === null) {
-	// 	return responseUtils.basicAuthChallenge(response);
-	// }
-
+	}
 
 	if (matchUserId(filePath)) {
 		// TODO: 8.5 Implement view, update and delete a single user by ID (GET, PUT, DELETE)
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
 
 		// Verify curent user is admin or respond with error 403
 		if (currentUser.role !== "admin") {
@@ -258,11 +235,6 @@ const handleRequest = async (request, response) => {
 		}
 
 		const adminUser = currentUser;
-
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
 
 		// Get user id from path
 		const userId = filePath.split("/")[3];
@@ -290,21 +262,8 @@ const handleRequest = async (request, response) => {
 		// TODO: 11.1 Implement
 		// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
 
-		// Get admin cred or responde with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Verify user cred or responde with 401 error
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		// Get product Id from path
 		const productId = filePath.split("/")[3];
-
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
 
 		// GET - send user as response body
 		if (method.toUpperCase() === "GET") {
@@ -327,19 +286,6 @@ const handleRequest = async (request, response) => {
 	if (matchOrderId(filePath)) {
 		const orderId = filePath.split("/")[3];
 
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
-		// Require a correct accept header (require 'application/json' or '*/*')
-		if (!acceptsJson(request)) {
-			return responseUtils.contentTypeNotAcceptable(response);
-		}
-
 		if (method.toUpperCase() === "GET") {
 			if (currentUser.role === "admin") {
 				return getAnyOrder(response, orderId);
@@ -351,20 +297,7 @@ const handleRequest = async (request, response) => {
 		}
 	}
 
-	// Require a correct accept header (require 'application/json' or '*/*')
-	if (!acceptsJson(request)) {
-		return responseUtils.contentTypeNotAcceptable(response);
-	}
-
 	if (filePath === "/api/users") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		// GET all users
 		if (method.toUpperCase() === "GET") {
 			// TODO: 8.4 Add authentication (only allowed to users with role "admin")
@@ -380,14 +313,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/products") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		// Get all products
 		if (method.toUpperCase() === "GET") {
 			// Authorised User check
@@ -416,14 +341,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/orders") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		if (method.toUpperCase() === "GET") {
 			if (currentUser.role === "admin") {
 				return getAllOrders(response);

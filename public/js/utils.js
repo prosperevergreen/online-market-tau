@@ -23,7 +23,7 @@ const getJSON = async (url) => {
 	// Create and setup header to accept json
 	const header = new Headers();
 	header.append("Accept", "application/json, */*");
-	// header.set("Authorization", localStorage.getItem("auth-cred"));
+	header.set("Authorization", localStorage.getItem("auth-cred"));
 	// Setup fetch metadata
 	const fetchDataSetup = {
 		method: "GET",
@@ -55,8 +55,8 @@ const postOrPutJSON = async (url, method, data = {}) => {
 	// TODO: 8.3 Implement this
 	// Create and setup header to specify its content type as json
 	const header = new Headers();
-	header.append("Content-Type", "application/json");
-	// header.set("Authorization", localStorage.getItem("auth-cred"));
+	header.append("Content-Type", "application/json, */*");
+	header.set("Authorization", localStorage.getItem("auth-cred"));
 
 	// Setup fetch metadata
 	const fetchDataSetup = {
@@ -84,7 +84,7 @@ const deleteResourse = async (url) => {
 	// throw new Error("Not Implemented");
 	const header = new Headers();
 	header.append("Accept", "application/json, */*");
-	// header.set("Authorization",localStorage.getItem("auth-cred"))
+	header.set("Authorization",localStorage.getItem("auth-cred"))
 
 	// Setup fetch metadata
 	const fetchDataSetup = {

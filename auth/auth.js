@@ -81,9 +81,9 @@ const getCurrentUserJWT = async (request) => {
 	}
 };
 
-const createJWTWebToken = (request) => {
-	const userCred = requestUtils.getCredentials(request);
-	const token = jwt.sign({...userCred}, process.env.ACCESS_TOKEN_SECRET);
+const createJWTWebToken = (userEmail, userPassword) => {
+	// const userCred = requestUtils.getCredentials(request);
+	const token = jwt.sign({userEmail, userPassword}, process.env.ACCESS_TOKEN_SECRET);
 	return token;
 };
 

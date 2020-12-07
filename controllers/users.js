@@ -13,7 +13,8 @@ const registerUser = async (response, userData) => {
 	// TODO: 10.1 Implement this
 
 	// Validate user infor and get the missing parts
-	const newUser = new User(userData);
+	const {name, email, password, role } = userData;
+	const newUser = new User({name, email, password, role });
 
 	// Some fields are missing respond with error
 	const errorMsg = newUser.validateSync();
@@ -33,6 +34,7 @@ const registerUser = async (response, userData) => {
 
 	// Save user and respond with copy of the newly created user
 	await newUser.save();
+	newUser.jwtToken = userData.token;
 	responseUtils.createdResource(response, newUser);
 };
 
