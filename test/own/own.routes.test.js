@@ -3,12 +3,15 @@ const expect = chai.expect;
 const chaiHttp = require("chai-http");
 const { handleRequest } = require('../../routes');
 
+const httpMocks = require('node-mocks-http');
+
 chai.use(chaiHttp);
 
 const User = require("../../models/user");
 
 const authorizeUrl = '/api/authorize';
 const loginUrl = '/api/login';
+const orderUrl = '/api/orders';
 const contentType = 'application/json';
 chai.use(chaiHttp);
 
@@ -28,10 +31,27 @@ const invalidCredentials = encodeCredentials(adminUser.email, customerUser.passw
 
 //const adminUser = User.findById(adminUserJson._id).exec();
 //const customerUser = User.findById(customerUserJson._id).exec();
-let allUsers;
-
+describe('Test sendOptions', () => {
+   it('should respond 404 not found if requested options with non-allowed path', async () => {
+      const response = await chai.request(handleRequest).options('/api/non-existent');
+      expect(response).to.have.status(404);
+   });
+});
+describe('Test "not allowed" responses ', () => {
+   it('should respond 404 if path is not allowed', async() => {
+      const path = "/non/existent"
+      const response = await chai.request(handleRequest).post(path).send({});
+      expect(response).to.have.status(404);
+   });
+   it('should respond 405 if method is not allowed for idless path', async() => {
+      const path = "/api/cart"
+      const response = await chai.request(handleRequest).post(path).send({});
+      expect(response).to.have.status(405);
+   });
+});
 
 describe('Test /api/login path', () => {
+   let allUsers;
    beforeEach(async () => {
       await User.deleteMany({});
       await User.create(users);
@@ -148,5 +168,4 @@ describe('Test /api/authorize path', () => {
       expect(response.body).to.have.key('role');
       expect(response.body.role).to.equal('admin');
    });
-
 });
