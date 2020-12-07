@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+
 
 /**
  * Decode, parse and return user credentials (username and password)
@@ -35,40 +35,6 @@ const getCredentials = (request) => {
   return creds;
 };
 
-/**
- * Decode, parse and return user credentials (username and password)
- * from the Authorization header.
- *
- * @param {http.incomingMessage} request - a http request
- * @returns {Array|null} [username, password] or null if header is missing
- */
-const getCredentialsJWT = (request) => {
-	
-	const authHead = request.headers["authorization"];
-
-	if (authHead) {
-		//Divide contents to type and credentials
-		const authorization = authHead.split(" ");
-
-		const type = authorization[0];
-		//Credentials base64
-		const credBase = authorization[1];
-
-		if (credBase === null) return;
-
-		if (type === "Bearer") {
-			//Decode JWT
-			return jwt.verify(
-				credBase,
-				process.env.ACCESS_TOKEN_SECRET,
-				(err, userDetails) => {
-          if (err) return;
-					return Object.values(userDetails);
-				}
-			);
-		}
-	}
-};
 
 /**
  * Does the client accept JSON responses?
@@ -145,4 +111,4 @@ const parseBodyJson = (request) => {
 	});
 };
 
-module.exports = { acceptsJson, getCredentials, getCredentialsJWT, isJson, parseBodyJson };
+module.exports = { acceptsJson, getCredentials, isJson, parseBodyJson };

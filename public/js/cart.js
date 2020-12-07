@@ -261,7 +261,6 @@ async function placeOrderButtonAction(event) {
    const products = getAllProductsFromCart();
    if(products.length > 0){
       try {
-         console.log(products);
          const result = await postOrPutJSON("/api/orders", "POST", {
             items: products.map(product => {
                   return { product: product,
