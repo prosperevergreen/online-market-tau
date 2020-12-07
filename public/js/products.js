@@ -28,6 +28,7 @@ const setProductView = (template, product, view) => {
       const productImage = clone.querySelector(".product-img");
       productImage.id = `${product._id}`;
       productImage.src = product.image;
+      productImage.alt = `Image of ${product.name}`;
    }
 
 	const itemRow = clone.querySelector(".item-row");
