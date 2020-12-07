@@ -50,6 +50,25 @@ describe('Test "not allowed" responses ', () => {
    });
 });
 
+describe('Test empty path', () => {
+   it('should respond with index.html if path is not given', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get('')
+      .send({});
+      expect(response).to.have.status(200);
+      expect(response).to.be.html;
+   });
+   it('should respond with index.html if path is /', async () => {
+      const response = await chai
+      .request(handleRequest)
+      .get('/')
+      .send({});
+      expect(response).to.have.status(200);
+      expect(response).to.be.html;
+   });
+});
+
 describe('Test /api/login path', () => {
    let allUsers;
    beforeEach(async () => {

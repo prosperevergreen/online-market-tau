@@ -339,8 +339,6 @@ const handleRequest = async (request, response) => {
 				return getAnyOrder(response, orderId);
 			} else if (currentUser.role === "customer") {
 				return getOneOrder(response, orderId, currentUser);
-			} else {
-				return responseUtils.forbidden(response);
 			}
 		}
 	}
@@ -385,11 +383,9 @@ const handleRequest = async (request, response) => {
 		// Get all products
 		if (method.toUpperCase() === "GET") {
 			// Authorised User check
-			if (currentUser.role !== "admin" && currentUser.role !== "customer") {
-				return responseUtils.forbidden(response);
-			}
-
-			return getAllProducts(response);
+         if(currentUser.role === "admin" || currentUser.role === "customer"){
+            return getAllProducts(response);
+         }
 		}
 		// create new product
 		if (method.toUpperCase() === "POST") {
@@ -423,8 +419,6 @@ const handleRequest = async (request, response) => {
 				return getAllOrders(response);
 			} else if (currentUser.role === "customer") {
 				return getAllUserOrders(response, currentUser);
-			} else {
-				return responseUtils.forbidden(response);
 			}
 		}
 
