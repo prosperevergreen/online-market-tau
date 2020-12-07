@@ -202,14 +202,6 @@ const handleRequest = async (request, response) => {
 		if (!acceptsJson(request)) {
 			return responseUtils.contentTypeNotAcceptable(response);
 		}
-		// register new user
-		if (method.toUpperCase() === "GET") {
-			// Fail if not a JSON request
-			// TODO: 8.3 Implement registration
-			// You can use parseBodyJson(request) from utils/requestUtils.js to parse request body
-			const userToken = auth.createJWTWebToken(request);
-			return responseUtils.sendJson(response, userToken);
-		}
 	}
 
    if (filePath === "/api/authenticate"){
