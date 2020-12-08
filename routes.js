@@ -28,6 +28,7 @@ const {
 // Require user model
 const User = require("./models/user");
 const Product = require("./models/product");
+const Order = require("./models/order");
 
 /**
  * Known API routes and their allowed methods
@@ -38,7 +39,7 @@ const Product = require("./models/product");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/login": ["GET"],
-	"/api/authenticate": ["GET"],
+   "/api/authorize": ["GET"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
@@ -215,7 +216,7 @@ const handleRequest = async (request, response) => {
 		return responseUtils.basicAuthChallenge(response);
 	}
 
-	if (filePath === "/api/authenticate") {
+	if (filePath === "/api/authorize") {
 		// register new user
 		if (method.toUpperCase() === "GET") {
 			// Fail if not a JSON request
@@ -291,8 +292,6 @@ const handleRequest = async (request, response) => {
 				return getAnyOrder(response, orderId);
 			} else if (currentUser.role === "customer") {
 				return getOneOrder(response, orderId, currentUser);
-			} else {
-				return responseUtils.forbidden(response);
 			}
 		}
 	}
@@ -316,11 +315,9 @@ const handleRequest = async (request, response) => {
 		// Get all products
 		if (method.toUpperCase() === "GET") {
 			// Authorised User check
-			if (currentUser.role !== "admin" && currentUser.role !== "customer") {
-				return responseUtils.forbidden(response);
-			}
-
-			return getAllProducts(response);
+         if(currentUser.role === "admin" || currentUser.role === "customer"){
+            return getAllProducts(response);
+         }
 		}
 		// create new product
 		if (method.toUpperCase() === "POST") {
@@ -346,8 +343,6 @@ const handleRequest = async (request, response) => {
 				return getAllOrders(response);
 			} else if (currentUser.role === "customer") {
 				return getAllUserOrders(response, currentUser);
-			} else {
-				return responseUtils.forbidden(response);
 			}
 		}
 

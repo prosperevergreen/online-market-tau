@@ -77,8 +77,23 @@ describe("Products Controller", () => {
 				expect(response._isEndCalled()).to.be.true;
 				expect(response._getJSONData()).to.include(productData);
 			});
+         it('should respond forbidden if user is not an admin', async() => {
+            await createProduct(response, product, customerUser);
+            expect(response.statusCode).to.equal(403);
+         });
 		});
 	});
+
+   describe("Test modifyProduct", async () => {
+      it('should respond with error when validation fails', async() => {
+
+         const modifyData = {name: "aauuu", price: undefined};
+         await modifyProduct(response, product._id, modifyData, adminUser);
+         expect(response.statusCode).to.equal(400);
+      });
+
+   });
+
 
 	// describe('updateUser()', () => {
 	//   it('should respond with "404 Not Found" if user with given userId does not exist', async () => {

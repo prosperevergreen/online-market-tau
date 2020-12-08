@@ -14,16 +14,13 @@ const generateRandomString = (len = 9) => {
   let str = '';
 
   do {
-    str += Math.random()
-      .toString(36)
-      .substr(2, 9)
-      .trim();
+    str += Math.random().toString(36).substr(2, 9).trim();
   } while (str.length < len);
 
   return str.substr(0, len);
 };
 
-const shortWaitTime = 200;
+const shortWaitTime = 350;
 
 // Get users (create copies for test isolation)
 const users = require('../setup/users.json').map(user => ({ ...user }));
@@ -326,12 +323,16 @@ describe('User Inteface', () => {
 
         expect(nameText).to.equal(product.name);
         expect(descriptionText).to.equal(product.description);
-        expect(priceText).to.equal(String(product.price));
+        expect(Number.parseFloat(priceText)).to.equal(product.price);
       }
     });
   });
 
   describe('UI: Shopping cart', () => {
+    beforeEach(async () => {
+      await page.authenticate({ username: customerUser.email, password: customerUser.password });
+    });
+
     it('should show a notification about adding a product to shopping cart', async () => {
       await page.goto(productsPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
@@ -385,9 +386,9 @@ describe('User Inteface', () => {
 
       expect({
         name: nameText,
-        price: priceText,
+        price: Number.parseFloat(priceText),
         amount: amountText
-      }).to.include({ name: product.name, price: String(product.price), amount: '1x' }, errorMsg);
+      }).to.include({ name: product.name, price: product.price, amount: '1x' }, errorMsg);
     });
 
     it('should increase the amount of items of a product in a shopping cart', async () => {
@@ -534,9 +535,9 @@ describe('User Inteface', () => {
 
       expect({
         name: nameText,
-        price: priceText,
+        price: Number.parseFloat(priceText),
         amount: amountText
-      }).to.include({ name: product.name, price: String(product.price), amount: '3x' }, errorMsg);
+      }).to.include({ name: product.name, price: product.price, amount: '3x' }, errorMsg);
     });
 
     it('should place order from the shopping cart', async () => {

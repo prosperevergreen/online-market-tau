@@ -11,10 +11,9 @@
 
   <body>
     <header>
-      <h1>KP-Market</h1>
+      <<h1><a href="index.html">KP-Market</a></h1>
       <nav class="navbar">
         <ul class="nav-links">
-          <li><a href="index.html">Front Page</a></li>
           <li><a href="register.html">Register</a></li>
           <li><a href="users.html">List Users</a></li>
           <li><a href="products.html">List Products</a></li>
@@ -27,7 +26,8 @@
       <h1>Orders</h1>
       <div id="notifications-container"></div>
       <form id="search-by-id">
-         <input type="text" name="search"  placeholder="Find an order by id" value="">
+         <label for="search">Search by order id:</label>
+         <input type="text" id="search" name="search"  placeholder="Search by order id" value="">
          <input type="submit" name="find-order" value="Search">
       </form>
       <div class="view-one-container" id="view-an-order"></div>
@@ -39,7 +39,7 @@
     <template id="order-template">
          <div class="item-row">
             <div class="card">
-            <h3 class="order-id">OrderId</h3>
+            <h2 class="order-id">OrderId</h2>
             <div class="items"></div>
             <p class="order-total"></p>
             </div>
@@ -49,7 +49,7 @@
     <template id="product-template">
       <div class="inlay">
          <div class="item-row">
-            <h3 class="product-name"></h3>
+            <h2 class="product-name"></h2>
             <p class="product-description"></p>
             <p class="product-price"></p>
             <p class="product-count"></p>

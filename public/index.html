@@ -1,61 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Front Page</title>
-  </head>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<title>Front Page</title>
+	</head>
 
-  <body>
-    <header>
-      <h1>KP-Market</h1>
-      <nav class="navbar">
-        <ul class="nav-links">
-          <li><a href="index.html">Front Page</a></li>
-          <li><a href="register.html">Register</a></li>
-          <li><a href="users.html">List Users</a></li>
-          <li><a href="products.html">List Products</a></li>
-          <li><a href="cart.html">Shopping Cart</a></li>
-          <li><a href="orders.html">View orders</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <h1>Front Page</h1>
-      <p>
-        <a href="register.html">Register</a> |
-        <a href="users.html">List Users</a> |
-        <a href="products.html">List Products</a> |
-        <a href="cart.html">Shopping Cart</a> |
-        <a href="orders.html">View orders</a>
-      </p>
+	<body>
+		<header>
+			<h1><a href="index.html">KP-Market</a></h1>
+			<nav class="navbar">
+				<ul class="nav-links">
+						<li class="links-for-visitors"><a href="register.html">Register</a></li>
+						<li class="links-for-users"><a href="users.html">List Users</a></li>
+						<li class="links-for-users"><a href="products.html">List Products</a></li>
+						<li class="links-for-users"><a href="cart.html">Shopping Cart</a></li>
+						<li class="links-for-users"><a href="orders.html">View orders</a></li>
+						<li class="links-for-users"><a href="#">Logout</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<h1>Front Page</h1>
+			<p>
+				<a href="register.html">Register</a>
+				<span class="links-for-users">
+					|
+					<a href="users.html">List Users</a> |
+					<a href="products.html">List Products</a> |
+					<a href="cart.html">Shopping Cart</a> |
+					<a href="orders.html">View orders</a>
+				</span>
+			</p>
 
-      <div class="front-page-content">
-         <p>
-            This is an assignment for the course Web development 1 - Programming.
-         </p>
+			<div class="front-page-content">
+				<p>
+					This is an assignment for the course Web development 1 - Programming.
+				</p>
 
-         <p>
-            This web app has webshop like features. Users can register, view products,
-            add them to cart and order them. After ordering users may view their orders.
-         </p>
+				<p>
+					This web app has webshop like features. Users can register, view
+					products, add them to cart and order them. After ordering users may
+					view their orders.
+				</p>
 
-         <p>
-            Some of the users have Admin credentials and they may view all users information,
-            modify and delete users and view all of the orders in the system. They may also
-            create new products, and modify and delete existing ones.
-         </p>
-         <p>
-            Products and orders may be viewed individually at the top of the page by clicking
-            a product or an order.
-         </p>
-      </div>
-
-    </main>
-    <footer>
-      <p>Copyright &copy; 2020</p>
-    </footer>
-  </body>
+				<p>
+					Some of the users have Admin credentials and they may view all users
+					information, modify and delete users and view all of the orders in the
+					system. They may also create new products, and modify and delete
+					existing ones.
+				</p>
+				<p>
+					Products and orders may be viewed individually at the top of the page
+					by clicking a product or an order.
+				</p>
+			</div>
+		</main>
+		<footer>
+			<p>Copyright &copy; 2020</p>
+		</footer>
+	</body>
 </html>

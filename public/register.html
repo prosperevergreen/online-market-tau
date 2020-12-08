@@ -1,121 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Register</title>
-  </head>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<title>Register</title>
+	</head>
 
-  <body>
-    <header>
-      <h1>KP-Market</h1>
-      <nav class="navbar">
-        <ul class="nav-links">
-          <li><a href="index.html">Front Page</a></li>
-          <li><a href="register.html">Register</a></li>
-          <li><a href="users.html">List Users</a></li>
-          <li><a href="products.html">List Products</a></li>
-          <li><a href="cart.html">Shopping Cart</a></li>
-          <li><a href="orders.html">View orders</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <div>
-        <p class="text-align-center">
-          <a id="register-link" href="javascript:showForm('register-form')">Register</a> | <a id="login-link" href="javascript:showForm('login-form')">Login</a>
-        </p>
-      </div>
-      <div id="notifications-container"></div>
-      <form id="register-form" class="form" method="POST">
-        <h2 class="text-align-center">Register</h2>
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input
-            type="text"
-            name="name"
-            class="form-control"
-            id="name"
-            placeholder="John Doe"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            class="form-control"
-            id="email"
-            placeholder="user@example.com"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            class="form-control"
-            id="password"
-            placeholder="password (at least 10 characters)"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="passwordConfirmation">Password confirmation</label>
-          <input
-            type="password"
-            name="passwordConfirmation"
-            class="form-control"
-            id="passwordConfirmation"
-            placeholder="password confirmation"
-            minlength="1"
-            required>
-        </div>
-        <div class="form-group">
-          <div class="second-column">
-            <button type="submit" id="btnRegister">Register</button>
-          </div>
-        </div>
-      </form>
+	<body>
+		<header>
+			<h1 class="app-log"><a href="index.html">KP-Market</a></h1>
+			<nav class="navbar">
+				<ul class="nav-links">
+          <li class="links-for-visitors" ><a href="register.html">Register</a></li>
+          <li class="links-for-users"><a href="users.html">List Users</a></li>
+          <li class="links-for-users"><a href="products.html">List Products</a></li>
+          <li class="links-for-users"><a href="cart.html">Shopping Cart</a></li>
+          <li class="links-for-users"><a href="orders.html">View orders</a></li>
+          <li class="links-for-users"><a href="#">Logout</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<div>
+				<p class="text-align-center">
+					<a id="register-link" href="javascript:showForm('register-form')"
+						>Register</a
+					>
+					|
+					<a id="login-link" href="javascript:showForm('login-form')">Login</a>
+				</p>
+			</div>
+			<div id="notifications-container"></div>
+			<form id="register-form" class="form" method="POST">
+				<h2 class="text-align-center">Register</h2>
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input
+						type="text"
+						name="name"
+						class="form-control"
+						id="name"
+						placeholder="John Doe"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input
+						type="email"
+						name="email"
+						class="form-control"
+						id="email"
+						placeholder="user@example.com"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input
+						type="password"
+						name="password"
+						class="form-control"
+						id="password"
+						placeholder="password (at least 10 characters)"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="passwordConfirmation">Password confirmation</label>
+					<input
+						type="password"
+						name="passwordConfirmation"
+						class="form-control"
+						id="passwordConfirmation"
+						placeholder="password confirmation"
+						minlength="1"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<div class="second-column">
+						<button type="submit" id="btnRegister">Register</button>
+					</div>
+				</div>
+			</form>
 
-
-      <form id="login-form" class="form hidden" method="POST">
-        <h2 class="text-align-center">Login</h2>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            class="form-control"
-            id="login-email"
-            placeholder="user@example.com"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            class="form-control"
-            id="login-password"
-            placeholder="password (at least 10 characters)"
-            required>
-        </div>
-        <div class="form-group">
-          <div class="second-column">
-            <button type="submit" id="loginBtn">Login</button>
-          </div>
-        </div>
-      </form>
-      <!-- <p class="text-align-center">
+			<form id="login-form" class="form hidden" method="POST">
+				<h2 class="text-align-center">Login</h2>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input
+						type="email"
+						name="email"
+						class="form-control"
+						id="login-email"
+						placeholder="user@example.com"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input
+						type="password"
+						name="password"
+						class="form-control"
+						id="login-password"
+						placeholder="password (at least 10 characters)"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<div class="second-column">
+						<button type="submit" id="loginBtn">Login</button>
+					</div>
+				</div>
+			</form>
+			<!-- <p class="text-align-center">
         <a href="index.html">Front Page</a> | <a href="users.html">List Users</a>
       </p> -->
-    </main>
-    <footer>
-      <p>Copyright &copy; 2020</p>
-    </footer>
-    <script src="js/utils.js"></script>
-    <script src="js/register.js"></script>
-  </body>
+		</main>
+		<footer>
+			<p>Copyright &copy; 2020</p>
+		</footer>
+		<script src="js/utils.js"></script>
+		<script src="js/register.js"></script>
+	</body>
 </html>

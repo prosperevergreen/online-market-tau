@@ -1,7 +1,6 @@
 const requestUtils = require("../utils/requestUtils");
 // require user model
 const User = require("../models/user");
-const jwt = require("jsonwebtoken");
 
 /**
  * Get current user based on the request headers

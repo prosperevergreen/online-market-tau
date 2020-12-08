@@ -32,12 +32,12 @@ footer {
   background-color: #24581D;
   color: #C2E3AB;
   box-shadow: 0 10px 10px rgba(0,0,0,0.2);
-  background-image: linear-gradient(to bottom right, #24581D, #5AA838);
+  background-image: linear-gradient(to bottom right, #24581D, #3C9933);
 
 }
-header{
+header {
    display: flex;
-   justify-content: space-evenly;
+  justify-content: space-between;
 }
 header h1{
    padding: 10px;
@@ -66,7 +66,7 @@ footer {
 
 .nav-links li {
   padding: 0 1.5rem;
-  font-size: 1.5em;
+  font-size: calc(100% + 0.7vw);;
   overflow-wrap: break-word;
   text-align: center;
 }
@@ -116,7 +116,7 @@ label {
 }
 
 button {
-  background-color: #4caf50;
+  background-color: #2E7E2A;
   color: white;
   padding: 1.5rem 2rem;
   border: none;
@@ -158,7 +158,10 @@ p {
 }
 
 #add-new-product-container{
-   /* float: right; */
    display: flex;
    flex-direction: row-reverse;
+}
+
+.links-for-users{
+  display: none;
 }
