@@ -9,6 +9,10 @@ chai.use(chaiHttp);
 const User = require('../models/user');
 const Product = require('../models/product');
 
+// helper function for authorization headers
+const encodeCredentials = (username, password) =>
+  Buffer.from(`${username}:${password}`, 'utf-8').toString('base64');
+
 // helper function for creating randomized test data
 const generateRandomString = (len = 9) => {
   let str = '';
@@ -39,12 +43,17 @@ describe('User Inteface', () => {
   let allProducts;
   let baseUrl;
   let browser;
+  let context;
   let page;
   let server;
   let registrationPage;
   let usersPage;
   let productsPage;
   let cartPage;
+
+  const getHeaders = user => {
+    return { Authorization: `Basic ${encodeCredentials(user.email, user.password)}` };
+  };
 
   // get randomized test user
   const getTestUser = () => {
@@ -69,7 +78,6 @@ describe('User Inteface', () => {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
     });
-    page = await browser.newPage();
 
     registrationPage = `${baseUrl}/register.html`;
     usersPage = `${baseUrl}/users.html`;
@@ -86,11 +94,19 @@ describe('User Inteface', () => {
     await User.deleteMany({});
     await User.create(users);
     allUsers = await User.find({});
+    page = await browser.newPage();
+  });
 
-    await page.authenticate({ username: adminUser.email, password: adminUser.password });
+  afterEach(async () => {
+    page && (await page.close());
   });
 
   describe('UI: List all users', () => {
+    beforeEach(async () => {
+      // await page.authenticate({ username: adminUser.email, password: adminUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(adminUser));
+    });
+
     it('should list all users when navigating to "/users.html"', async () => {
       await page.goto(usersPage);
       await page.waitForTimeout(shortWaitTime);
@@ -146,6 +162,8 @@ describe('User Inteface', () => {
       await page.waitForTimeout(shortWaitTime);
 
       // navigate to "/users.html" and check to see if the new user can be found
+      // await page.authenticate({ username: adminUser.email, password: adminUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(adminUser));
       await page.goto(usersPage, { waitUntil: 'networkidle0' });
       const nameElement = await page.$x(`//h3[contains(., '${newCustomer.name}')]`);
       let nameText = '';
@@ -159,6 +177,11 @@ describe('User Inteface', () => {
   });
 
   describe('UI: Modify user', () => {
+    beforeEach(async () => {
+      // await page.authenticate({ username: adminUser.email, password: adminUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(adminUser));
+    });
+
     it('should show correctly filled modification form', async () => {
       const customer = await User.findOne({ email: customerUser.email }).exec();
       const openButtonSelector = `#modify-${customer.id}`;
@@ -242,6 +265,11 @@ describe('User Inteface', () => {
   });
 
   describe('UI: Delete user', () => {
+    beforeEach(async () => {
+      // await page.authenticate({ username: adminUser.email, password: adminUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(adminUser));
+    });
+
     it('should delete user correctly', async () => {
       const customer = await User.findOne({ email: customerUser.email }).exec();
       const { _id, name } = customer.toJSON();
@@ -296,6 +324,11 @@ describe('User Inteface', () => {
 
   // Product UI tests
   describe('UI: List all products', () => {
+    beforeEach(async () => {
+      // await page.authenticate({ username: adminUser.email, password: adminUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(adminUser));
+    });
+
     it('should list all products when navigating to "/products.html"', async () => {
       const productsData = JSON.parse(JSON.stringify(allProducts));
       await page.goto(productsPage);
@@ -330,12 +363,11 @@ describe('User Inteface', () => {
 
   describe('UI: Shopping cart', () => {
     beforeEach(async () => {
-      await page.authenticate({ username: customerUser.email, password: customerUser.password });
+      // await page.authenticate({ username: customerUser.email, password: customerUser.password });
+      await page.setExtraHTTPHeaders(getHeaders(customerUser));
     });
 
     it('should show a notification about adding a product to shopping cart', async () => {
-      await page.goto(productsPage, { waitUntil: 'networkidle0' });
-      await page.waitForTimeout(shortWaitTime);
       const product = allProducts[0];
       const addToCartSelector = `#add-to-cart-${product.id}`;
       const expectedText = `Added ${product.name} to cart!`;
@@ -370,6 +402,21 @@ describe('User Inteface', () => {
 
     it('should show the product in shopping cart', async () => {
       const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
+
+      await page.goto(productsPage, { waitUntil: 'networkidle0' });
+      await page.waitForTimeout(shortWaitTime);
+
+      let errorMsg =
+        `Tried to add a product to the cart: ${product.name} ` +
+        `Could not locate the add to cart button ${addToCartSelector} ` +
+        'Make sure that the button has the correct id.';
+
+      const addToCartButton = await page.$(addToCartSelector);
+      expect(addToCartButton, errorMsg).not.to.be.null;
+
+      await page.click(addToCartSelector);
+      await page.waitForTimeout(shortWaitTime);
 
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
@@ -393,13 +440,29 @@ describe('User Inteface', () => {
 
     it('should increase the amount of items of a product in a shopping cart', async () => {
       const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
+
+      await page.goto(productsPage, { waitUntil: 'networkidle0' });
+      await page.waitForTimeout(shortWaitTime);
+
+      let errorMsg =
+        `Tried to add a product to the cart: ${product.name} ` +
+        `Could not locate the add to cart button ${addToCartSelector} ` +
+        'Make sure that the button has the correct id.';
+
+      const addToCartButton = await page.$(addToCartSelector);
+      expect(addToCartButton, errorMsg).not.to.be.null;
+
+      await page.click(addToCartSelector);
+      await page.waitForTimeout(shortWaitTime);
+
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
       const plusButtonSelector = `#plus-${product.id}`;
       const increaseAmountButton = await page.$(plusButtonSelector);
 
-      let errorMsg =
+      errorMsg =
         `Tried to increase the amount of a product in the cart: ${product.name} ` +
         `Could not locate the button ${plusButtonSelector} ` +
         'Make sure that the button has the correct id.';
@@ -424,13 +487,43 @@ describe('User Inteface', () => {
 
     it('should decrease the amount of items of a product in a shopping cart', async () => {
       const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
+
+      await page.goto(productsPage, { waitUntil: 'networkidle0' });
+      await page.waitForTimeout(shortWaitTime);
+
+      const addToCartButton = await page.$(addToCartSelector);
+
+      let errorMsg =
+        `Tried to add a product to the cart: ${product.name} ` +
+        `Could not locate the add to cart button ${addToCartSelector} ` +
+        'Make sure that the button has the correct id.';
+
+      expect(addToCartButton, errorMsg).not.to.be.null;
+
+      await page.click(addToCartSelector);
+      await page.waitForTimeout(shortWaitTime);
+
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
+      await page.waitForTimeout(shortWaitTime);
+
+      const plusButtonSelector = `#plus-${product.id}`;
+      const increaseAmountButton = await page.$(plusButtonSelector);
+
+      errorMsg =
+        `Tried to increase the amount of a product in the cart: ${product.name} ` +
+        `Could not locate the button ${plusButtonSelector} ` +
+        'Make sure that the button has the correct id.';
+
+      expect(increaseAmountButton, errorMsg).not.to.be.null;
+
+      await page.click(plusButtonSelector);
       await page.waitForTimeout(shortWaitTime);
 
       const minusButtonSelector = `#minus-${product.id}`;
       const decreaseAmountButton = await page.$(minusButtonSelector);
 
-      let errorMsg =
+      errorMsg =
         `Tried to decrease the amount of a product in the cart: ${product.name} ` +
         `Could not locate the the button ${minusButtonSelector} ` +
         'Make sure that the button has the correct id.';
@@ -455,13 +548,30 @@ describe('User Inteface', () => {
 
     it('should remove item from shopping cart when amount decreases to 0', async () => {
       const product = allProducts[0];
+      const addToCartSelector = `#add-to-cart-${product.id}`;
+
+      await page.goto(productsPage, { waitUntil: 'networkidle0' });
+      await page.waitForTimeout(shortWaitTime);
+
+      const addToCartButton = await page.$(addToCartSelector);
+
+      let errorMsg =
+        `Tried to add a product to the cart: ${product.name} ` +
+        `Could not locate the add to cart button ${addToCartSelector} ` +
+        'Make sure that the button has the correct id.';
+
+      expect(addToCartButton, errorMsg).not.to.be.null;
+
+      await page.click(addToCartSelector);
+      await page.waitForTimeout(shortWaitTime);
+
       await page.goto(cartPage, { waitUntil: 'networkidle0' });
       await page.waitForTimeout(shortWaitTime);
 
       const minusButtonSelector = `#minus-${product.id}`;
       const decreaseAmountButton = await page.$(minusButtonSelector);
 
-      let errorMsg =
+      errorMsg =
         `Tried to decrease the amount of a product in the cart: ${product.name} ` +
         `Could not locate the the button ${minusButtonSelector} ` +
         'Make sure that the button has the correct id.';
@@ -626,6 +736,7 @@ describe('User Inteface', () => {
       expect(notificationText).to.equal(expectedText1, errorMsg);
 
       await page.click(addToCartSelector2);
+      await page.waitForTimeout(shortWaitTime);
       await page.click(addToCartSelector2);
       await page.waitForTimeout(shortWaitTime);
 
