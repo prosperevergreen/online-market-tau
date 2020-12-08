@@ -27,12 +27,6 @@ body{
    align-items: center;
 
 }
-.view-one-container .card > img {
-   width: inherit;
-   margin: 10px 0px;
-   justify-content: center;
-   align-items: center;
-}
 
 /* Items inside an order. */
 .inlay {
@@ -109,9 +103,8 @@ body{
    box-shadow: 0 20px 20px rgba(0,0,0,0.3), 0px 0px 50px rgba(0,0,0,0.2);
 }
 
-#products-container .card > img {
+#products-container .card > img, .view-one-container .card > img {
    width: 100%;
-   /* margin: 10px 0px; */
    justify-content: center;
    align-items: center;
    border-radius: 15px 15px 0 0;
