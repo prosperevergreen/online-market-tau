@@ -58,7 +58,7 @@ body{
 
 /* Users - container*/
 
-#users-container{
+#users-container, #cart-container{
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
@@ -66,11 +66,11 @@ body{
    align-items: center;
 }
 
-#users-container .card {
+#users-container .card, #cart-container .card {
       padding: 30px 0px;
 }
 
-#users-container button{
+#users-container button, #cart-container button{
    margin: 10px 5px;
    border-radius: 5px;
 }
