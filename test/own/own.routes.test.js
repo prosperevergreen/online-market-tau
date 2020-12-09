@@ -37,14 +37,27 @@ describe('Test sendOptions', () => {
       expect(response).to.have.status(404);
    });
 });
-describe('Test "not allowed" responses ', () => {
+describe('Test "not allowed" responses for paths with ids', () => {
+   const generateRandomString = (len = 9) => {
+     let str = '';
+
+     do {
+       str += Math.random()
+         .toString(36)
+         .substr(2, 9)
+         .trim();
+     } while (str.length < len);
+
+     return str.substr(0, len);
+   };
+
    it('should respond 404 if path is not allowed', async() => {
-      const path = "/non/existent"
+      const path = `/api/non-existent/${generateRandomString()}`;
       const response = await chai.request(handleRequest).post(path).send({});
       expect(response).to.have.status(404);
    });
    it('should respond 405 if method is not allowed for idless path', async() => {
-      const path = "/api/cart"
+      const path = `/api/orders/${generateRandomString()}`;
       const response = await chai.request(handleRequest).post(path).send({});
       expect(response).to.have.status(405);
    });
