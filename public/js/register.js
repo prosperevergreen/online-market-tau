@@ -17,7 +17,7 @@ const signinUser = async (email, password) => {
 	// Report register error or success
 	saveAuthData("Bearer", jwtToken);
 	await authorize();
-	window.location.replace("http://localhost:3000");
+	window.location.replace(`${window.location.protocol}//${window.location.hostname}:${ window.location.port}`);
 };
 
 // Get for element
