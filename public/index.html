@@ -14,17 +14,17 @@
 			<nav class="navbar">
 				<ul class="nav-links">
 					<li class="visitor-link"><a href="register.html">Register</a></li>
-					<li class="user-link hidden"><a href="users.html">List Users</a></li>
+					<li class="admin-link hidden"><a href="users.html">List Users</a></li>
+          <li class="user-link hidden">
+            <a href="products.html">List Products</a>
+          </li>
 					<li class="user-link hidden">
 						<a href="cart.html">Shopping Cart</a>
 					</li>
 					<li class="user-link hidden">
-						<a href="products.html">List Products</a>
+						<a href="orders.html">View orders</a>
 					</li>
 					<li class="user-link hidden">
-						<a href="orders.html">View orders</a>
-          </li>
-          <li class="user-link hidden">
 						<a href="javascript:deleteAuthData()">Logout</a>
 					</li>
 				</ul>
@@ -33,12 +33,15 @@
 		<main>
 			<h1>Front Page</h1>
 			<p>
-        <span class="visitor-link">
-					<a href="register.html">Register</a>
+				<span class="visitor-link">
+					<a href="register.html">Register | Login</a>
+				</span>
+				<span class="admin-link hidden">
+					|
+					<a href="users.html">List Users</a>
 				</span>
 				<span class="user-link hidden">
 					|
-					<a href="users.html">List Users</a> |
 					<a href="products.html">List Products</a> |
 					<a href="cart.html">Shopping Cart</a>
 				</span>
@@ -70,6 +73,6 @@
 		<footer>
 			<p>Copyright &copy; 2020</p>
 		</footer>
-    <script src="js/auth.js"></script>
-  </body>
+		<script src="js/auth.js"></script>
+	</body>
 </html>

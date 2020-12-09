@@ -1,5 +1,10 @@
 const responseUtils = require("./utils/responseUtils");
-const { acceptsJson, isJson, parseBodyJson, getCredentials } = require("./utils/requestUtils");
+const {
+	acceptsJson,
+	isJson,
+	parseBodyJson,
+	getCredentials,
+} = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");
 const auth = require("./auth/auth");
 const {
@@ -37,7 +42,7 @@ const Order = require("./models/order");
 const allowedMethods = {
 	"/api/register": ["POST"],
 	"/api/login": ["GET"],
-   "/api/authorize": ["GET"],
+	"/api/authorize": ["GET"],
 	"/api/users": ["GET"],
 	//Added routes for products and cart:
 	"/api/products": ["GET", "POST"],
@@ -180,11 +185,10 @@ const handleRequest = async (request, response) => {
 				"Invalid Content-Type. Expected application/json"
 			);
 		}
-      // register new user
+		// register new user
 		// Respond to POST request
 		const userData = await parseBodyJson(request);
 		return registerUser(response, userData);
-
 	}
 
 	if (filePath === "/api/login") {
@@ -192,32 +196,27 @@ const handleRequest = async (request, response) => {
 		if ((await auth.getCurrentUser(request)) === null) {
 			return responseUtils.basicAuthChallenge(response);
 		}
+		const newToken = auth.createJWTWebToken(request);
+		responseUtils.sendJson(response, newToken);
+	}
+	// Get current cred or respond with 401 error
+	const currentUser = await auth.getCurrentUserJWT(request);
+
+	// Check user Authentication
+	if (currentUser === null) {
+		return responseUtils.unauthorized(response);
 	}
 
-   // // Get current cred or respond with 401 error
-	// const currentUser = await auth.getCurrentUser(request);
-
-	// // Check user Authentication
-	// if (currentUser === null) {
-	// 	return responseUtils.basicAuthChallenge(response);
-	// }
-
-   if (filePath === "/api/authorize"){
-      // Check user Authentication
-      const currentUser = await auth.getCurrentUser(request);
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
+	if (filePath === "/api/authorize") {
 		// Require a correct accept header (require 'application/json' or '*/*')
 		if (!acceptsJson(request)) {
 			return responseUtils.contentTypeNotAcceptable(response);
 		}
 		//Will respond to GET request
-		responseUtils.sendJson(response, {role: currentUser.role});
-   }
+		responseUtils.sendJson(response, { role: currentUser.role });
+	}
 
 	if (matchUserId(filePath)) {
-
 		// Verify curent user is admin or respond with error 403
 		if (currentUser.role !== "admin") {
 			return responseUtils.forbidden(response);
@@ -230,7 +229,7 @@ const handleRequest = async (request, response) => {
 
 		// DELETE - Delete user by id and send deleted user as response body
 		if (method.toUpperCase() === "DELETE") {
-         return deleteUser(response, userId, adminUser);
+			return deleteUser(response, userId, adminUser);
 		}
 
 		// PUT - Modify user role and send modified user as response body
@@ -242,19 +241,11 @@ const handleRequest = async (request, response) => {
 
 		// GET - send user as response body
 		// Responds to GET request
-      return viewUser(response, userId, adminUser);
+		return viewUser(response, userId, adminUser);
 	}
 
 	// view, update and delete a single product by ID (GET, PUT, DELETE)
 	if (matchProductId(filePath)) {
-
-		// Get admin cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Verify user cred or respond with 401 error
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
 
 		// Get product Id from path
 		const productId = filePath.split("/")[3];
@@ -264,9 +255,9 @@ const handleRequest = async (request, response) => {
 			return responseUtils.contentTypeNotAcceptable(response);
 		}
 
-      // DELETE - Delete user by id and send deleted product as response body
+		// DELETE - Delete user by id and send deleted product as response body
 		if (method.toUpperCase() === "DELETE") {
-         return deleteProduct(response, productId, currentUser);
+			return deleteProduct(response, productId, currentUser);
 		}
 
 		// PUT - Modify product info and send modified product as response body
@@ -278,21 +269,11 @@ const handleRequest = async (request, response) => {
 
 		// GET - send user as response body
 		// Respond to GET request
-      return viewProduct(response, productId);
-
-
+		return viewProduct(response, productId);
 	}
 
 	if (matchOrderId(filePath)) {
 		const orderId = filePath.split("/")[3];
-
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
 
 		// Require a correct accept header (require 'application/json' or '*/*')
 		if (!acceptsJson(request)) {
@@ -307,15 +288,8 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/users") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
 
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
-      // GET all users
+		// GET all users
 		// Verify user is admin or resonde with error 403
 		if (currentUser.role !== "admin") {
 			return responseUtils.forbidden(response);
@@ -326,13 +300,6 @@ const handleRequest = async (request, response) => {
 	}
 
 	if (filePath === "/api/products") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
 
 		// create new product
 		if (method.toUpperCase() === "POST") {
@@ -350,20 +317,12 @@ const handleRequest = async (request, response) => {
 			const productData = await parseBodyJson(request);
 			return createProduct(response, productData, currentUser);
 		}
-      //Responds to GET request
-      // Get all products
-      return getAllProducts(response);
+		//Responds to GET request
+		// Get all products
+		return getAllProducts(response);
 	}
 
 	if (filePath === "/api/orders") {
-		// Get current cred or respond with 401 error
-		const currentUser = await auth.getCurrentUser(request);
-
-		// Check user Authentication
-		if (currentUser === null) {
-			return responseUtils.basicAuthChallenge(response);
-		}
-
 		if (method.toUpperCase() === "POST") {
 			if (currentUser.role === "customer") {
 				// Fail if not a JSON request
@@ -379,12 +338,12 @@ const handleRequest = async (request, response) => {
 				return responseUtils.forbidden(response);
 			}
 		}
-      //Responds to GET request
-      if (currentUser.role === "admin") {
-         return getAllOrders(response);
-      }
-      //Responds with currentUsers orders
-      return getAllUserOrders(response, currentUser);
+		//Responds to GET request
+		if (currentUser.role === "admin") {
+			return getAllOrders(response);
+		}
+		//Responds with currentUsers orders
+		return getAllUserOrders(response, currentUser);
 	}
 };
 

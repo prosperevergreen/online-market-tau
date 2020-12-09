@@ -1,6 +1,21 @@
 const requestUtils = require("../utils/requestUtils");
 // require user model
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
+const verifyUser = async (email, password) => {
+	// Find one user with an email "email@email.com"
+	const emailUser = await User.findOne({ email: email }).exec();
+
+	// User email not found
+	if (emailUser === null) return null;
+
+	// password is correct
+	if (emailUser.checkPassword(password)) return emailUser;
+
+	// password is incorrect
+	return null;
+};
 
 /**
  * Get current user based on the request headers
@@ -16,29 +31,14 @@ const getCurrentUser = async (request) => {
 
 	// Get request user credentials (Basic Auth)
 	const credentials = requestUtils.getCredentials(request);
-	// If found exists, return it in parts(type and value) or return null
-	if (credentials) {
-		const currentUserEmail = credentials[0];
-		const currentUserPassword = credentials[1];
-		// Find one user with an email "email@email.com"
-		const emailUser = await User.findOne({ email: currentUserEmail }).exec();
 
-		if (emailUser === null) {
-			// User email not found
-			return null;
-		} else {
-			if (emailUser.checkPassword(currentUserPassword)) {
-				// password is correct
-				return emailUser;
-			} else {
-				// password is incorrect
-				return null;
-			}
-		}
-		// return users.getUser(credentials[0], credentials[1]);
-	} else {
-		return null;
-	}
+	// If found exists, return it in parts(type and value) or return null
+	if (!credentials) return null;
+
+	const currentUserEmail = credentials[0];
+	const currentUserPassword = credentials[1];
+
+	return verifyUser(currentUserEmail, currentUserPassword);
 };
 
 /**
@@ -55,34 +55,30 @@ const getCurrentUserJWT = async (request) => {
 
 	// Get request user credentials (Basic Auth)
 	const credentials = requestUtils.getCredentialsJWT(request);
+	console.log(credentials);
 	// If found exists, return it in parts(type and value) or return null
-	if (credentials) {
-		const currentUserEmail = credentials[0];
-		const currentUserPassword = credentials[1];
-		// Find one user with an email "email@email.com"
-		const emailUser = await User.findOne({ email: currentUserEmail }).exec();
+	if (!credentials) return null;
 
-		if (emailUser === null) {
-			// User email not found
-			return null;
-		} else {
-			if (emailUser.checkPassword(currentUserPassword)) {
-				// password is correct
-				return emailUser;
-			} else {
-				// password is incorrect
-				return null;
-			}
-		}
-		// return users.getUser(credentials[0], credentials[1]);
-	} else {
-		return null;
-	}
+	const currentUserEmail = credentials[0];
+	const currentUserPassword = credentials[1];
+
+	return verifyUser(currentUserEmail, currentUserPassword);
 };
 
-const createJWTWebToken = (userEmail, userPassword) => {
-	// const userCred = requestUtils.getCredentials(request);
-	const token = jwt.sign({userEmail, userPassword}, process.env.ACCESS_TOKEN_SECRET);
+const createJWTWebToken = (request) => {
+	// Get request user credentials (Basic Auth)
+	const credentials = requestUtils.getCredentials(request);
+
+	// If found exists, return it in parts(type and value) or return null
+	if (!credentials) return null;
+
+	const currentUserEmail = credentials[0];
+	const currentUserPassword = credentials[1];
+
+	const token = jwt.sign(
+		{ currentUserEmail, currentUserPassword },
+		process.env.ACCESS_TOKEN_SECRET
+	);
 	return token;
 };
 

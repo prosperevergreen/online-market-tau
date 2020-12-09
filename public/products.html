@@ -1,168 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/card.css">
-    <title>Products</title>
-  </head>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<link rel="stylesheet" href="css/card.css" />
+		<title>Products</title>
+		<script>
+			if (
+				document.readyState === "loading" &&
+				!sessionStorage.getItem("role")
+			) {
+				window.history.back();
+			}
+		</script>
+	</head>
 
-  <body>
-    <header>
-      <h1><a href="index.html">KP-Market</a></h1>
-      <nav class="navbar">
-        <ul class="nav-links">
+	<body>
+		<header>
+			<h1><a href="index.html">KP-Market</a></h1>
+			<nav class="navbar">
+				<ul class="nav-links">
 					<li class="visitor-link"><a href="register.html">Register</a></li>
-					<li class="user-link hidden"><a href="users.html">List Users</a></li>
-					<li class="user-link hidden">
-						<a href="cart.html">Shopping Cart</a>
-					</li>
+					<li class="admin-link hidden"><a href="users.html">List Users</a></li>
 					<li class="user-link hidden">
 						<a href="products.html">List Products</a>
 					</li>
 					<li class="user-link hidden">
+						<a href="cart.html">Shopping Cart</a>
+					</li>
+					<li class="user-link hidden">
 						<a href="orders.html">View orders</a>
-          </li>
-          <li class="user-link hidden">
+					</li>
+					<li class="user-link hidden">
 						<a href="javascript:deleteAuthData()">Logout</a>
 					</li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <h1>Products</h1>
-      <div id="notifications-container"></div>
-      <div id="add-new-product-container">
-        <button id="add-new-product" type="button" class="hidden" name="button">Add new product</button>
-      </div>
-      <div id="modify-form-container">
-      </div>
-      <form id="new-product-form" class="form hidden" method="POST">
-        <h2 class="text-align-center">Create a new product</h2>
-        <div class="form-group">
-          <label for="productName">Name</label>
-          <input
-            type="text"
-            name="name"
-            class="form-control"
-            id="name"
-            placeholder="Product name (mandatory)"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input
-            type="text"
-            name="price"
-            class="form-control"
-            id="price"
-            placeholder="Price in euros (mandatory)"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input
-            type="text"
-            name="description"
-            class="form-control"
-            id="description"
-            placeholder="Product description">
-        </div>
-        <div class="form-group">
-          <label for="productImage">Image</label>
-          <input
-            type="link"
-            name="linkForImage"
-            class="form-control"
-            placeholder="Link for product image">
-        </div>
-        <div class="form-group">
-          <div class="second-column">
-            <button type="submit" id="createProduct">Create</button>
-          </div>
-        </div>
-      </form>
-      <div class="view-one-container" id="view-a-product"></div>
-      <div id="products-container"></div>
-    </main>
-    <footer>
-      <p>Copyright &copy; 2020 diipadaa etc etc.</p>
-    </footer>
-    <template id="product-template">
-      <div class="item-row">
-        <div class="card">
-           <img class="product-img" src="">
-           <h3 class="product-name"></h3>
-           <p class="product-description"></p>
-           <p><span class="product-price"></span><span> €</span></p>
-           <button>Add to cart</button>
-        </div>
-      </div>
-    </template>
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<h1>Products</h1>
+			<div id="notifications-container"></div>
+			<div id="add-new-product-container">
+				<button id="add-new-product" type="button" class="hidden" name="button">
+					Add new product
+				</button>
+			</div>
+			<div id="modify-form-container"></div>
+			<form id="new-product-form" class="form hidden" method="POST">
+				<h2 class="text-align-center">Create a new product</h2>
+				<div class="form-group">
+					<label for="productName">Name</label>
+					<input
+						type="text"
+						name="name"
+						class="form-control"
+						id="name"
+						placeholder="Product name (mandatory)"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="price">Price</label>
+					<input
+						type="text"
+						name="price"
+						class="form-control"
+						id="price"
+						placeholder="Price in euros (mandatory)"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="description">Description</label>
+					<input
+						type="text"
+						name="description"
+						class="form-control"
+						id="description"
+						placeholder="Product description"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="productImage">Image</label>
+					<input
+						type="link"
+						name="linkForImage"
+						class="form-control"
+						placeholder="Link for product image"
+					/>
+				</div>
+				<div class="form-group">
+					<div class="second-column">
+						<button type="submit" id="createProduct">Create</button>
+					</div>
+				</div>
+			</form>
+			<div class="view-one-container" id="view-a-product"></div>
+			<div id="products-container"></div>
+		</main>
+		<footer>
+			<p>Copyright &copy; 2020 diipadaa etc etc.</p>
+		</footer>
+		<template id="product-template">
+			<div class="item-row">
+				<div class="card">
+					<img class="product-img" src="" />
+					<div class="product-details">
+						<h3 class="product-name"></h3>
+						<p class="product-description"></p>
+						<p><span class="product-price"></span><span> €</span></p>
+						<button>Add to cart</button>
+					</div>
+				</div>
+			</div>
+		</template>
 
-    <template id="form-template">
-      <form id="edit-product-form" method="POST">
-        <h2 class="text-align-center">Modify user {Product Name}</h2>
-        <div class="form-group">
-          <label for="id">Id</label>
-          <input
-            name="_id"
-            type="text"
-            class="form-control"
-            id="id-input"
-            value=""
-            disabled
-            required>
-        </div>
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input
-            name="name"
-            type="text"
-            class="form-control"
-            id="name-input"
-            value=""
-            required>
-        </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input
-            type="text"
-            name="price"
-            class="form-control"
-            id="price-input"
-            placeholder="Price in euros (mandatory)"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input
-            type="text"
-            name="description"
-            class="form-control"
-            id="description-input"
-            placeholder="Product description">
-        </div>
-        <div class="form-group">
-          <label for="productImage">Image</label>
-          <input
-            type="link"
-            name="linkForImage"
-            id="link"
-            class="form-control"
-            placeholder="Link for product image">
-        </div>
-        <div class="form-group">
-          <div class="second-column">
-            <button type="submit" id="update-button">Update</button>
-          </div>
-        </div>
-      </form>
-    </template>
-    <script src="js/auth.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/products.js"></script>
-  </body>
+		<template id="form-template">
+			<form id="edit-product-form" method="POST">
+				<h2 class="text-align-center">Modify user {Product Name}</h2>
+				<div class="form-group">
+					<label for="id">Id</label>
+					<input
+						name="_id"
+						type="text"
+						class="form-control"
+						id="id-input"
+						value=""
+						disabled
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input
+						name="name"
+						type="text"
+						class="form-control"
+						id="name-input"
+						value=""
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="price">Price</label>
+					<input
+						type="text"
+						name="price"
+						class="form-control"
+						id="price-input"
+						placeholder="Price in euros (mandatory)"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="description">Description</label>
+					<input
+						type="text"
+						name="description"
+						class="form-control"
+						id="description-input"
+						placeholder="Product description"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="productImage">Image</label>
+					<input
+						type="link"
+						name="linkForImage"
+						id="link"
+						class="form-control"
+						placeholder="Link for product image"
+					/>
+				</div>
+				<div class="form-group">
+					<div class="second-column">
+						<button type="submit" id="update-button">Update</button>
+					</div>
+				</div>
+			</form>
+		</template>
+		<script src="js/auth.js"></script>
+		<script src="js/utils.js"></script>
+		<script src="js/products.js"></script>
+	</body>
 </html>

@@ -34,7 +34,6 @@ const registerUser = async (response, userData) => {
 
 	// Save user and respond with copy of the newly created user
 	await newUser.save();
-	newUser.jwtToken = userData.token;
 	responseUtils.createdResource(response, newUser);
 };
 

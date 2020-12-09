@@ -7,6 +7,18 @@
  *       - Reset the form back to empty after successful registration
  *       - Use postOrPutJSON() function from utils.js to send your data back to server
  */
+const signinUser = async (email, password) => {
+	// create Basic Auth data and hash
+	const token = `${email}:${password}`;
+	const hashCred = btoa(token);
+	// save auth data to local storage
+	saveAuthData("Basic", hashCred);
+	const jwtToken = await getJSON("/api/login");
+	// Report register error or success
+	saveAuthData("Bearer", jwtToken);
+	await authorize();
+	window.location.replace("http://localhost:3000");
+};
 
 // Get for element
 const registerForm = document.getElementById("register-form");
@@ -29,22 +41,10 @@ registerForm.addEventListener("submit", async (event) => {
 				email: email.value,
 				password: password.value,
 			});
-			
-			// set jwt token
-			const jwtAuth = `Bearer ${result.jwtToken}`
-			localStorage.setItem("auth-cred", jwtAuth);
 
+			// update browser with user token and role
+			await signinUser(email.value, password.value)
 
-            // Report register error or success
-			if (result.error) {
-				createNotification(result.error, "notifications-container", false);
-			} else {
-				registerForm.reset();
-				createNotification(
-					"Successful registration",
-					"notifications-container"
-				);
-			}
 		} catch (error) {
 			createNotification(`${error}`, "notifications-container", false);
 		}
@@ -57,41 +57,23 @@ registerForm.addEventListener("submit", async (event) => {
 	}
 });
 
-
 const loginForm = document.getElementById("login-form");
 
 // Setup event listener when form is submited
 loginForm.addEventListener("submit", async (event) => {
-
 	// Get form data
-	const email = document.getElementById("login-email");
-	const password = document.getElementById("login-password");
+	const email = document.getElementById("login-email").value;
+	const password = document.getElementById("login-password").value;
 
 	// Prevent default submission
 	event.preventDefault();
 	// Verify that password match else report error
-	if (password.value && password.value.length) {
+	if (password && password.length) {
 		// Try creating new user or report error on falure
 		try {
-			// create Basic Auth data and hash
-			const token = `${email.value}:${password.value}`
-			const hashCred = btoa(token);
-			const basicAuth = `Basic ${hashCred}`
-			// save auth data to local storage
-			saveAuthData('Basic', basicAuth)
-			const jwtToken = await getJSON("/api/login");
-            // Report register error or success
-			if (jwtToken.error) {
-				createNotification(jwtToken.error, "notifications-container", false);
-			} else {
-				// Save new JWT token
-				saveAuthData('Bearer', jwtToken)
-				loginForm.reset();
-				createNotification(
-					"Successful login",
-					"notifications-container"
-				);
-			}
+			// update browser with user token and role
+			await signinUser(email, password);
+			loginForm.reset();
 		} catch (error) {
 			createNotification(`${error}`, "notifications-container", false);
 		}
@@ -108,4 +90,4 @@ const showForm = (formId) => {
 	loginForm.classList.add("hidden");
 	registerForm.classList.add("hidden");
 	document.getElementById(formId).classList.remove("hidden");
-}
+};

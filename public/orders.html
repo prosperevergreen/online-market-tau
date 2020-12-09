@@ -7,20 +7,28 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/card.css">
     <title>Orders</title>
+    <script>
+			if (
+				document.readyState === "loading" &&
+				!sessionStorage.getItem("role")
+			) {
+				window.history.back();
+			}
+		</script>
   </head>
 
   <body>
     <header>
-      <<h1><a href="index.html">KP-Market</a></h1>
+      <h1><a href="index.html">KP-Market</a></h1>
       <nav class="navbar">
         <ul class="nav-links">
 					<li class="visitor-link"><a href="register.html">Register</a></li>
-					<li class="user-link hidden"><a href="users.html">List Users</a></li>
+					<li class="admin-link hidden"><a href="users.html">List Users</a></li>
+          <li class="user-link hidden">
+            <a href="products.html">List Products</a>
+          </li>
 					<li class="user-link hidden">
 						<a href="cart.html">Shopping Cart</a>
-					</li>
-					<li class="user-link hidden">
-						<a href="products.html">List Products</a>
 					</li>
 					<li class="user-link hidden">
 						<a href="orders.html">View orders</a>
