@@ -11,8 +11,10 @@ const getAuthData = () => {
 const deleteAuthData = () => {
 	sessionStorage.removeItem("auth-cred");
 	sessionStorage.removeItem("role");
-	window.location.replace("http://localhost:3000");
+	window.location.replace(`${window.location.protocol}//${window.location.hostname}:${ window.location.port}`);
 };
+
+
 
 /**
  * Authenticate user by requesting server.
