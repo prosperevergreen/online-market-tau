@@ -8,17 +8,25 @@
 		<title>Register</title>
 	</head>
 
-	<body>
+	<body >
 		<header>
 			<h1 class="app-log"><a href="index.html">KP-Market</a></h1>
 			<nav class="navbar">
 				<ul class="nav-links">
-          <li class="links-for-visitors" ><a href="register.html">Register</a></li>
-          <li class="links-for-users"><a href="users.html">List Users</a></li>
-          <li class="links-for-users"><a href="products.html">List Products</a></li>
-          <li class="links-for-users"><a href="cart.html">Shopping Cart</a></li>
-          <li class="links-for-users"><a href="orders.html">View orders</a></li>
-          <li class="links-for-users"><a href="#">Logout</a></li>
+					<li class="visitor-link"><a href="register.html">Register</a></li>
+					<li class="user-link hidden"><a href="users.html">List Users</a></li>
+					<li class="user-link hidden">
+						<a href="cart.html">Shopping Cart</a>
+					</li>
+					<li class="user-link hidden">
+						<a href="products.html">List Products</a>
+					</li>
+					<li class="user-link hidden">
+						<a href="orders.html">View orders</a>
+          </li>
+          <li class="user-link hidden">
+						<a href="javascript:deleteAuthData()">Logout</a>
+					</li>
 				</ul>
 			</nav>
 		</header>
@@ -26,8 +34,7 @@
 			<div>
 				<p class="text-align-center">
 					<a id="register-link" href="javascript:showForm('register-form')"
-						>Register</a
-					>
+						>Register</a>
 					|
 					<a id="login-link" href="javascript:showForm('login-form')">Login</a>
 				</p>
@@ -124,6 +131,7 @@
 		<footer>
 			<p>Copyright &copy; 2020</p>
 		</footer>
+		<script src="js/auth.js"></script>
 		<script src="js/utils.js"></script>
 		<script src="js/register.js"></script>
 	</body>

@@ -62,6 +62,7 @@ const loginForm = document.getElementById("login-form");
 
 // Setup event listener when form is submited
 loginForm.addEventListener("submit", async (event) => {
+
 	// Get form data
 	const email = document.getElementById("login-email");
 	const password = document.getElementById("login-password");
@@ -72,17 +73,19 @@ loginForm.addEventListener("submit", async (event) => {
 	if (password.value && password.value.length) {
 		// Try creating new user or report error on falure
 		try {
+			// create Basic Auth data and hash
 			const token = `${email.value}:${password.value}`
 			const hashCred = btoa(token);
 			const basicAuth = `Basic ${hashCred}`
-			localStorage.setItem("auth-cred", basicAuth);
+			// save auth data to local storage
+			saveAuthData('Basic', basicAuth)
 			const jwtToken = await getJSON("/api/login");
             // Report register error or success
-			if (token.error) {
-				createNotification(result.error, "notifications-container", false);
+			if (jwtToken.error) {
+				createNotification(jwtToken.error, "notifications-container", false);
 			} else {
-				jwtAuth = `Bearer ${jwtToken}`
-				localStorage.setItem("auth-cred", jwtAuth);
+				// Save new JWT token
+				saveAuthData('Bearer', jwtToken)
 				loginForm.reset();
 				createNotification(
 					"Successful login",

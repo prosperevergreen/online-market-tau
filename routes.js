@@ -1,5 +1,3 @@
-/* eslint-disable complexity */
-
 const responseUtils = require("./utils/responseUtils");
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require("./utils/requestUtils");
 const { renderPublic } = require("./utils/render");

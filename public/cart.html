@@ -14,11 +14,20 @@
       <h1><a href="index.html">KP-Market</a></h1>
       <nav class="navbar">
         <ul class="nav-links">
-          <li><a href="register.html">Register</a></li>
-          <li><a href="users.html">List Users</a></li>
-          <li><a href="products.html">List Products</a></li>
-          <li><a href="cart.html">Shopping Cart</a></li>
-          <li><a href="orders.html">View orders</a></li>
+					<li class="visitor-link"><a href="register.html">Register</a></li>
+					<li class="user-link hidden"><a href="users.html">List Users</a></li>
+					<li class="user-link hidden">
+						<a href="cart.html">Shopping Cart</a>
+					</li>
+					<li class="user-link hidden">
+						<a href="products.html">List Products</a>
+					</li>
+					<li class="user-link hidden">
+						<a href="orders.html">View orders</a>
+          </li>
+          <li class="user-link hidden">
+						<a href="javascript:deleteAuthData()">Logout</a>
+					</li>
         </ul>
       </nav>
     </header>
@@ -49,6 +58,7 @@
         </div>
       </div>
     </template>
+    <script src="js/auth.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/cart.js"></script>
   </body>

@@ -23,7 +23,7 @@ const getJSON = async (url) => {
 	// Create and setup header to accept json
 	const header = new Headers();
 	header.append("Accept", "application/json, */*");
-	header.set("Authorization", localStorage.getItem("auth-cred"));
+	header.set("Authorization", getAuthData());
 	// Setup fetch metadata
 	const fetchDataSetup = {
 		method: "GET",
@@ -56,7 +56,7 @@ const postOrPutJSON = async (url, method, data = {}) => {
 	// Create and setup header to specify its content type as json
 	const header = new Headers();
 	header.append("Content-Type", "application/json, */*");
-	header.set("Authorization", localStorage.getItem("auth-cred"));
+	header.set("Authorization", getAuthData());
 
 	// Setup fetch metadata
 	const fetchDataSetup = {
@@ -84,7 +84,7 @@ const deleteResourse = async (url) => {
 	// throw new Error("Not Implemented");
 	const header = new Headers();
 	header.append("Accept", "application/json, */*");
-	header.set("Authorization",localStorage.getItem("auth-cred"))
+	header.set("Authorization",getAuthData())
 
 	// Setup fetch metadata
 	const fetchDataSetup = {
@@ -157,25 +157,3 @@ const removeElement = (containerId, elementId) => {
 		.forEach((element) => element.remove());
 };
 
-/**
- * Authenticate user by requesting server.
- *
- * Save role to sessionStorage.
- */
-const authorize = async () => {
-   try {
-		//Get products as JSON from server:
-		const userRole = await getJSON("/api/authorize");
-      if(sessionStorage.getItem("role") === null){
-         sessionStorage.setItem("role", userRole.role);
-
-      }
-      else{
-         sessionStorage["role"] = userRole.role;
-      }
-
-	} catch (err) {
-		createNotification(`${err}`, "notifications-container", false);
-	}
-
-}
