@@ -55,7 +55,6 @@ const getCurrentUserJWT = async (request) => {
 
 	// Get request user credentials (Basic Auth)
 	const credentials = requestUtils.getCredentialsJWT(request);
-	console.log(credentials);
 	// If found exists, return it in parts(type and value) or return null
 	if (!credentials) return null;
 

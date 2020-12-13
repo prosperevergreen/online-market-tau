@@ -17,6 +17,12 @@ learn more from eachothers code, workflow and habits.
 
 A web shop with vanilla JS, HTML & CSS.
 
+[Basic Auth Web Version](https://kp-market.herokuapp.com/)
+
+[JWT Web Version](https://jwtwebdev66.herokuapp.com/)
+
+
+
 
 ### The project structure
 

@@ -57,17 +57,36 @@ body{
 
 
 /* Users - container*/
+#users-container{
+   flex-direction: row;
+   align-items: center;
+}
+
+#cart-container{
+   flex-direction: column-reverse;
+   /* align-items: ; */
+}
+
 
 #users-container, #cart-container{
    display: flex;
-   flex-direction: row;
    flex-wrap: wrap;
    justify-content: center;
    align-items: center;
 }
+#cart-container .card {
+   display: flex;
+   flex-direction: row;
+   width: 100%;
+   justify-content: space-evenly;
+}
+
+#cart-container .item-row{
+   width: 100%;
+}
 
 #users-container .card, #cart-container .card {
-      padding: 30px 0px;
+      padding: 10px 0px;
 }
 
 #users-container button, #cart-container button{

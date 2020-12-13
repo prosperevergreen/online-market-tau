@@ -20,12 +20,10 @@ const products = require('./products.json').map(product => ({ ...product }));
     const Product = require('../models/product');
     await Product.deleteMany({});
     await Product.create(products);
-    console.log('Created products');
 } catch (error) {}
 
   await User.deleteMany({});
   await User.create(users);
-  console.log('Created users');
 
   disconnectDB();
 })();
