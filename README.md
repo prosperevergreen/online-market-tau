@@ -2,9 +2,11 @@
 
 A web shop with vanilla JS, HTML & CSS.
 
-[Basic Auth Web Version](https://kp-market.herokuapp.com/)
+Link to app site below
 
-[JWT Web Version](https://jwtwebdev66.herokuapp.com/)
+1. [JWT Web Version](https://jwtwebdev66.herokuapp.com/)
+2. [Basic Auth Web Version](https://kp-market.herokuapp.com/)
+
 
 
 
