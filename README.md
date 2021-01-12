@@ -1,19 +1,4 @@
-# Group 
-
-Member1:  Kaisa Sormunen, kaisa.sormunen@tuni.fi, 439656, 
-resposible for: Frontend UI, Frontend functionality, Backend, adding images, linting, documenting, project management
-
-Member2:  Prosper Evergreen, prosper.evergreen@tuni.fi, 050542738, 
-resposible for: Backend, Frontend functionality, JWT,
-   Authentication and Login/Logout implementations, Dynamic forms, documenting, project management
-   
-Over all work was split pretty evenly, for we both wanted to learn the subjects handled on this course.
-Many of the tasks were such that parts of it could be completed by the other student, which abled us to 
-learn more from eachothers code, workflow and habits.
-
-
-
-# WebDev1 coursework assignment
+# An online shop
 
 A web shop with vanilla JS, HTML & CSS.
 
