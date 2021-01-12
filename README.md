@@ -1,6 +1,8 @@
 # An online shop
 
-A web shop with vanilla JS, HTML & CSS.
+A Fullstack web shop with vanilla JS, HTML & CSS.
+
+<img src="https://gitlab.com/prosperevergreen/online-market-jwt/-/raw/jwt/documentation/online-market-screenshot.png" style="float: right; width: 300px;" alt="Online Shop Screenshot">
 
 Link to app site below
 
