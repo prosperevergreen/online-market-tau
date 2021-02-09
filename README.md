@@ -2,15 +2,11 @@
 
 A Fullstack web shop with vanilla JS, HTML & CSS.
 
-<img src="https://gitlab.com/prosperevergreen/online-market-jwt/-/raw/jwt/documentation/online-market-screenshot.png" style="float: right;" width="800px" alt="Online Shop Screenshot">
-
 Link to app site below
-
 1. [JWT Web Version](https://jwtwebdev66.herokuapp.com/)
 2. [Basic Auth Web Version](https://kp-market.herokuapp.com/)
 
-
-
+<img src="https://gitlab.com/prosperevergreen/online-market-jwt/-/raw/jwt/documentation/online-market-screenshot.png" style="float: right;" width="800px" alt="Online Shop Screenshot">
 
 
 ### The project structure
@@ -42,8 +38,6 @@ Link to app site below
 
 ```
 
-TODO: describe added files here and give them short descriptions
-
 ## The architecture 
 
 TODO: describe the system, important buzzwords include MVC and REST.
@@ -62,46 +56,3 @@ datapersistence.
 Also while making this project functional programming was endrosed. Functional programming sits with this style of RESTful developing, for
 it aims for clear, constrained way of coding that eliminates the issues that rise from mutability. It provides tools to create readable, 
 unambiguous code.
-
-
-
-## Tests and documentation
-
-TODO: Links to at least 10 of your group's GitLab issues, and their associated Mocha tests and test files.
-
-
-## Security concerns
-
-TODO: list the security threats represented in the course slides.
-Document how your application protects against the threats.
-You are also free to add more security threats + protection here, if you will.
-
-XSS - Cross site scripting
-We protect the app and its users against xss by validating user input and not representing anything 
-straight to the browser. In this app user input is mostly collected in clicks, or such text input that
-it gets validated and processed before bringing it back to the front end.
-
-Information leakage
-Authentication and Authorization
-Are implemented in this task by Basic and JWT-based authentication and requiring authorization in most cases.
-
-Session Management:
- Session fixation
- This threat is handled by not saving any session related id's so that the user could make the system 
- believe they have different authority. All such cookies and tokens should be renewed frequently to 
- prevent fraud from happening.
- 
- Session sidejacking
- This threat is handled by using https for the whole interaction with the user.
- 
- CSRF - Cross site request forgery
- This threat should be handled by restricting allowed methods and by checking origin. CSRF-tokens 
- are a way to check that the action is actually coming from where it is supposed to come from.
- 
-NoSQL injections
-Can be prevented by validating and sanitizing, never performing a query straight with a user given string.
-
-Directory Traversals
-Are prevented in this particular app by allowing only very specific paths to be executed.
-
-
