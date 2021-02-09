@@ -1,6 +1,6 @@
-# An online shop
+# A demo online shop
 
-A Fullstack web shop with vanilla JS, HTML & CSS.
+A Fullstack web app that works as an a sample online shop with vanilla JS, HTML & CSS.
 
 Link to app site below
 1. [JWT Web Version](https://jwtwebdev66.herokuapp.com/)
