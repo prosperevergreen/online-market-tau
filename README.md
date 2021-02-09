@@ -40,9 +40,6 @@ Link to app site below
 
 ## The architecture 
 
-TODO: describe the system, important buzzwords include MVC and REST.
-UML diagrams would be highly appreciated.
-
 This system is a web application based on RESTful architechture and there fore is versatile and easy to 
 modify. Being built on such constraints gives freedom for the developer to add new but well managed functions to the app,
 without having to fundamentally rebuild the system. It is like a tree trunck to grow new branches and leaves on.
